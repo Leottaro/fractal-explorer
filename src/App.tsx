@@ -16,17 +16,40 @@ export default function App() {
     window.onresize = () => { setSize([window.innerWidth, window.innerHeight]) };
 
     const [center, setCenter] = useState([0., 0.]);
-    const [zoom, setZoom] = useState(1);
     const [maxIters, setMaxIters] = useState(50.);
     const [glow, setGlow] = useState(1.25);
-    const [smoothColors, setSmoothColors] = useState(true);
+    const [smoothColors, setSmoothColors] = useState(false);
+
+    const zoomRate = 1.05;
+    const [zoom, setZoom] = useState(2.);
+    window.onwheel = (event) => {
+        if (event.deltaY < 0) {
+            setZoom(zoom * zoomRate);
+        } else {
+            setZoom(zoom / zoomRate)
+        }
+    }
+    useEffect(() => {
+        setMaxIters(Math.sqrt(2*Math.sqrt(Math.abs(1 - Math.sqrt(5 * zoom)))) * 100);
+    }, [zoom]);
+    
+    const [mouseDown, setMouseDown] = useState(false);
+    window.onmousedown = () => setMouseDown(true);
+    window.onmouseup = () => setMouseDown(false);
 
     const [mouse, setMouse] = useState([0, 0]);
-    window.onmousemove = (event) => { setMouse([event.offsetX / size[0], event.offsetY / size[1]].map(coord => coord * 2 - 1)) };
+    window.onmousemove = (event) => {
+        const newMouse = [event.offsetX, -event.offsetY].map(coord => (coord / size[1]) * 2 - 1);
+        if (mouseDown) {
+            const deltaMouse = [newMouse[0] - mouse[0], newMouse[1] - mouse[1]].map(coord => coord / zoom);
+            setCenter([center[0] - deltaMouse[0], center[1] - deltaMouse[1]]);
+        }
+        setMouse(newMouse);
+    }
 
     const [time, setTime] = useState(0);
     const intervalRef = useRef<number | null>(null);
-
+    
     useEffect(() => {
         if (intervalRef.current) {
             window.clearInterval(intervalRef.current);
@@ -37,10 +60,6 @@ export default function App() {
             setTime((time) => time + 0.01);
         }, 10);
     }, []);
-
-    useEffect(() => {
-        // setZoom(zoom * 1.01);
-    }, [time]);
 
     return (
         <WebGLCanvas
