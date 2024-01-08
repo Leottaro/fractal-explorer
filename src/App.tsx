@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 import FractalCanvas, { FractalCanvasAttributesProps, FractalCanvasUniformsProps } from "./component/FractalCanvas/FractalCanvas";
+import SettingsTab from './component/SettingsTab/SettingsTab';
 
 const defaultAttributes: FractalCanvasAttributesProps = {
     aSize: [window.innerWidth, window.innerHeight],
@@ -87,6 +88,9 @@ export default function App() {
     }
 
     return (
-        <FractalCanvas attributes={Attributes} uniforms={Uniforms} canvasProps={canvasProps} />
+        <>
+            <FractalCanvas attributes={Attributes} uniforms={Uniforms} canvasProps={canvasProps} />
+            <SettingsTab />
+        </>
     );
 }

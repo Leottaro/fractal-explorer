@@ -1,0 +1,14 @@
+#SettingsTab {
+    height: 100vh;
+    max-width: 33vw;
+    aspect-ratio: 1/2;
+
+    position: absolute;
+    right: 0px;
+    top: 0px;
+
+    background: #573b8ac0;
+    backdrop-filter: blur(5px);
+    border: 1px solid #221736c0;
+    border-radius: 1vh 0vh 0vh 1vh;
+}
