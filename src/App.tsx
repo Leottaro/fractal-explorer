@@ -1,27 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
 
-import WebGLCanvas from "./component/WebGLCanvas/WebGLCanvas";
+import FractalCanvas, { FractalCanvasAttributesProps, FractalCanvasUniformsProps } from "./component/FractalCanvas/FractalCanvas";
 
-// const stopInterval = () => {
-//     if (intervalRef.current) {
-//         window.clearInterval(intervalRef.current);
-//         setTime(0);
-//         intervalRef.current = null;
-//     }
-// };
+const defaultAttributes: FractalCanvasAttributesProps = {
+    aSize: [window.innerWidth, window.innerHeight],
+}
+const defaultUniforms: FractalCanvasUniformsProps = {
+    uAspectRatio: window.innerWidth / window.innerHeight,
+    uCenter: [0., 0.],
+    uMaxIters: 50,
+    uGlow: 1.,
+    uSmoothColors: true,
+    uZoom: 1.,
+    uMouse: [0., 0.],
+    uTime: 0
+}
 
 export default function App() {
-    const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
+    const [size, setSize] = useState(defaultAttributes.aSize);
     window.onresize = () => { setSize([window.innerWidth, window.innerHeight]) };
 
-    const [center, setCenter] = useState([0., 0.]);
-    const [maxIters, setMaxIters] = useState(50.);
-    const [glow, setGlow] = useState(1.25);
-    const [smoothColors, setSmoothColors] = useState(false);
+    const [center, setCenter] = useState(defaultUniforms.uCenter);
+    const [maxIters, setMaxIters] = useState(defaultUniforms.uMaxIters);
+    const [glow, setGlow] = useState(defaultUniforms.uGlow);
+    const [smoothColors, setSmoothColors] = useState(defaultUniforms.uSmoothColors);
 
     const zoomRate = 1.05;
-    const [zoom, setZoom] = useState(2.);
+    const [zoom, setZoom] = useState(defaultUniforms.uZoom);
     window.onwheel = (event) => {
         if (event.deltaY < 0) {
             setZoom(zoom * zoomRate);
@@ -30,16 +36,15 @@ export default function App() {
         }
     }
     useEffect(() => {
-        setMaxIters(Math.sqrt(2*Math.sqrt(Math.abs(1 - Math.sqrt(5 * zoom)))) * 100);
+        setMaxIters(Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * zoom)))) * 75);
     }, [zoom]);
-    
+
     const [mouseDown, setMouseDown] = useState(false);
-    window.onmousedown = () => setMouseDown(true);
     window.onmouseup = () => setMouseDown(false);
 
-    const [mouse, setMouse] = useState([0, 0]);
+    const [mouse, setMouse] = useState(defaultUniforms.uMouse);
     window.onmousemove = (event) => {
-        const newMouse = [event.offsetX, -event.offsetY].map(coord => (coord / size[1]) * 2 - 1);
+        const newMouse = [event.clientX, -event.clientY].map(coord => (coord / size[1]) * 2 - 1);
         if (mouseDown) {
             const deltaMouse = [newMouse[0] - mouse[0], newMouse[1] - mouse[1]].map(coord => coord / zoom);
             setCenter([center[0] - deltaMouse[0], center[1] - deltaMouse[1]]);
@@ -47,9 +52,9 @@ export default function App() {
         setMouse(newMouse);
     }
 
-    const [time, setTime] = useState(0);
+    const [time, setTime] = useState(defaultUniforms.uTime);
     const intervalRef = useRef<number | null>(null);
-    
+
     useEffect(() => {
         if (intervalRef.current) {
             window.clearInterval(intervalRef.current);
@@ -61,21 +66,27 @@ export default function App() {
         }, 10);
     }, []);
 
+    const Attributes: FractalCanvasAttributesProps = {
+        aSize: size
+    }
+
+    const Uniforms: FractalCanvasUniformsProps = {
+        uAspectRatio: size[0] / size[1],
+        uCenter: center,
+        uZoom: zoom,
+        uMaxIters: maxIters,
+        uGlow: glow,
+        uSmoothColors: smoothColors,
+        uMouse: mouse,
+        uTime: time,
+    };
+
+    const canvasProps = {
+        id: "FractalCanvas",
+        onMouseDown: () => setMouseDown(true)
+    }
+
     return (
-        <WebGLCanvas
-            attributes={{
-                aSize: size,
-            }}
-            uniforms={{
-                uAspectRatio: size[0] / size[1],
-                uCenter: center,
-                uZoom: zoom,
-                uMaxIters: maxIters,
-                uGlow: glow,
-                uSmoothColors: smoothColors,
-                uMouse: mouse,
-                uTime: time,
-            }}
-        />
+        <FractalCanvas attributes={Attributes} uniforms={Uniforms} canvasProps={canvasProps} />
     );
 }

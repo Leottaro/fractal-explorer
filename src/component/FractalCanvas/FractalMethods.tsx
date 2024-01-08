@@ -1,4 +1,4 @@
-import { WebGLCanvasAttributesProps, WebGLCanvasUniformsProps } from "./WebGLCanvas";
+import { FractalCanvasAttributesProps, FractalCanvasUniformsProps } from "./FractalCanvas";
 
 let canvas: HTMLCanvasElement;
 let gl: WebGL2RenderingContext;
@@ -9,7 +9,7 @@ let fragmentShaderSource: string;
 let fragmentShader: WebGLShader;
 let compiled = false;
 
-export const Init = async (canvasElement: HTMLCanvasElement, attributes: WebGLCanvasAttributesProps, uniforms: WebGLCanvasUniformsProps) => {
+export const Init = async (canvasElement: HTMLCanvasElement, attributes: FractalCanvasAttributesProps, uniforms: FractalCanvasUniformsProps) => {
     compiled = false;
     canvas = canvasElement;
     canvas.width = window.innerWidth;
@@ -73,7 +73,7 @@ export const buildShader = () => {
     }
 }
 
-export const buildAttributes = (attributes: WebGLCanvasAttributesProps) => {
+export const buildAttributes = (attributes: FractalCanvasAttributesProps) => {
     if (!compiled) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -98,7 +98,7 @@ export const buildAttributes = (attributes: WebGLCanvasAttributesProps) => {
     gl.vertexAttribPointer(aPositionLoc, 2, gl.FLOAT, true, 2 * 4, 0);
 }
 
-export const buidlUniforms = (uniforms: WebGLCanvasUniformsProps) => {
+export const buidlUniforms = (uniforms: FractalCanvasUniformsProps) => {
     if (!compiled) return;
 
     // for vertex shader
