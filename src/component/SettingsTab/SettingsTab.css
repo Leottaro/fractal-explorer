@@ -1,14 +1,51 @@
-#SettingsTab {
+#SettingsDiv {
     height: 100vh;
-    max-width: 33vw;
-    aspect-ratio: 1/2;
+    width: 40vw;
 
     position: absolute;
-    right: 0px;
-    top: 0px;
+    top: 0vh;
+    right: -40vw;
 
-    background: #573b8ac0;
-    backdrop-filter: blur(5px);
-    border: 1px solid #221736c0;
-    border-radius: 1vh 0vh 0vh 1vh;
+    border-radius: 1rem 0rem 0rem 1rem;
+}
+
+#SettingsButton {
+    height: 3rem;
+    width: 3rem;
+
+    position: absolute;
+    top: calc((100vh - 3rem)/2);
+    right: 0vw;
+
+    border-radius: 2rem 0rem 0rem 2rem;
+}
+
+#SettingsButton path {
+    stroke: #fff;
+    stroke-width: 0.15rem;
+    transform: rotate(180deg);
+    transition: transform 1s;
+}
+
+#SettingsDiv,
+#SettingsButton {
+    transition: right 1s;
+    background: #11235Ac0;
+    border: none;
+}
+
+#SettingsDiv.shown {
+    right: 0vw;
+}
+
+#SettingsButton.shown {
+    right: 40vw;
+}
+
+#SettingsButton:hover {
+    background: #596FB7c0;
+}
+
+#SettingsButton.shown path {
+    transform: none;
 }

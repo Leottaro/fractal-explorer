@@ -78,7 +78,7 @@ export default function App() {
         uMaxIters: maxIters,
         uGlow: glow,
         uSmoothColors: smoothColors,
-        uMouse: mouse,
+        uMouse: mouse.map(coord => (coord+1)/2).map(coord => (coord-1)/2),
         uTime: time,
     };
 
