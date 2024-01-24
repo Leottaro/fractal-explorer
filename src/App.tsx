@@ -1,96 +1,78 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import AppContext, { ContextSettings } from './context/AppContext';
 import './App.css';
 
-import FractalCanvas, { FractalCanvasAttributesProps, FractalCanvasUniformsProps } from "./component/FractalCanvas/FractalCanvas";
+import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
 import SettingsTab from './component/SettingsTab/SettingsTab';
 
-const defaultAttributes: FractalCanvasAttributesProps = {
-    aSize: [window.innerWidth, window.innerHeight],
-}
-const defaultUniforms: FractalCanvasUniformsProps = {
-    uAspectRatio: window.innerWidth / window.innerHeight,
-    uCenter: [0., 0.],
-    uMaxIters: 50,
-    uGlow: 1.,
-    uSmoothColors: true,
-    uZoom: 1.,
-    uMouse: [0., 0.],
-    uTime: 0
-}
+function App() {
+    const [settings, setSettings] = useState<ContextSettings>({
+        aWidth: window.innerWidth,
+        aHeight: window.innerHeight,
 
-export default function App() {
-    const [size, setSize] = useState(defaultAttributes.aSize);
-    window.onresize = () => { setSize([window.innerWidth, window.innerHeight]) };
+        uAspectRatio: window.innerWidth / window.innerHeight,
+        uCenter: [0., 0.],
+        uMaxIters: 25,
+        uGlow: 1.,
+        uSmoothColors: true,
+        uZoom: 1.,
+        uMouse: [0., 0.],
+        uTime: 0,
 
-    const [center, setCenter] = useState(defaultUniforms.uCenter);
-    const [maxIters, setMaxIters] = useState(defaultUniforms.uMaxIters);
-    const [glow, setGlow] = useState(defaultUniforms.uGlow);
-    const [smoothColors, setSmoothColors] = useState(defaultUniforms.uSmoothColors);
+        sZoomRate: 1.05,
+        sMouseDown: false,
+    });
 
-    const zoomRate = 1.05;
-    const [zoom, setZoom] = useState(defaultUniforms.uZoom);
-    window.onwheel = (event) => {
-        if (event.deltaY < 0) {
-            setZoom(zoom * zoomRate);
-        } else {
-            setZoom(zoom / zoomRate)
-        }
-    }
-    useEffect(() => {
-        setMaxIters(Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * zoom)))) * 75);
-    }, [zoom]);
-
-    const [mouseDown, setMouseDown] = useState(false);
-    window.onmouseup = () => setMouseDown(false);
-
-    const [mouse, setMouse] = useState(defaultUniforms.uMouse);
-    window.onmousemove = (event) => {
-        const newMouse = [event.clientX, -event.clientY].map(coord => (coord / size[1]) * 2 - 1);
-        if (mouseDown) {
-            const deltaMouse = [newMouse[0] - mouse[0], newMouse[1] - mouse[1]].map(coord => coord / zoom);
-            setCenter([center[0] - deltaMouse[0], center[1] - deltaMouse[1]]);
-        }
-        setMouse(newMouse);
-    }
-
-    const [time, setTime] = useState(defaultUniforms.uTime);
-    const intervalRef = useRef<number | null>(null);
-
-    useEffect(() => {
-        if (intervalRef.current) {
-            window.clearInterval(intervalRef.current);
-            intervalRef.current = null;
-            setTime(0);
-        }
-        intervalRef.current = window.setInterval(() => {
-            setTime((time) => time + 0.01);
-        }, 10);
-    }, []);
-
-    const Attributes: FractalCanvasAttributesProps = {
-        aSize: size
-    }
-
-    const Uniforms: FractalCanvasUniformsProps = {
-        uAspectRatio: size[0] / size[1],
-        uCenter: center,
-        uZoom: zoom,
-        uMaxIters: maxIters,
-        uGlow: glow,
-        uSmoothColors: smoothColors,
-        uMouse: mouse.map(coord => (coord+1)/2).map(coord => (coord-1)/2),
-        uTime: time,
+    // uSize
+    window.onresize = () => {
+        setSettings({ ...settings, aWidth: window.innerWidth, aHeight: window.innerHeight, uAspectRatio: window.innerWidth / window.innerHeight }); console.log("oui");
     };
 
-    const canvasProps = {
-        id: "FractalCanvas",
-        onMouseDown: () => setMouseDown(true)
+    // uZoom
+    const zoomRate = 1.05;
+    window.onwheel = (event) => {
+        if (event.deltaY < 0) {
+            setSettings({ ...settings, uZoom: settings.uZoom * zoomRate });
+        } else {
+            setSettings({ ...settings, uZoom: settings.uZoom / zoomRate });
+        }
+    }
+    useEffect(() => {
+        setSettings({ ...settings, uMaxIters: Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) * 10 }); // TODO:
+    }, [settings.uZoom]);
+
+    // sMouseDown
+    window.onmouseup = () => setSettings({ ...settings, sMouseDown: false });
+
+    // uMouse
+    window.onmousemove = (event) => {
+        const newMouse = [event.clientX / settings.aWidth, event.clientY / settings.aHeight].map(coord => coord * 2 - 1); // TOFIX: gaffe au coordonnées de la souris (pas traité pareil que les pixels)
+        if (settings.sMouseDown) {
+            const deltaMouse = [(newMouse[0] - settings.uMouse[0]) * settings.aWidth / settings.aHeight, settings.uMouse[1] - newMouse[1]].map(coord => coord / settings.uZoom);
+            const newCenter = [settings.uCenter[0] - deltaMouse[0], settings.uCenter[1] - deltaMouse[1]];
+            setSettings({ ...settings, uCenter: newCenter, uMouse: newMouse });
+        } else {
+            setSettings({ ...settings, uMouse: newMouse });
+        }
     }
 
+    // uTime
+    const intervalRef = useRef(0);
+    useEffect(() => {
+        intervalRef.current = setInterval(() => {
+            setSettings({ ...settings, uTime: settings.uTime + 0.01 });
+        }, 10);
+        return () => clearInterval(intervalRef.current);
+    });
+
     return (
-        <>
-            <FractalCanvas attributes={Attributes} uniforms={Uniforms} canvasProps={canvasProps} />
+        <AppContext.Provider value={{ settings, setSettings }}>
+            <FractalCanvas canvasProps={{
+                id: "FractalCanvas",
+                onMouseDown: () => setSettings({ ...settings, sMouseDown: true })
+            }} />
             <SettingsTab />
-        </>
+        </AppContext.Provider>
     );
 }
+export default App;

@@ -1,12 +1,16 @@
 #SettingsDiv {
     height: 100vh;
     width: 40vw;
-
+    
     position: absolute;
     top: 0vh;
     right: -40vw;
-
+    
     border-radius: 1rem 0rem 0rem 1rem;
+    padding: 1rem;
+
+    display: flex;
+    flex-direction: column;
 }
 
 #SettingsButton {
@@ -30,7 +34,7 @@
 #SettingsDiv,
 #SettingsButton {
     transition: right 1s;
-    background: #11235Ac0;
+    background: #11235Ae0;
     border: none;
 }
 

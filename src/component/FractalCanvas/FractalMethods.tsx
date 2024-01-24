@@ -1,15 +1,15 @@
-import { FractalCanvasAttributesProps, FractalCanvasUniformsProps } from "./FractalCanvas";
+import { Attributes, Uniforms, ContextSettings } from "../../context/AppContext";
 
-let canvas: HTMLCanvasElement;
-let gl: WebGL2RenderingContext;
-let program: WebGLProgram;
-let vertexShaderSource: string;
-let vertexShader: WebGLShader;
-let fragmentShaderSource: string;
-let fragmentShader: WebGLShader;
-let compiled = false;
+var canvas: HTMLCanvasElement;
+var gl: WebGL2RenderingContext;
+var program: WebGLProgram;
+var vertexShaderSource: string;
+var vertexShader: WebGLShader;
+var fragmentShaderSource: string;
+var fragmentShader: WebGLShader;
+var compiled = false;
 
-export const Init = async (canvasElement: HTMLCanvasElement, attributes: FractalCanvasAttributesProps, uniforms: FractalCanvasUniformsProps) => {
+export const Init = async (canvasElement: HTMLCanvasElement, settings: ContextSettings) => {
     compiled = false;
     canvas = canvasElement;
     canvas.width = window.innerWidth;
@@ -38,8 +38,8 @@ export const Init = async (canvasElement: HTMLCanvasElement, attributes: Fractal
     await fetchShader().then(() => {
         buildShader();
         if (compiled) {
-            buildAttributes(attributes);
-            buidlUniforms(uniforms);
+            buildAttributes(settings);
+            buidlUniforms(settings);
             draw();
         }
     });
@@ -73,10 +73,10 @@ export const buildShader = () => {
     }
 }
 
-export const buildAttributes = (attributes: FractalCanvasAttributesProps) => {
+export const buildAttributes = (attributes: Attributes) => {
     if (!compiled) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = attributes.aWidth;
+    canvas.height = attributes.aHeight;
     gl.viewport(0, 0, canvas.width, canvas.height);
 
     const bufferData = new Float32Array([
@@ -98,7 +98,7 @@ export const buildAttributes = (attributes: FractalCanvasAttributesProps) => {
     gl.vertexAttribPointer(aPositionLoc, 2, gl.FLOAT, true, 2 * 4, 0);
 }
 
-export const buidlUniforms = (uniforms: FractalCanvasUniformsProps) => {
+export const buidlUniforms = (uniforms: Uniforms) => {
     if (!compiled) return;
 
     // for vertex shader

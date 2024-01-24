@@ -1,40 +1,26 @@
-import { createRef, useEffect } from "react";
-import { Init, fetchShader, buildShader, buildAttributes, buidlUniforms, draw } from "./FractalMethods";
-
-export interface FractalCanvasAttributesProps {
-    aSize: number[],
-}
-
-export interface FractalCanvasUniformsProps {
-    uAspectRatio: number,
-    uCenter: number[],
-    uZoom: number,
-    uMaxIters: number,
-    uGlow: number,
-    uSmoothColors: boolean,
-    uMouse: number[],
-    uTime: number,
-}
+import { createRef, useEffect, useContext } from "react";
+import AppContext from "../../context/AppContext";
+import { Init, buildAttributes, buidlUniforms, draw } from "./FractalMethods";
 
 interface FractalCanvasProps {
-    attributes: FractalCanvasAttributesProps,
-    uniforms: FractalCanvasUniformsProps,
     canvasProps: {},
 }
 
-export default function FractalCanvas({ attributes, uniforms, canvasProps }: FractalCanvasProps) {
+export default function FractalCanvas({ canvasProps }: FractalCanvasProps) {
+    const { settings } = useContext(AppContext);
+
     const ref = createRef<HTMLCanvasElement>();
 
     useEffect(() => {
         if (!ref.current) return;
-        Init(ref.current, attributes, uniforms);
+        Init(ref.current, settings);
     }, []);
 
     useEffect(() => {
-        buildAttributes(attributes);
-        buidlUniforms(uniforms);
+        buildAttributes(settings);
+        buidlUniforms(settings);
         draw();
-    }, [attributes, uniforms]);
+    }, [settings]);
 
     return (
         <canvas ref={ref} {...canvasProps}></canvas>
