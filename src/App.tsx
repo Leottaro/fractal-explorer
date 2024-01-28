@@ -67,10 +67,7 @@ function App() {
 
     return (
         <AppContext.Provider value={{ settings, setSettings }}>
-            <FractalCanvas canvasProps={{
-                id: "FractalCanvas",
-                onMouseDown: () => setSettings({ ...settings, sMouseDown: true })
-            }} />
+            <FractalCanvas id="FractalCanvas" onMouseDown={() => setSettings({ ...settings, sMouseDown: true })} />
             <SettingsTab />
         </AppContext.Provider>
     );

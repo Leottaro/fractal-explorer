@@ -1,12 +1,8 @@
-import { createRef, useEffect, useContext } from "react";
+import React, { createRef, useEffect, useContext } from "react";
 import AppContext from "../../context/AppContext";
 import { Init, buildAttributes, buidlUniforms, draw } from "./FractalMethods";
 
-interface FractalCanvasProps {
-    canvasProps: {},
-}
-
-export default function FractalCanvas({ canvasProps }: FractalCanvasProps) {
+export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanvasElement>) {
     const { settings } = useContext(AppContext);
 
     const ref = createRef<HTMLCanvasElement>();
@@ -23,6 +19,6 @@ export default function FractalCanvas({ canvasProps }: FractalCanvasProps) {
     }, [settings]);
 
     return (
-        <canvas ref={ref} {...canvasProps}></canvas>
+        <canvas ref={ref} {...props}></canvas>
     );
 }
