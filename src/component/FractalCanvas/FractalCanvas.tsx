@@ -19,6 +19,9 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
     }, [settings]);
 
     return (
-        <canvas ref={ref} {...props}></canvas>
+        <canvas
+            ref={ref}
+            {...props}
+        ></canvas>
     );
 }

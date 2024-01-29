@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import AppContext, { ContextSettings } from './context/AppContext';
-import './App.css';
+import { useCallback, useEffect, useRef, useState } from "react";
+import AppContext, { ContextSettings } from "./context/AppContext";
+import "./App.css";
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
-import SettingsTab from './component/SettingsTab/SettingsTab';
+import SettingsTab from "./component/SettingsTab/SettingsTab";
 
 function App() {
     const [settings, setSettings] = useState<ContextSettings>({
@@ -11,12 +11,12 @@ function App() {
         aHeight: window.innerHeight,
 
         uAspectRatio: window.innerWidth / window.innerHeight,
-        uCenter: [0., 0.],
+        uCenter: [0, 0],
         uMaxIters: 25,
-        uGlow: 1.,
+        uGlow: 1,
         uSmoothColors: true,
-        uZoom: 1.,
-        uMouse: [0., 0.],
+        uZoom: 1,
+        uMouse: [0, 0],
         uTime: 0,
 
         sZoomRate: 1.05,
@@ -25,7 +25,13 @@ function App() {
 
     // uSize
     window.onresize = () => {
-        setSettings({ ...settings, aWidth: window.innerWidth, aHeight: window.innerHeight, uAspectRatio: window.innerWidth / window.innerHeight }); console.log("oui");
+        setSettings({
+            ...settings,
+            aWidth: window.innerWidth,
+            aHeight: window.innerHeight,
+            uAspectRatio: window.innerWidth / window.innerHeight,
+        });
+        console.log("oui");
     };
 
     // uZoom
@@ -36,9 +42,12 @@ function App() {
         } else {
             setSettings({ ...settings, uZoom: settings.uZoom / zoomRate });
         }
-    }
+    };
     useEffect(() => {
-        setSettings({ ...settings, uMaxIters: Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) * 10 }); // TODO:
+        setSettings({
+            ...settings,
+            uMaxIters: Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) * 10,
+        }); // TODO:
     }, [settings.uZoom]);
 
     // sMouseDown
@@ -46,15 +55,23 @@ function App() {
 
     // uMouse
     window.onmousemove = (event) => {
-        const newMouse = [event.clientX / settings.aWidth, event.clientY / settings.aHeight].map(coord => coord * 2 - 1); // TOFIX: gaffe au coordonnées de la souris (pas traité pareil que les pixels)
+        const newMouse = [event.clientX / settings.aWidth, event.clientY / settings.aHeight].map(
+            (coord) => coord * 2 - 1
+        ); // TOFIX: gaffe au coordonnées de la souris (pas traité pareil que les pixels)
         if (settings.sMouseDown) {
-            const deltaMouse = [(newMouse[0] - settings.uMouse[0]) * settings.aWidth / settings.aHeight, settings.uMouse[1] - newMouse[1]].map(coord => coord / settings.uZoom);
-            const newCenter = [settings.uCenter[0] - deltaMouse[0], settings.uCenter[1] - deltaMouse[1]];
+            const deltaMouse = [
+                ((newMouse[0] - settings.uMouse[0]) * settings.aWidth) / settings.aHeight,
+                settings.uMouse[1] - newMouse[1],
+            ].map((coord) => coord / settings.uZoom);
+            const newCenter = [
+                settings.uCenter[0] - deltaMouse[0],
+                settings.uCenter[1] - deltaMouse[1],
+            ];
             setSettings({ ...settings, uCenter: newCenter, uMouse: newMouse });
         } else {
             setSettings({ ...settings, uMouse: newMouse });
         }
-    }
+    };
 
     // uTime
     const intervalRef = useRef(0);
@@ -67,7 +84,10 @@ function App() {
 
     return (
         <AppContext.Provider value={{ settings, setSettings }}>
-            <FractalCanvas id="FractalCanvas" onMouseDown={() => setSettings({ ...settings, sMouseDown: true })} />
+            <FractalCanvas
+                id="FractalCanvas"
+                onMouseDown={() => setSettings({ ...settings, sMouseDown: true })}
+            />
             <SettingsTab />
         </AppContext.Provider>
     );

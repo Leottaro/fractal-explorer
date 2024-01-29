@@ -43,17 +43,17 @@ export const Init = async (canvasElement: HTMLCanvasElement, settings: ContextSe
             draw();
         }
     });
-}
+};
 
 export const fetchShader = async () => {
-    vertexShaderSource = await fetch("shaders/vertexShader.glsl").then(res => res.text());
-    fragmentShaderSource = await fetch("shaders/fragmentShader.glsl").then(res => res.text());
-}
+    vertexShaderSource = await fetch("shaders/vertexShader.glsl").then((res) => res.text());
+    fragmentShaderSource = await fetch("shaders/fragmentShader.glsl").then((res) => res.text());
+};
 
 export const buildShader = () => {
     compiled = false;
     const tempShaders = gl.getAttachedShaders(program);
-    if (tempShaders) tempShaders.forEach(shader => gl.detachShader(program, shader));
+    if (tempShaders) tempShaders.forEach((shader) => gl.detachShader(program, shader));
 
     gl.shaderSource(vertexShader, vertexShaderSource);
     gl.compileShader(vertexShader);
@@ -71,7 +71,7 @@ export const buildShader = () => {
         console.error(gl.getShaderInfoLog(vertexShader));
         console.error(gl.getShaderInfoLog(fragmentShader));
     }
-}
+};
 
 export const buildAttributes = (attributes: Attributes) => {
     if (!compiled) return;
@@ -79,14 +79,7 @@ export const buildAttributes = (attributes: Attributes) => {
     canvas.height = attributes.aHeight;
     gl.viewport(0, 0, canvas.width, canvas.height);
 
-    const bufferData = new Float32Array([
-        -1., -1.,
-        -1., 1.,
-        1., 1.,
-        -1., -1.,
-        1., -1.,
-        1., 1.,
-    ]);
+    const bufferData = new Float32Array([-1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1]);
 
     const aPositionLoc = gl.getAttribLocation(program, "aPosition");
     gl.enableVertexAttribArray(aPositionLoc);
@@ -96,7 +89,7 @@ export const buildAttributes = (attributes: Attributes) => {
     gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
 
     gl.vertexAttribPointer(aPositionLoc, 2, gl.FLOAT, true, 2 * 4, 0);
-}
+};
 
 export const buidlUniforms = (uniforms: Uniforms) => {
     if (!compiled) return;
@@ -131,9 +124,9 @@ export const buidlUniforms = (uniforms: Uniforms) => {
 
     const uTime = gl.getUniformLocation(program, "uTime");
     gl.uniform1f(uTime, uniforms.uTime);
-}
+};
 
 export const draw = () => {
     if (!compiled) return;
-    gl.drawArrays(gl.TRIANGLES, 0., 6.);
-}
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+};
