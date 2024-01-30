@@ -46,8 +46,8 @@ function App() {
     useEffect(() => {
         setSettings({
             ...settings,
-            uMaxIters: Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) * 10,
-        }); // TODO:
+            uMaxIters: Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) * 33,
+        });
     }, [settings.uZoom]);
 
     // sMouseDown

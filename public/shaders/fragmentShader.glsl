@@ -46,9 +46,9 @@ void main() {
     vec3 result;
     // result=julia(vPosition,vec2(-.4,-.59));
     // result=julia(vPosition,vec2(1.)*uMouse);
-    result=julia(vPosition,vec2(cos(uTime),sin(uTime)));
+    // result=julia(vPosition,vec2(cos(uTime),sin(uTime)));
     // result=julia(vPosition,vec2(cos(uTime)*uMouse.x,sin(uTime)*uMouse.y));
-    // result = mandelbrot(vPosition);
+    result = mandelbrot(vPosition);
 
     float iterations;
     if(uSmoothColors) {
