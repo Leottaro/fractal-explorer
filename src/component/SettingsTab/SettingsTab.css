@@ -58,3 +58,70 @@
 #SettingsDiv.hidden {
     right: calc(var(--width) * -1);
 }
+
+.setting {
+    height: calc(var(--width) / 10);
+    width: 100%;
+    padding: 0px calc(var(--width) / 80) 0px calc(var(--width) / 80);
+
+    background: var(--color3);
+    border-radius: calc(var(--width) / 40);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.settingTitle {
+    height: 100%;
+    margin-right: calc(var(--width) / 50);
+
+    color: var(--color1);
+    font-weight: bold;
+    font-size: calc(var(--width) / 20);
+
+    display: flex;
+    align-items: center;
+}
+
+.settingRange {
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0px calc(var(--width) / 400) 0px calc(var(--width) / 400);
+
+    width: 100%;
+    height: 50%;
+    border: calc(var(--width) / 300) solid var(--color1);
+
+    background: var(--color1);
+    border-radius: var(--width);
+    overflow: hidden;
+}
+
+.settingRange::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+
+    height: calc(var(--width) / 25);
+    aspect-ratio: 1;
+
+    background: var(--color2);
+    border-radius: 100%;
+    box-shadow: 0 0 0 calc(var(--width) / 400) var(--color4),
+        -100vw 0 0 calc(100vw - var(--width) / 60) var(--color4);
+}
+
+.settingCheckbox {
+    height: 100%;
+    margin-left: calc(var(--width) / 50);
+}
+
+.settingCheckbox .check {
+    stroke: var(--color1);
+}
+
+.settingCheckbox .box {
+    stroke: var(--color1);
+    fill: var(--color4);
+}

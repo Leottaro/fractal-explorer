@@ -12,7 +12,16 @@ function SettingsTab() {
             <div
                 id="SettingsDiv"
                 className={hidden ? "hidden" : undefined}
-            ></div>
+            >
+                <Setting
+                    title={"Zoom"}
+                    min={0.5}
+                    max={50000}
+                    getter={settings.uZoom}
+                    setter={(newZoom) => setSettings({ ...settings, uZoom: newZoom })}
+                />
+            </div>
+
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 60 90"
