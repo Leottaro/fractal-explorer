@@ -1,53 +1,30 @@
 #root {
-    --background: #11235ae0;
-    --light-background: #2143aee0;
-    --width: 30vw;
+    --color1: #222831;
+    --color2: #393e46;
+    --color3: #00adb5;
+    --color4: #eeeeee;
+    --width: min(30rem, 75vw);
 }
 
-#SettingsDiv,
 #SettingsButton {
+    width: calc(var(--width) / 10);
+
+    position: absolute;
+    right: var(--width);
+    top: 50vh;
+
+    transform: translate(0.1vw, -50%);
     transition: right 1s;
 }
 
-#SettingsDiv {
-    height: 100vh;
-    width: var(--width);
-
-    position: absolute;
-    top: 0vh;
-    right: 0vw;
-
-    background: var(--background);
-    border: none;
-    border-radius: 1rem 0rem 0rem 1rem;
-
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: center;
-}
-
-#SettingsDiv.hidden {
-    right: calc(-1 * var(--width));
-}
-
-#SettingsButton {
-    width: 3rem;
-
-    position: absolute;
-    top: 50vh;
-    right: var(--width);
-    transform: translate(0, -50%);
-}
-
 #SettingsButton.hidden {
-    right: 0vw;
+    right: 0;
 }
 
 #SettingsButton .arrow {
-    stroke: #fff;
-    stroke-width: 0.15rem;
+    stroke: var(--color3);
     transform-origin: 50% 50%;
-    transition: cubic-bezier(0.5, -0.5, 0.5, 1.5) 1s;
+    transition: transform 1s;
 }
 
 #SettingsButton.hidden .arrow {
@@ -55,9 +32,29 @@
 }
 
 #SettingsButton .background {
-    fill: var(--background);
+    fill: var(--color1);
 }
 
 #SettingsButton:hover .background {
-    fill: var(--light-background);
+    fill: var(--color2);
+}
+
+#SettingsDiv {
+    height: 100vh;
+    width: var(--width);
+    padding: calc(var(--width) / 40);
+
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    background: var(--color1);
+    border-top-left-radius: calc(var(--width) / 20);
+    border-bottom-left-radius: calc(var(--width) / 20);
+
+    transition: right 1s;
+}
+
+#SettingsDiv.hidden {
+    right: calc(var(--width) * -1);
 }
