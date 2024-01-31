@@ -1,21 +1,72 @@
 import { useEffect, useState } from "react";
 
-export interface SettingProps {
+export enum SliderTypes {
+    LINEAR,
+    EXPONENTIAL,
+    LOGARITHMIC,
+}
+
+interface SettingProps {
     title: String;
     min: number;
     max: number;
     getter: number;
     setter: (value: number) => void;
+    sliderType: SliderTypes;
 }
 
 export default function Setting(props: SettingProps) {
-    // TODO: logarithmic multiplier
-    const [value, setValue] = useState(0);
+    const [valueRange, setValueRange] = useState({ min: 0, max: 1 });
+    const [value, setValue] = useState(props.getter);
+    const [scale, setScale] = useState(props.max - props.min);
+
     const [checked, setChecked] = useState(false);
 
     useEffect(() => {
-        setValue(props.getter);
-    }, [props.getter]);
+        let newValueRange = { min: 0, max: 1 };
+        switch (props.sliderType) {
+            case SliderTypes.LINEAR:
+                newValueRange = { min: props.min, max: props.max };
+                break;
+            case SliderTypes.EXPONENTIAL:
+                newValueRange = { min: Math.log(props.min), max: Math.log(props.max) };
+                break;
+            case SliderTypes.LOGARITHMIC:
+                newValueRange = { min: Math.exp(props.min), max: Math.exp(props.max) };
+                break;
+        }
+        setValueRange(newValueRange);
+        setScale(newValueRange.max - newValueRange.min);
+    }, [props.min, props.max]);
+
+    useEffect(() => {
+        switch (props.sliderType) {
+            case SliderTypes.LINEAR:
+                setValue((props.getter - valueRange.min) / scale);
+                break;
+            case SliderTypes.EXPONENTIAL:
+                setValue((Math.log(props.getter) - valueRange.min) / scale);
+                break;
+            case SliderTypes.LOGARITHMIC:
+                setValue(Math.exp(valueRange.min + props.getter * scale));
+                break;
+        }
+    }, [props.getter, scale]);
+
+    function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const sliderVal = parseFloat(e.target.value);
+        switch (props.sliderType) {
+            case SliderTypes.LINEAR:
+                props.setter(valueRange.min + sliderVal * scale);
+                break;
+            case SliderTypes.EXPONENTIAL:
+                props.setter(Math.exp(valueRange.min + sliderVal * scale));
+                break;
+            case SliderTypes.LOGARITHMIC:
+                props.setter((Math.log(sliderVal) - valueRange.min) / scale);
+                break;
+        }
+    }
 
     return (
         <div className="setting">
@@ -23,11 +74,11 @@ export default function Setting(props: SettingProps) {
             <input
                 className="settingRange"
                 type="range"
-                min={props.min}
-                max={props.max}
-                step={0.001}
+                min={0}
+                max={1}
+                step={0.000001}
                 value={value}
-                onChange={(e) => props.setter(parseFloat(e.target.value))}
+                onChange={handleInputChange}
             />
 
             <svg

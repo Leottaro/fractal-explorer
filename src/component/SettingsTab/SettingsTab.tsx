@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import Setting from "./Setting";
+import Setting, { SliderTypes } from "./Setting";
 import "./SettingsTab.css";
 import AppContext from "../../context/AppContext";
 
@@ -15,10 +15,19 @@ function SettingsTab() {
             >
                 <Setting
                     title={"Zoom"}
-                    min={0.5}
-                    max={50000}
+                    min={settings.sZoomMin}
+                    max={settings.sZoomMax}
                     getter={settings.uZoom}
                     setter={(newZoom) => setSettings({ ...settings, uZoom: newZoom })}
+                    sliderType={SliderTypes.EXPONENTIAL}
+                />
+                <Setting
+                    title={"Glow"}
+                    min={settings.sGlowMin}
+                    max={settings.sGlowMax}
+                    getter={settings.uGlow}
+                    setter={(test) => setSettings({ ...settings, uGlow: test })}
+                    sliderType={SliderTypes.EXPONENTIAL}
                 />
             </div>
 

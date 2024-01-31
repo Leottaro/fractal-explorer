@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext } from "react";
 
 export interface Attributes {
     aWidth: number;
@@ -17,7 +17,11 @@ export interface Uniforms {
 }
 
 export interface Settings {
+    sZoomMin: number;
+    sZoomMax: number;
     sZoomRate: number;
+    sGlowMin: number;
+    sGlowMax: number;
     sMouseDown: boolean;
 }
 

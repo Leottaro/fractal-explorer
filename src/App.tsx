@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppContext, { ContextSettings } from "./context/AppContext";
 import "./App.css";
 
@@ -19,7 +19,11 @@ function App() {
         uMouse: [0, 0],
         uTime: 0,
 
+        sZoomMin: 0.5,
+        sZoomMax: 40000,
         sZoomRate: 1.05,
+        sGlowMin: 0.1,
+        sGlowMax: 5,
         sMouseDown: false,
     });
 
@@ -35,13 +39,17 @@ function App() {
     };
 
     // uZoom
-    const zoomRate = 1.05;
     window.onwheel = (event) => {
-        if (event.deltaY < 0) {
-            setSettings({ ...settings, uZoom: settings.uZoom * zoomRate });
-        } else {
-            setSettings({ ...settings, uZoom: settings.uZoom / zoomRate });
+        let newZoom =
+            event.deltaY < 0
+                ? settings.uZoom * settings.sZoomRate
+                : settings.uZoom / settings.sZoomRate;
+        if (newZoom < settings.sZoomMin) {
+            newZoom = settings.sZoomMin;
+        } else if (newZoom > settings.sZoomMax) {
+            newZoom = settings.sZoomMax;
         }
+        setSettings({ ...settings, uZoom: newZoom });
     };
     useEffect(() => {
         setSettings({
