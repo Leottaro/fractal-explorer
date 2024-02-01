@@ -22,6 +22,9 @@ export interface Settings {
     sZoomRate: number;
     sGlowMin: number;
     sGlowMax: number;
+    sMaxItersFactor: number;
+    sMaxItersFactorMin: number;
+    sMaxItersFactorMax: number;
     sMouseDown: boolean;
 }
 

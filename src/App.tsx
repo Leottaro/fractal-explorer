@@ -24,6 +24,9 @@ function App() {
         sZoomRate: 1.05,
         sGlowMin: 0.1,
         sGlowMax: 5,
+        sMaxItersFactor: 33,
+        sMaxItersFactorMin: 1,
+        sMaxItersFactorMax: 200,
         sMouseDown: false,
     });
 
@@ -54,9 +57,11 @@ function App() {
     useEffect(() => {
         setSettings({
             ...settings,
-            uMaxIters: Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) * 33,
+            uMaxIters:
+                Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) *
+                settings.sMaxItersFactor,
         });
-    }, [settings.uZoom]);
+    }, [settings.uZoom, settings.sMaxItersFactor]);
 
     // sMouseDown
     window.onmouseup = () => setSettings({ ...settings, sMouseDown: false });

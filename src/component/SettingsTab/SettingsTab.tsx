@@ -5,7 +5,7 @@ import AppContext from "../../context/AppContext";
 
 function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);
-    const [hidden, setHidden] = useState(false);
+    const [hidden, setHidden] = useState(true);
 
     return (
         <>
@@ -26,7 +26,15 @@ function SettingsTab() {
                     min={settings.sGlowMin}
                     max={settings.sGlowMax}
                     getter={settings.uGlow}
-                    setter={(test) => setSettings({ ...settings, uGlow: test })}
+                    setter={(glow) => setSettings({ ...settings, uGlow: glow })}
+                    sliderType={SliderTypes.EXPONENTIAL}
+                />
+                <Setting
+                    title={"precision"}
+                    min={settings.sMaxItersFactorMin}
+                    max={settings.sMaxItersFactorMax}
+                    getter={settings.sMaxItersFactor}
+                    setter={(factor) => setSettings({ ...settings, sMaxItersFactor: factor })}
                     sliderType={SliderTypes.EXPONENTIAL}
                 />
             </div>
