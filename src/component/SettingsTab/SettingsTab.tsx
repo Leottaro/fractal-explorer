@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
-import Setting, { SliderTypes } from "./Setting";
 import "./SettingsTab.css";
 import AppContext from "../../context/AppContext";
+import Slider, { SliderTypes } from "../Slider/Slider";
 
 function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);
@@ -13,32 +13,37 @@ function SettingsTab() {
                 id="SettingsDiv"
                 className={hidden ? "hidden" : undefined}
             >
-                <Setting
-                    title={"Zoom"}
-                    min={settings.sZoomMin}
-                    max={settings.sZoomMax}
-                    getter={settings.uZoom}
-                    setter={(newZoom) => setSettings({ ...settings, uZoom: newZoom })}
-                    sliderType={SliderTypes.EXPONENTIAL}
-                />
-                <Setting
-                    title={"Glow"}
-                    min={settings.sGlowMin}
-                    max={settings.sGlowMax}
-                    getter={settings.uGlow}
-                    setter={(glow) => setSettings({ ...settings, uGlow: glow })}
-                    sliderType={SliderTypes.EXPONENTIAL}
-                />
-                <Setting
-                    title={"precision"}
-                    min={settings.sMaxItersFactorMin}
-                    max={settings.sMaxItersFactorMax}
-                    getter={settings.sMaxItersFactor}
-                    setter={(factor) => setSettings({ ...settings, sMaxItersFactor: factor })}
-                    sliderType={SliderTypes.EXPONENTIAL}
-                />
+                <div className="setting">
+                    <label className="settingTitle">Zoom</label>
+                    <Slider
+                        min={settings.sZoomMin}
+                        max={settings.sZoomMax}
+                        getter={settings.uZoom}
+                        setter={(newZoom) => setSettings({ ...settings, uZoom: newZoom })}
+                        sliderType={SliderTypes.EXPONENTIAL}
+                    />
+                </div>
+                <div className="setting">
+                    <label className="settingTitle">Glow</label>
+                    <Slider
+                        min={settings.sGlowMin}
+                        max={settings.sGlowMax}
+                        getter={settings.uGlow}
+                        setter={(glow) => setSettings({ ...settings, uGlow: glow })}
+                        sliderType={SliderTypes.EXPONENTIAL}
+                    />
+                </div>
+                <div className="setting">
+                    <label className="settingTitle">Precision</label>
+                    <Slider
+                        min={settings.sMaxItersFactorMin}
+                        max={settings.sMaxItersFactorMax}
+                        getter={settings.sMaxItersFactor}
+                        setter={(factor) => setSettings({ ...settings, sMaxItersFactor: factor })}
+                        sliderType={SliderTypes.EXPONENTIAL}
+                    />
+                </div>
             </div>
-
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 60 90"
