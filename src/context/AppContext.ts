@@ -1,5 +1,10 @@
 import { createContext } from "react";
 
+export type Point = {
+    x: number;
+    y: number;
+};
+
 export interface Attributes {
     aWidth: number;
     aHeight: number;
@@ -7,12 +12,12 @@ export interface Attributes {
 
 export interface Uniforms {
     uAspectRatio: number;
-    uCenter: number[];
+    uCenter: Point;
     uMaxIters: number;
     uGlow: number;
     uSmoothColors: boolean;
     uZoom: number;
-    uMouse: number[];
+    uMouse: Point;
     uTime: number;
 }
 
@@ -26,6 +31,7 @@ export interface Settings {
     sMaxItersFactorMin: number;
     sMaxItersFactorMax: number;
     sMouseDown: boolean;
+    sMouse: Point;
 }
 
 export interface ContextSettings extends Attributes, Uniforms, Settings {}

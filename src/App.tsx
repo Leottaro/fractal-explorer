@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import AppContext, { ContextSettings } from "./context/AppContext";
+import { useEffect, useRef, useState, WheelEvent } from "react";
+import AppContext, { ContextSettings, Point } from "./context/AppContext";
 import "./App.css";
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
@@ -11,12 +11,12 @@ function App() {
         aHeight: window.innerHeight,
 
         uAspectRatio: window.innerWidth / window.innerHeight,
-        uCenter: [0, 0],
-        uMaxIters: 25,
+        uCenter: { x: 0, y: 0 },
+        uMaxIters: 50,
         uGlow: 1,
         uSmoothColors: true,
         uZoom: 1,
-        uMouse: [0, 0],
+        uMouse: { x: 0, y: 0 },
         uTime: 0,
 
         sZoomMin: 0.5,
@@ -26,9 +26,26 @@ function App() {
         sGlowMax: 5,
         sMaxItersFactor: 33,
         sMaxItersFactorMin: 1,
-        sMaxItersFactorMax: 200,
+        sMaxItersFactorMax: 500,
         sMouseDown: false,
+        sMouse: { x: 0, y: 0 },
     });
+
+    // Functions
+    function PixelToPoint(p: Point) {
+        return {
+            x:
+                (((p.x / settings.aWidth) * 2 - 1) * settings.uAspectRatio) / settings.uZoom +
+                settings.uCenter.x,
+            y: ((p.y / settings.aHeight) * -2 + 1) / settings.uZoom + settings.uCenter.y,
+        };
+    }
+    function pointLerp(a: Point, b: Point, p: number) {
+        return {
+            x: a.x + p * (b.x - a.x),
+            y: a.y + p * (b.y - a.y),
+        };
+    }
 
     // uSize
     window.onresize = () => {
@@ -38,22 +55,33 @@ function App() {
             aHeight: window.innerHeight,
             uAspectRatio: window.innerWidth / window.innerHeight,
         });
-        console.log("oui");
     };
 
     // uZoom
-    window.onwheel = (event) => {
+    function handleWheel(event: WheelEvent<HTMLCanvasElement>) {
         let newZoom =
             event.deltaY < 0
                 ? settings.uZoom * settings.sZoomRate
                 : settings.uZoom / settings.sZoomRate;
+        let effectiveZoomRate = settings.sZoomRate;
         if (newZoom < settings.sZoomMin) {
             newZoom = settings.sZoomMin;
+            effectiveZoomRate = settings.uZoom / newZoom;
         } else if (newZoom > settings.sZoomMax) {
             newZoom = settings.sZoomMax;
+            effectiveZoomRate = newZoom / settings.uZoom;
         }
-        setSettings({ ...settings, uZoom: newZoom });
-    };
+        if (newZoom === settings.uZoom) {
+            return;
+        }
+
+        const newCenter = pointLerp(
+            settings.uMouse,
+            settings.uCenter,
+            event.deltaY < 0 ? 1 / effectiveZoomRate : effectiveZoomRate
+        );
+        setSettings({ ...settings, uZoom: newZoom, uCenter: newCenter });
+    }
     useEffect(() => {
         setSettings({
             ...settings,
@@ -68,23 +96,23 @@ function App() {
 
     // uMouse
     window.onmousemove = (event) => {
-        const newMouse = [event.clientX / settings.aWidth, event.clientY / settings.aHeight].map(
-            (coord) => coord * 2 - 1
-        ); // TOFIX: gaffe au coordonnées de la souris (pas traité pareil que les pixels)
-        if (settings.sMouseDown) {
-            const deltaMouse = [
-                ((newMouse[0] - settings.uMouse[0]) * settings.aWidth) / settings.aHeight,
-                settings.uMouse[1] - newMouse[1],
-            ].map((coord) => coord / settings.uZoom);
-            const newCenter = [
-                settings.uCenter[0] - deltaMouse[0],
-                settings.uCenter[1] - deltaMouse[1],
-            ];
-            setSettings({ ...settings, uCenter: newCenter, uMouse: newMouse });
-        } else {
-            setSettings({ ...settings, uMouse: newMouse });
-        }
+        setSettings({
+            ...settings,
+            sMouse: { x: event.clientX, y: event.clientY },
+        });
     };
+    useEffect(() => {
+        const newMouse = PixelToPoint(settings.sMouse);
+
+        setSettings({ ...settings, uMouse: newMouse });
+        if (settings.sMouseDown) {
+            const newCenter = {
+                x: settings.uCenter.x - newMouse.x + settings.uMouse.x,
+                y: settings.uCenter.y - newMouse.y + settings.uMouse.y,
+            };
+            setSettings({ ...settings, uCenter: newCenter });
+        }
+    }, [settings.sMouse, settings.aWidth, settings.aHeight, settings.uAspectRatio]);
 
     // uTime
     const intervalRef = useRef(0);
@@ -100,6 +128,7 @@ function App() {
             <FractalCanvas
                 id="FractalCanvas"
                 onMouseDown={() => setSettings({ ...settings, sMouseDown: true })}
+                onWheel={handleWheel}
             />
             <SettingsTab />
         </AppContext.Provider>

@@ -100,7 +100,7 @@ export const buidlUniforms = (uniforms: Uniforms) => {
     gl.uniform1f(uAspectRatio, uniforms.uAspectRatio);
 
     const uCenter = gl.getUniformLocation(program, "uCenter");
-    gl.uniform2f(uCenter, uniforms.uCenter[0], uniforms.uCenter[1]);
+    gl.uniform2f(uCenter, uniforms.uCenter.x, uniforms.uCenter.y);
 
     const uZoom = gl.getUniformLocation(program, "uZoom");
     gl.uniform1f(uZoom, uniforms.uZoom);
@@ -120,7 +120,7 @@ export const buidlUniforms = (uniforms: Uniforms) => {
     gl.uniform1ui(uSmoothColors, uniforms.uSmoothColors ? 1 : 0);
 
     const uMouse = gl.getUniformLocation(program, "uMouse");
-    gl.uniform2f(uMouse, uniforms.uMouse[0], uniforms.uMouse[1]);
+    gl.uniform2f(uMouse, uniforms.uMouse.x, uniforms.uMouse.y);
 
     const uTime = gl.getUniformLocation(program, "uTime");
     gl.uniform1f(uTime, uniforms.uTime);
