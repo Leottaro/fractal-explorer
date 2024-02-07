@@ -72,10 +72,12 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
 }
 
 .settingTitle {
     height: 100%;
+    width: fit-content;
     margin-right: calc(var(--width) / 50);
 
     color: var(--color1);

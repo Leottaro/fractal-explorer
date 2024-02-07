@@ -27,6 +27,7 @@ function App() {
         sMaxItersFactor: 33,
         sMaxItersFactorMin: 1,
         sMaxItersFactorMax: 500,
+        sMaxItersZoomDependant: true,
         sMouseDown: false,
         sMouse: { x: 0, y: 0 },
     });
@@ -89,7 +90,7 @@ function App() {
                 Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) *
                 settings.sMaxItersFactor,
         });
-    }, [settings.uZoom, settings.sMaxItersFactor]);
+    }, [settings.sMaxItersZoomDependant ? settings.uZoom : undefined, settings.sMaxItersFactor]);
 
     // sMouseDown
     window.onmouseup = () => setSettings({ ...settings, sMouseDown: false });

@@ -30,6 +30,7 @@ export interface Settings {
     sMaxItersFactor: number;
     sMaxItersFactorMin: number;
     sMaxItersFactorMax: number;
+    sMaxItersZoomDependant: boolean;
     sMouseDown: boolean;
     sMouse: Point;
 }

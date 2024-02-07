@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 import "./SettingsTab.css";
 import AppContext from "../../context/AppContext";
-import Slider, { SliderTypes } from "../Slider/Slider";
+import Slider, { SliderTypes } from "../Inputs/Slider";
+import Toggle from "../Inputs/Toggle";
 
 function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);
@@ -41,6 +42,24 @@ function SettingsTab() {
                         getter={settings.sMaxItersFactor}
                         setter={(factor) => setSettings({ ...settings, sMaxItersFactor: factor })}
                         sliderType={SliderTypes.EXPONENTIAL}
+                    />
+                    <Toggle
+                        checked={settings.sMaxItersZoomDependant}
+                        onClick={() =>
+                            setSettings({
+                                ...settings,
+                                sMaxItersZoomDependant: !settings.sMaxItersZoomDependant,
+                            })
+                        }
+                    />
+                </div>
+                <div className="setting">
+                    <label className="settingTitle">Smooth colors</label>
+                    <Toggle
+                        checked={settings.uSmoothColors}
+                        onClick={() =>
+                            setSettings({ ...settings, uSmoothColors: !settings.uSmoothColors })
+                        }
                     />
                 </div>
             </div>
