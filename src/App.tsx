@@ -96,17 +96,18 @@ function App() {
     window.onmouseup = () => setSettings({ ...settings, sMouseDown: false });
 
     // uMouse
-    window.onmousemove = (event) => {
+    function handleMouseMove(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
         setSettings({
             ...settings,
             sMouse: { x: event.clientX, y: event.clientY },
         });
-    };
+    }
     useEffect(() => {
         const newMouse = PixelToPoint(settings.sMouse);
 
-        setSettings({ ...settings, uMouse: newMouse });
-        if (settings.sMouseDown) {
+        if (!settings.sMouseDown) {
+            setSettings({ ...settings, uMouse: newMouse });
+        } else {
             const newCenter = {
                 x: settings.uCenter.x - newMouse.x + settings.uMouse.x,
                 y: settings.uCenter.y - newMouse.y + settings.uMouse.y,
@@ -130,6 +131,7 @@ function App() {
                 id="FractalCanvas"
                 onMouseDown={() => setSettings({ ...settings, sMouseDown: true })}
                 onWheel={handleWheel}
+                onMouseMove={handleMouseMove}
             />
             <SettingsTab />
         </AppContext.Provider>
