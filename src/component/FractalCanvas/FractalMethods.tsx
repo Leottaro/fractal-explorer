@@ -46,8 +46,8 @@ export const Init = async (canvasElement: HTMLCanvasElement, settings: ContextSe
 };
 
 export const fetchShader = async () => {
-    vertexShaderSource = await fetch("shaders/vertexShader.glsl").then((res) => res.text());
-    fragmentShaderSource = await fetch("shaders/fragmentShader.glsl").then((res) => res.text());
+    vertexShaderSource = await fetch("shaders/screen.vert").then((res) => res.text());
+    fragmentShaderSource = await fetch("shaders/julia-mandelbrot.frag").then((res) => res.text());
 };
 
 export const buildShader = () => {

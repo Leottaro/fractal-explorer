@@ -38,7 +38,7 @@ vec3 getColor(float p) {
         p = 0.f;
     else if(p > 1.f)
         p = 1.f;
-    p = pow(p, 1.f / uGlow); // TODO: 0.01 <= uGlow <= 5
+    p = pow(p, 1.f / uGlow);
     return uColors[0] * (1.f - p) + uColors[1] * p;
 }
 

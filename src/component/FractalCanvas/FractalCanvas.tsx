@@ -8,7 +8,7 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
     const ref = createRef<HTMLCanvasElement>();
 
     useEffect(() => {
-        if (!ref.current) return;
+        if (!ref.current) throw new Error("can't find the canvas");
         Init(ref.current, settings);
     }, []);
 
