@@ -41,7 +41,7 @@ function SettingsTab() {
                         max={settings.sMaxItersFactorMax}
                         getter={settings.sMaxItersFactor}
                         setter={(factor) => setSettings({ ...settings, sMaxItersFactor: factor })}
-                        sliderType={SliderTypes.EXPONENTIAL}
+                        sliderType={SliderTypes.LINEAR}
                     />
                     <Toggle
                         checked={settings.sMaxItersZoomDependant}

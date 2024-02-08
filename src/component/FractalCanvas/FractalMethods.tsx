@@ -47,7 +47,7 @@ export const Init = async (canvasElement: HTMLCanvasElement, settings: ContextSe
 
 export const fetchShader = async () => {
     vertexShaderSource = await fetch("shaders/screen.vert").then((res) => res.text());
-    fragmentShaderSource = await fetch("shaders/julia-mandelbrot.frag").then((res) => res.text());
+    fragmentShaderSource = await fetch("shaders/mandelbrot.frag").then((res) => res.text());
 };
 
 export const buildShader = () => {
@@ -78,17 +78,21 @@ export const buildAttributes = (attributes: Attributes) => {
     canvas.width = attributes.aWidth;
     canvas.height = attributes.aHeight;
     gl.viewport(0, 0, canvas.width, canvas.height);
-
-    const bufferData = new Float32Array([-1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1]);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const aPositionLoc = gl.getAttribLocation(program, "aPosition");
     gl.enableVertexAttribArray(aPositionLoc);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1]),
+        gl.DYNAMIC_DRAW
+    );
 
-    gl.vertexAttribPointer(aPositionLoc, 2, gl.FLOAT, true, 2 * 4, 0);
+    gl.vertexAttribPointer(aPositionLoc, 2, gl.FLOAT, false, 0, 0);
 };
 
 export const buidlUniforms = (uniforms: Uniforms) => {
@@ -107,8 +111,14 @@ export const buidlUniforms = (uniforms: Uniforms) => {
 
     // for fragment shader
 
-    const uColors = gl.getUniformLocation(program, "uColors");
-    gl.uniform3fv(uColors, [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]); // TODO: colors
+    const uColors = gl.getUniformLocation(program, "uColors"); // TODO:
+    gl.uniform3fv(
+        uColors,
+        [0, 7, 100, 32, 107, 203, 237, 255, 255, 255, 170, 0, 0, 2, 0].map((coord) => coord / 255)
+    );
+
+    const uFillingColor = gl.getUniformLocation(program, "uFillingColor"); // TODO:
+    gl.uniform3f(uFillingColor, 0, 0, 0);
 
     const uMaxIters = gl.getUniformLocation(program, "uMaxIters");
     gl.uniform1f(uMaxIters, uniforms.uMaxIters);

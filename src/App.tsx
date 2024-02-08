@@ -24,7 +24,7 @@ function App() {
         sZoomRate: 1.05,
         sGlowMin: 0.1,
         sGlowMax: 5,
-        sMaxItersFactor: 33,
+        sMaxItersFactor: 250,
         sMaxItersFactorMin: 1,
         sMaxItersFactorMax: 500,
         sMaxItersZoomDependant: true,
