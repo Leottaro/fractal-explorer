@@ -83,6 +83,7 @@
     color: var(--color1);
     font-weight: bold;
     font-size: calc(var(--width) / 20);
+    white-space: nowrap;
 
     display: flex;
     align-items: center;

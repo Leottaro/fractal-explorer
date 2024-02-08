@@ -4,14 +4,13 @@ precision highp float;
 const float PI = 3.14159265358979f;
 const float logOf2 = log(2.f);
 
+uniform float uMaxIters;
+uniform bool uSmoothColors;
+uniform vec3 uFillingColor;
+uniform vec3 uColors[5];
+uniform float uColorOffset;
 uniform vec2 uMouse;
 uniform float uTime;
-uniform vec3 uColors[5];
-uniform vec3 uFillingColor;
-uniform float uMaxIters;
-uniform float uGlow;
-uniform bool uSmoothColors;
-
 
 in vec2 vPosition;
 out vec4 fragColor;
@@ -29,7 +28,7 @@ vec3 getColor(float iterations) {
     if (iterations >= uMaxIters) {
         return uFillingColor;
     }
-    float newI = (1.+cos(log2(iterations+10.))) * float(uColors.length()/2);
+    float newI = (1.+cos(log2(iterations+10.) + uColorOffset)) * float(uColors.length()/2);
     int col1 = int(newI);
     int col2 = (col1 + 1) % uColors.length();
     float percent = newI - float(col1);

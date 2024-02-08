@@ -25,13 +25,13 @@ function SettingsTab() {
                     />
                 </div>
                 <div className="setting">
-                    <label className="settingTitle">Glow</label>
+                    <label className="settingTitle">Color offset</label>
                     <Slider
-                        min={settings.sGlowMin}
-                        max={settings.sGlowMax}
-                        getter={settings.uGlow}
-                        setter={(glow) => setSettings({ ...settings, uGlow: glow })}
-                        sliderType={SliderTypes.EXPONENTIAL}
+                        min={settings.sColorOffsetMin}
+                        max={settings.sColorOffsetMax}
+                        getter={settings.uColorOffset}
+                        setter={(offset) => setSettings({ ...settings, uColorOffset: offset })}
+                        sliderType={SliderTypes.LINEAR}
                     />
                 </div>
                 <div className="setting">

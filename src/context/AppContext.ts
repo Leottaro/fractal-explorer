@@ -14,7 +14,7 @@ export interface Uniforms {
     uAspectRatio: number;
     uCenter: Point;
     uMaxIters: number;
-    uGlow: number;
+    uColorOffset: number;
     uSmoothColors: boolean;
     uZoom: number;
     uMouse: Point;
@@ -25,8 +25,8 @@ export interface Settings {
     sZoomMin: number;
     sZoomMax: number;
     sZoomRate: number;
-    sGlowMin: number;
-    sGlowMax: number;
+    sColorOffsetMin: number;
+    sColorOffsetMax: number;
     sMaxItersFactor: number;
     sMaxItersFactorMin: number;
     sMaxItersFactorMax: number;

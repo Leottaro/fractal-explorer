@@ -123,8 +123,8 @@ export const buidlUniforms = (uniforms: Uniforms) => {
     const uMaxIters = gl.getUniformLocation(program, "uMaxIters");
     gl.uniform1f(uMaxIters, uniforms.uMaxIters);
 
-    const uGlow = gl.getUniformLocation(program, "uGlow");
-    gl.uniform1f(uGlow, uniforms.uGlow);
+    const uColorOffset = gl.getUniformLocation(program, "uColorOffset");
+    gl.uniform1f(uColorOffset, uniforms.uColorOffset);
 
     const uSmoothColors = gl.getUniformLocation(program, "uSmoothColors");
     gl.uniform1ui(uSmoothColors, uniforms.uSmoothColors ? 1 : 0);
