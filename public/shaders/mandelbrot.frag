@@ -12,7 +12,7 @@ uniform float uColorOffset;
 uniform vec2 uMouse;
 uniform float uTime;
 
-in vec2 vPosition;
+in vec2 vMappedPosition;
 out vec4 fragColor;
 
 vec2 complexMul(vec2 a, vec2 b) { 
@@ -37,25 +37,25 @@ vec3 getColor(float iterations) {
 
 void main() {
     // skip if the point is in the 1st cardioid
-    float y2 = vPosition.y * vPosition.y;
-    float q = pow(vPosition.x - 0.25, 2.) + y2;
-    if (q * (q + (vPosition.x - 0.25)) <= 0.25*y2) {
+    float y2 = vMappedPosition.y * vMappedPosition.y;
+    float q = pow(vMappedPosition.x - 0.25, 2.) + y2;
+    if (q * (q + (vMappedPosition.x - 0.25)) <= 0.25*y2) {
         fragColor = vec4(uFillingColor, 1.);
         return;
     }
     
     // skip if the point is in the 2nd cardioid
-    if (pow(vPosition.x + 1., 2.) + y2 < 0.0625) {
+    if (pow(vMappedPosition.x + 1., 2.) + y2 < 0.0625) {
         fragColor = vec4(uFillingColor, 1.);
         return;
     }
 
     // Usual algorithm
-    vec2 z = vPosition;
+    vec2 z = vMappedPosition;
     float i;
     for(i = 0.; i <= uMaxIters; i++) {
-        z = complexMul(z, z) + vPosition;
-        if (z == vPosition) { // periodicity check
+        z = complexMul(z, z) + vMappedPosition;
+        if (z == vMappedPosition) { // periodicity check
             fragColor = vec4(uFillingColor, 1.);
             return;
         }
