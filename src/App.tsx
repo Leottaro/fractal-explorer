@@ -32,7 +32,7 @@ function App() {
         sZoomRate: 1.05,
         sColorOffsetMin: 0,
         sColorOffsetMax: 2 * Math.PI,
-        sMaxItersFactor: 250,
+        sMaxItersFactor: 75,
         sMaxItersFactorMin: 1,
         sMaxItersFactorMax: 500,
         sMaxItersZoomDependant: true,

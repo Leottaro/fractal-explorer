@@ -109,7 +109,7 @@ export default class Renderer {
             uniformsValues.set(color, 16 + 4 * index);
         });
 
-        const uniformBuffer = this.createBuffer(uniformsValues, GPUBufferUsage.UNIFORM);
+        const uniformBuffer = this.createBuffer(uniformsValues, GPUBufferUsage.STORAGE);
         this.bindGroup = this.device.createBindGroup({
             layout: this.pipeline.getBindGroupLayout(0),
             entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
