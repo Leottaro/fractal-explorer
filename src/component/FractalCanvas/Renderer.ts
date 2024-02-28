@@ -12,15 +12,18 @@ function discardNull(element: any | null | undefined, errorMessage: string) {
 export default class Renderer {
     private canvas: HTMLCanvasElement;
     private shaderSoucre!: string;
-    private context!: GPUCanvasContext;
+    private context: GPUCanvasContext;
     private device!: GPUDevice;
     private pipeline!: GPURenderPipeline;
     private positionBuffer!: GPUBuffer;
     private bindGroup!: GPUBindGroup;
 
+    private drawing: boolean;
+
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.context = discardNull(this.canvas.getContext("webgpu"), "WebGPU not supported");
+        this.drawing = false;
     }
 
     public async Init(shaderPath: string): Promise<void> {
@@ -36,7 +39,7 @@ export default class Renderer {
         });
         this.prepareModel();
         this.positionBuffer = this.createBuffer(
-            new Float32Array([-1, 3, 3, -1, -1, -1]), // https://webgpufundamentals.org/webgpu/lessons/webgpu-large-triangle-to-cover-clip-space.html
+            new Float32Array([-1, 1, 1, -1, -1, -1, -1, 1, 1, -1, 1, 1]),
             GPUBufferUsage.VERTEX
         );
     }
@@ -116,7 +119,11 @@ export default class Renderer {
         });
     }
 
-    public draw(): void {
+    public async draw(): Promise<void> {
+        if (this.drawing) {
+            return;
+        }
+        this.drawing = true;
         const commandEncoder = this.device.createCommandEncoder();
         const textureView = this.context.getCurrentTexture().createView();
         const rendererPassDescriptor: GPURenderPassDescriptor = {
@@ -135,8 +142,10 @@ export default class Renderer {
         passEncorder.setVertexBuffer(0, this.positionBuffer);
         passEncorder.setBindGroup(0, this.bindGroup);
 
-        passEncorder.draw(3);
+        passEncorder.draw(6);
         passEncorder.end();
         this.device.queue.submit([commandEncoder.finish()]);
+        await this.device.queue.onSubmittedWorkDone();
+        this.drawing = false;
     }
 }

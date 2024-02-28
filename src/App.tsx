@@ -12,7 +12,7 @@ function App() {
 
         uAspectRatio: window.innerWidth / window.innerHeight,
         uCenter: { x: 0, y: 0 },
-        uMaxIters: 50,
+        uMaxIters: 186,
         uColorOffset: 0,
         uSmoothColors: true,
         uZoom: 1,
@@ -28,11 +28,11 @@ function App() {
         uFillingColor: [0, 0, 0],
 
         sZoomMin: 0.5,
-        sZoomMax: 40000,
+        sZoomMax: 50000,
         sZoomRate: 1.05,
         sColorOffsetMin: 0,
         sColorOffsetMax: 2 * Math.PI,
-        sMaxItersFactor: 75,
+        sMaxItersFactor: 125,
         sMaxItersFactorMin: 1,
         sMaxItersFactorMax: 500,
         sMaxItersZoomDependant: true,
