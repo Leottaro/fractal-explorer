@@ -1,5 +1,15 @@
 # React + TypeScript + Vite
 
+## Download, run and build the project
+
+To download the project: `git clone https://github.com/Leottaro/fractal-explorer.git && cd fractal-explorer && npm i`
+
+you can run in dev mode with `npm run dev`
+
+or build and then run the build with `npm build` and `npm preview`
+
+---
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
