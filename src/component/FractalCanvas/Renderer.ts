@@ -1,139 +1,151 @@
 import { ContextSettings } from "../../context/AppContext";
 
-interface bufferProps {
-    layoutID: number;
-    dataType: number;
-    vecSize: number;
-    data: number[];
+function discardNull(element: any | null | undefined, errorMessage: string) {
+    if (!element) {
+        console.error(errorMessage);
+        alert(errorMessage);
+        throw new Error(errorMessage);
+    }
+    return element;
 }
 
-export class Renderer {
+export default class Renderer {
     private canvas: HTMLCanvasElement;
-    private gl: WebGL2RenderingContext;
-    private program: WebGLProgram;
-    private settings: ContextSettings;
+    private shaderSoucre!: string;
+    private context: GPUCanvasContext;
+    private device!: GPUDevice;
+    private pipeline!: GPURenderPipeline;
+    private positionBuffer!: GPUBuffer;
+    private bindGroup!: GPUBindGroup;
 
-    constructor(canvasElement: HTMLCanvasElement, settings: ContextSettings) {
-        this.settings = settings;
-        this.canvas = canvasElement;
-        this.canvas.width = settings.aWidth;
-        this.canvas.height = settings.aHeight;
-        const tempGl = this.canvas.getContext("webgl2");
-        if (!tempGl) {
-            throw new Error("Your browser doesn't support WebGL2");
-        }
-        this.gl = tempGl;
-        this.gl.viewport(0, 0, settings.aWidth, settings.aHeight);
-        this.program = this.gl.createProgram()!;
+    private drawing: boolean;
+
+    constructor(canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
+        this.context = discardNull(this.canvas.getContext("webgpu"), "WebGPU not supported");
+        this.drawing = false;
     }
 
-    async Init(vertexPath: string, fragmentPath: string) {
-        const [vertexSource, fragmentSource] = await this.fetchShaders(vertexPath, fragmentPath);
-        const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexSource);
-        const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentSource);
-
-        this.createProgram(vertexShader, fragmentShader);
-        this.gl.useProgram(this.program);
-
-        // aPosition
-        this.createArrayBuffer({
-            layoutID: 0,
-            dataType: this.gl.FLOAT,
-            vecSize: 2,
-            data: [-1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1],
+    public async Init(shaderPath: string): Promise<void> {
+        const adapter = discardNull(
+            await navigator.gpu.requestAdapter({ powerPreference: "low-power" }),
+            "No adapter found"
+        );
+        this.device = await adapter.requestDevice();
+        this.shaderSoucre = await fetch(shaderPath).then((res) => res.text());
+        this.context.configure({
+            device: this.device,
+            format: navigator.gpu.getPreferredCanvasFormat(),
         });
+        this.prepareModel();
+        this.positionBuffer = this.createBuffer(
+            new Float32Array([-1, 1, 1, -1, -1, -1, -1, 1, 1, -1, 1, 1]),
+            GPUBufferUsage.VERTEX
+        );
     }
 
-    private async fetchShaders(vertexPath: string, fragmentPath: string) {
-        const vertexSource = await fetch(vertexPath).then((res) => res.text());
-        const fragmentSource = await fetch(fragmentPath).then((res) => res.text());
-        return [vertexSource, fragmentSource];
-    }
-
-    private createShader(type: number, source: string): WebGLShader {
-        const shader = this.gl.createShader(type)!;
-        this.gl.shaderSource(shader, source);
-        this.gl.compileShader(shader);
-
-        if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-            console.error(this.gl.getShaderInfoLog(shader));
-        }
-
-        return shader;
-    }
-
-    private createProgram(vertexShader: WebGLShader, fragmentShader: WebGLShader) {
-        const program = this.gl.createProgram()!;
-        this.gl.attachShader(this.program, vertexShader);
-        this.gl.attachShader(this.program, fragmentShader);
-
-        this.gl.linkProgram(this.program);
-
-        if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
-            console.error(this.gl.getProgramInfoLog(this.program));
-        }
-        return program;
-    }
-
-    private createArrayBuffer({ layoutID, dataType, vecSize, data }: bufferProps): WebGLBuffer {
-        const buffer = this.gl.createBuffer()!;
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(data), this.gl.STATIC_DRAW);
-        this.gl.vertexAttribPointer(layoutID, vecSize, dataType, false, 0, 0);
-        this.gl.enableVertexAttribArray(layoutID);
+    private createBuffer(data: Float32Array | Float64Array, usage: number): GPUBuffer {
+        const buffer = this.device.createBuffer({
+            size: data.byteLength,
+            usage: usage | GPUBufferUsage.COPY_DST,
+            mappedAtCreation: true,
+        });
+        new Float32Array(buffer.getMappedRange()).set(data);
+        buffer.unmap();
         return buffer;
     }
 
-    public updateSettings(settings: ContextSettings) {
-        this.settings = settings;
+    private prepareModel() {
+        const shaderModule = this.device.createShaderModule({ code: this.shaderSoucre });
 
-        this.canvas.width = this.settings.aWidth;
-        this.canvas.height = this.settings.aHeight;
-        this.gl.viewport(0, 0, this.settings.aWidth, this.settings.aHeight);
+        const positionBufferLayout: GPUVertexBufferLayout = {
+            arrayStride: 2 * Float32Array.BYTES_PER_ELEMENT,
+            attributes: [
+                {
+                    shaderLocation: 0,
+                    offset: 0,
+                    format: "float32x2",
+                },
+            ],
+            stepMode: "vertex",
+        };
 
-        // aMappedPosition
-        this.createArrayBuffer({
-            layoutID: 1,
-            dataType: this.gl.FLOAT,
-            vecSize: 2,
-            data: [-1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, 1].map((coord, index) => {
-                return index % 2 == 0
-                    ? (coord * this.settings.uAspectRatio) / this.settings.uZoom +
-                          this.settings.uCenter.x
-                    : coord / this.settings.uZoom + this.settings.uCenter.y;
-            }),
+        const vertexState: GPUVertexState = {
+            module: shaderModule,
+            entryPoint: "vertexMain",
+            buffers: [positionBufferLayout],
+        };
+
+        const fragmentState: GPUFragmentState = {
+            module: shaderModule,
+            entryPoint: "fragmentMain",
+            targets: [{ format: navigator.gpu.getPreferredCanvasFormat() }],
+        };
+
+        this.pipeline = this.device.createRenderPipeline({
+            vertex: vertexState,
+            fragment: fragmentState,
+            primitive: { topology: "triangle-list" },
+            layout: "auto",
         });
-
-        const uColors = this.gl.getUniformLocation(this.program, "uColors"); // TODO:
-        this.gl.uniform3fv(
-            uColors,
-            [0, 7, 100, 32, 107, 203, 237, 255, 255, 255, 170, 0, 0, 2, 0].map(
-                (color) => color / 255
-            )
-        );
-
-        const uFillingColor = this.gl.getUniformLocation(this.program, "uFillingColor"); // TODO:
-        this.gl.uniform3f(uFillingColor, 0, 0, 0);
-
-        const uMaxIters = this.gl.getUniformLocation(this.program, "uMaxIters");
-        this.gl.uniform1f(uMaxIters, this.settings.uMaxIters);
-
-        const uColorOffset = this.gl.getUniformLocation(this.program, "uColorOffset");
-        this.gl.uniform1f(uColorOffset, this.settings.uColorOffset);
-
-        const uSmoothColors = this.gl.getUniformLocation(this.program, "uSmoothColors");
-        this.gl.uniform1ui(uSmoothColors, this.settings.uSmoothColors ? 1 : 0);
-
-        const uMouse = this.gl.getUniformLocation(this.program, "uMouse");
-        this.gl.uniform2f(uMouse, this.settings.uMouse.x, this.settings.uMouse.y);
-
-        const uTime = this.gl.getUniformLocation(this.program, "uTime");
-        this.gl.uniform1f(uTime, this.settings.uTime);
     }
 
-    public draw(): void {
-        this.gl.clearColor(1, 0, 0, 1);
-        this.gl.clear(this.gl.DEPTH_BUFFER_BIT | this.gl.COLOR_BUFFER_BIT);
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+    public updateSettings(settings: ContextSettings): void {
+        this.canvas.width = settings.aWidth;
+        this.canvas.height = settings.aHeight;
+
+        /**
+         * i pasted my shaders into https://webgpufundamentals.org/webgpu/lessons/resources/wgsl-offset-computer.html
+         * to get the offsets i needed, i then divided everything by 4 (the number of bytes of a float32)
+         */
+        const uniformsValues = new Float32Array(36);
+        uniformsValues.set([settings.uTime], 0);
+        uniformsValues.set([settings.uSmoothColors ? 1 : 0], 1);
+        uniformsValues.set([settings.uMaxIters], 2);
+        uniformsValues.set([settings.uColorOffset], 3);
+        uniformsValues.set([settings.uAspectRatio], 4);
+        uniformsValues.set([settings.uZoom], 5);
+        uniformsValues.set([settings.uCenter.x, settings.uCenter.y], 6);
+        uniformsValues.set([settings.uMouse.x, settings.uMouse.y], 8);
+        uniformsValues.set(settings.uFillingColor, 12);
+        settings.uColors.forEach((color, index) => {
+            uniformsValues.set(color, 16 + 4 * index);
+        });
+
+        const uniformBuffer = this.createBuffer(uniformsValues, GPUBufferUsage.STORAGE);
+        this.bindGroup = this.device.createBindGroup({
+            layout: this.pipeline.getBindGroupLayout(0),
+            entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
+        });
+    }
+
+    public async draw(): Promise<void> {
+        if (this.drawing) {
+            return;
+        }
+        this.drawing = true;
+        const commandEncoder = this.device.createCommandEncoder();
+        const textureView = this.context.getCurrentTexture().createView();
+        const rendererPassDescriptor: GPURenderPassDescriptor = {
+            colorAttachments: [
+                {
+                    view: textureView,
+                    clearValue: { r: 0.1, g: 0.1, b: 0.1, a: 1 },
+                    loadOp: "clear",
+                    storeOp: "store",
+                },
+            ],
+        };
+        const passEncorder = commandEncoder.beginRenderPass(rendererPassDescriptor);
+        passEncorder.setPipeline(this.pipeline);
+
+        passEncorder.setVertexBuffer(0, this.positionBuffer);
+        passEncorder.setBindGroup(0, this.bindGroup);
+
+        passEncorder.draw(6);
+        passEncorder.end();
+        this.device.queue.submit([commandEncoder.finish()]);
+        await this.device.queue.onSubmittedWorkDone();
+        this.drawing = false;
     }
 }

@@ -19,6 +19,8 @@ export interface Uniforms {
     uZoom: number;
     uMouse: Point;
     uTime: number;
+    uColors: [number, number, number][];
+    uFillingColor: [number, number, number];
 }
 
 export interface Settings {

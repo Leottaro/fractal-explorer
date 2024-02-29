@@ -12,19 +12,27 @@ function App() {
 
         uAspectRatio: window.innerWidth / window.innerHeight,
         uCenter: { x: 0, y: 0 },
-        uMaxIters: 50,
+        uMaxIters: 186,
         uColorOffset: 0,
         uSmoothColors: true,
         uZoom: 1,
         uMouse: { x: 0, y: 0 },
         uTime: 0,
+        uColors: [
+            [0, 0.027450980392156862, 0.39215686274509803],
+            [0.12549019607843137, 0.4196078431372549, 0.796078431372549],
+            [0.9294117647058824, 1, 1],
+            [1, 0.6666666666666666, 0],
+            [0, 0.00784313725490196, 0],
+        ],
+        uFillingColor: [0, 0, 0],
 
         sZoomMin: 0.5,
-        sZoomMax: 40000,
+        sZoomMax: 50000,
         sZoomRate: 1.05,
         sColorOffsetMin: 0,
         sColorOffsetMax: 2 * Math.PI,
-        sMaxItersFactor: 250,
+        sMaxItersFactor: 125,
         sMaxItersFactorMin: 1,
         sMaxItersFactorMax: 500,
         sMaxItersZoomDependant: true,
@@ -47,11 +55,6 @@ function App() {
             y: a.y + p * (b.y - a.y),
         };
     }
-    window.onkeydown = (e) => {
-        if (e.key === "a") {
-            console.log(settings.uColorOffset);
-        }
-    };
 
     // uSize
     window.onresize = () => {
