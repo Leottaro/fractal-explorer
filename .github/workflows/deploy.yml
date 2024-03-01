@@ -1,0 +1,25 @@
+name: Github Pages Deploy
+run-name: Deploying to github pages
+on: [push]
+jobs:
+    Deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Run deploy script
+              run: |
+                  export NODE_OPTIONS="--max_old_space_size=4096"
+                  set -e
+                  npm i
+                  npm run build
+                  cd dist
+                  echo > .nojekyll
+                  git config --global user.email "${{ secrets.GH_EMAIL }}"
+                  git config --global user.name "${{ secrets.GH_USER }}"
+                  git init
+                  git checkout -B main
+                  git add -A
+                  git commit -m 'deploy'
+                  git push -f https://${{ secrets.GH_USER }}:${{ secrets.GH_TOKEN }}@github.com/Leottaro/fractal-explorer.git main:gh-pages
+                  cd -
+              shell: bash
