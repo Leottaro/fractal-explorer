@@ -1,6 +1,10 @@
 name: Github Pages Deploy
 run-name: Deploying to github pages
-on: [push]
+on: 
+  push: 
+    branches:
+      - main
+  workflow_dispatch:
 jobs:
     Deploy:
         runs-on: ubuntu-latest
