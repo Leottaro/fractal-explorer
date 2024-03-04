@@ -1,4 +1,4 @@
-import { ContextSettings } from "../../context/AppContext";
+import { ContextSettings } from "../context/AppContext";
 
 function discardNull(element: any | null | undefined, errorMessage: string) {
     if (!element) {
@@ -19,6 +19,7 @@ export default class Renderer {
     private bindGroup!: GPUBindGroup;
 
     private drawing: boolean;
+    public isDrawing = () => this.drawing;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -119,11 +120,13 @@ export default class Renderer {
         });
     }
 
-    public async draw(): Promise<void> {
+    public async draw(): Promise<number | undefined> {
         if (this.drawing) {
             return;
         }
         this.drawing = true;
+        const start = performance.now();
+
         const commandEncoder = this.device.createCommandEncoder();
         const textureView = this.context.getCurrentTexture().createView();
         const rendererPassDescriptor: GPURenderPassDescriptor = {
@@ -146,6 +149,9 @@ export default class Renderer {
         passEncorder.end();
         this.device.queue.submit([commandEncoder.finish()]);
         await this.device.queue.onSubmittedWorkDone();
+
+        const deltaTime = performance.now() - start;
         this.drawing = false;
+        return deltaTime;
     }
 }

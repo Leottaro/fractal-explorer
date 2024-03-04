@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, WheelEvent } from "react";
+import { useEffect, useState, WheelEvent } from "react";
 import AppContext, { ContextSettings, Point } from "./context/AppContext";
 import "./App.css";
 
@@ -28,7 +28,7 @@ function App() {
         uFillingColor: [0, 0, 0],
 
         sZoomMin: 0.5,
-        sZoomMax: 50000,
+        sZoomMax: 40000,
         sZoomRate: 1.05,
         sColorOffsetMin: 0,
         sColorOffsetMax: 2 * Math.PI,
@@ -123,15 +123,6 @@ function App() {
             setSettings({ ...settings, uCenter: newCenter });
         }
     }, [settings.sMouse, settings.aWidth, settings.aHeight, settings.uAspectRatio]);
-
-    // uTime
-    const intervalRef = useRef(0);
-    useEffect(() => {
-        intervalRef.current = setInterval(() => {
-            setSettings({ ...settings, uTime: settings.uTime + 0.01 });
-        }, 10);
-        return () => clearInterval(intervalRef.current);
-    });
 
     return (
         <AppContext.Provider value={{ settings, setSettings }}>
