@@ -28,7 +28,7 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
             if (renderer.isDrawing()) return;
 
             const newSettings = { ...settings, uTime: performance.now() / 1000 };
-            setSettings({ ...settings, uTime: performance.now() });
+            setSettings(newSettings);
             renderer.updateSettings(newSettings);
 
             renderer.draw().then((deltaTime) => {
