@@ -103,6 +103,10 @@
     overflow: hidden;
 }
 
+.settingRange:disabled {
+    filter: brightness(0.75);
+}
+
 .settingRange::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -115,6 +119,10 @@
     border-radius: 100%;
     box-shadow: 0 0 0 calc(var(--width) / 400) var(--color4),
         -100vw 0 0 calc(100vw - var(--width) / 60) var(--color4);
+}
+
+.settingRange:disabled::-webkit-slider-thumb {
+    cursor: auto;
 }
 
 .settingCheckbox {

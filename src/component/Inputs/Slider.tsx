@@ -11,6 +11,7 @@ export interface SliderProps {
     getter: number;
     setter: (value: number) => void;
     sliderType: SliderTypes;
+    disabled?: boolean;
 }
 
 export default function Slider(props: SliderProps) {
@@ -64,6 +65,7 @@ export default function Slider(props: SliderProps) {
             step={0.000001}
             value={value}
             onChange={handleInputChange}
+            disabled={props.disabled ? props.disabled : false}
         />
     );
 }

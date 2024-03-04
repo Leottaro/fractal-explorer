@@ -29,6 +29,7 @@ export interface Settings {
     sZoomRate: number;
     sColorOffsetMin: number;
     sColorOffsetMax: number;
+    sColorOffsetTimeDependant: boolean;
     sMaxItersFactor: number;
     sMaxItersFactorMin: number;
     sMaxItersFactorMax: number;

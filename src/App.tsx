@@ -32,6 +32,7 @@ function App() {
         sZoomRate: 1.05,
         sColorOffsetMin: 0,
         sColorOffsetMax: 2 * Math.PI,
+        sColorOffsetTimeDependant: false,
         sMaxItersFactor: 125,
         sMaxItersFactorMin: 1,
         sMaxItersFactorMax: 500,
@@ -123,6 +124,11 @@ function App() {
             setSettings({ ...settings, uCenter: newCenter });
         }
     }, [settings.sMouse, settings.aWidth, settings.aHeight, settings.uAspectRatio]);
+
+    // uTime
+    useEffect(() => {
+        setSettings({ ...settings, uColorOffset: settings.uTime % settings.sColorOffsetMax });
+    }, [settings.sColorOffsetTimeDependant ? settings.uTime : undefined]);
 
     return (
         <AppContext.Provider value={{ settings, setSettings }}>

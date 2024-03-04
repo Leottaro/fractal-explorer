@@ -32,6 +32,16 @@ function SettingsTab() {
                         getter={settings.uColorOffset}
                         setter={(offset) => setSettings({ ...settings, uColorOffset: offset })}
                         sliderType={SliderTypes.LINEAR}
+                        disabled={settings.sColorOffsetTimeDependant}
+                    />
+                    <Toggle
+                        checked={settings.sColorOffsetTimeDependant}
+                        onClick={() =>
+                            setSettings({
+                                ...settings,
+                                sColorOffsetTimeDependant: !settings.sColorOffsetTimeDependant,
+                            })
+                        }
                     />
                 </div>
                 <div className="setting">
