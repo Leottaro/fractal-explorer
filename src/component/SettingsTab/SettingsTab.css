@@ -52,11 +52,13 @@
     border-top-left-radius: calc(var(--width) / 20);
     border-bottom-left-radius: calc(var(--width) / 20);
 
-    transition: right 1s;
+    transition: all 1s;
+    visibility: visible;
     overflow-y: scroll;
 }
 
 #SettingsDiv.hidden {
+    visibility: hidden;
     right: calc(var(--width) * -1);
 }
 
