@@ -11,13 +11,14 @@ function discardNull(element: any | null | undefined, errorMessage: string) {
 }
 
 export default class Renderer {
-    private canvas: HTMLCanvasElement;
-    private context: GPUCanvasContext;
+    private readonly canvas: HTMLCanvasElement;
+    private readonly context: GPUCanvasContext;
+    private readonly renderingFormat: GPUTextureFormat;
     private device!: GPUDevice;
 
-    private fractalShaderSoucre!: string;
+    private fractalSource!: string;
     private fractalPipeline!: GPURenderPipeline;
-    private fractalPositionBuffer!: GPUBuffer;
+    private fractalPositions!: GPUBuffer;
     private fractalBindGroup!: GPUBindGroup;
 
     private fractalTexture!: GPUTexture;
@@ -31,12 +32,13 @@ export default class Renderer {
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.context = discardNull(this.canvas.getContext("webgpu"), "WebGPU not supported");
+        this.renderingFormat = navigator.gpu.getPreferredCanvasFormat();
         this.drawing = false;
     }
 
     public async Init(
         settings: ContextSettings,
-        fractalShaderPath: string,
+        fractalPath: string,
         computePath: string
     ): Promise<void> {
         const adapter = discardNull(
@@ -44,10 +46,10 @@ export default class Renderer {
             "No adapter found"
         );
         this.device = await adapter.requestDevice();
-        this.fractalShaderSoucre = await fetch(fractalShaderPath).then((res) => res.text());
+        this.fractalSource = await fetch(fractalPath).then((res) => res.text());
         this.context.configure({
             device: this.device,
-            format: navigator.gpu.getPreferredCanvasFormat(),
+            format: this.renderingFormat,
         });
         this.prepareModel();
         this.updateSettings(settings);
@@ -66,8 +68,8 @@ export default class Renderer {
 
     private prepareModel() {
         // Fractal shader
-        const fractalShaderModule = this.device.createShaderModule({
-            code: this.fractalShaderSoucre,
+        const fractalModule = this.device.createShaderModule({
+            code: this.fractalSource,
         });
 
         const fractalPositionBufferLayout: GPUVertexBufferLayout = {
@@ -84,38 +86,38 @@ export default class Renderer {
 
         this.fractalPipeline = this.device.createRenderPipeline({
             vertex: {
-                module: fractalShaderModule,
+                module: fractalModule,
                 entryPoint: "vertexMain",
                 buffers: [fractalPositionBufferLayout],
             },
             fragment: {
-                module: fractalShaderModule,
+                module: fractalModule,
                 entryPoint: "fragmentMain",
-                targets: [{ format: navigator.gpu.getPreferredCanvasFormat() }],
+                targets: [{ format: this.renderingFormat }],
             },
             primitive: { topology: "triangle-list" },
             layout: "auto",
         });
 
-        this.fractalPositionBuffer = this.createBuffer(
+        this.fractalPositions = this.createBuffer(
             new Float32Array([-1, 3, 3, -1, -1, -1]), // https://webgpufundamentals.org/webgpu/lessons/webgpu-large-triangle-to-cover-clip-space.html
             GPUBufferUsage.VERTEX
         );
 
         // fullscreen texture display Shader
-        const fullScreenTexShaderModule = this.device.createShaderModule({
+        const fullScreenTexModule = this.device.createShaderModule({
             code: fullScreenTexSource,
         });
 
         this.fullScreenTexPipeline = this.device.createRenderPipeline({
             vertex: {
-                module: fullScreenTexShaderModule,
+                module: fullScreenTexModule,
                 entryPoint: "vertexMain",
             },
             fragment: {
-                module: fullScreenTexShaderModule,
+                module: fullScreenTexModule,
                 entryPoint: "fragmentMain",
-                targets: [{ format: navigator.gpu.getPreferredCanvasFormat() }],
+                targets: [{ format: this.renderingFormat }],
             },
             primitive: { topology: "triangle-list" },
             layout: "auto",
@@ -156,7 +158,7 @@ export default class Renderer {
 
         this.fractalTexture = this.device.createTexture({
             size: [this.canvas.width, this.canvas.height],
-            format: navigator.gpu.getPreferredCanvasFormat(),
+            format: this.renderingFormat,
             usage:
                 GPUTextureUsage.TEXTURE_BINDING |
                 GPUTextureUsage.COPY_DST |
@@ -202,7 +204,7 @@ export default class Renderer {
         };
         const fractalPass = commandEncoder.beginRenderPass(fractalPassDescriptor);
         fractalPass.setPipeline(this.fractalPipeline);
-        fractalPass.setVertexBuffer(0, this.fractalPositionBuffer);
+        fractalPass.setVertexBuffer(0, this.fractalPositions);
         fractalPass.setBindGroup(0, this.fractalBindGroup);
         fractalPass.draw(3);
         fractalPass.end();
