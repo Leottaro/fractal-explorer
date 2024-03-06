@@ -1,6 +1,6 @@
 import React, { createRef, useEffect, useContext, useState, useRef } from "react";
 import AppContext from "../../context/AppContext";
-import Renderer from "../../utils/Renderer";
+import Renderer from "../../utils/Renderer/Renderer";
 import Stats from "../../utils/Stats";
 
 export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanvasElement>) {
@@ -15,7 +15,9 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
             throw new Error("can't find the canvas");
         }
         const newRenderer = new Renderer(canvasRef.current);
-        newRenderer.Init("shaders/mandelbrot.wgsl").then(() => setRenderer(newRenderer));
+        newRenderer
+            .Init(settings, "shaders/mandelbrot.wgsl", "shaders/anti_alias.wgsl")
+            .then(() => setRenderer(newRenderer));
         stats.current = new Stats(50);
     }, []);
 
