@@ -16,12 +16,16 @@ export default class Renderer {
     private readonly renderingFormat: GPUTextureFormat;
     private device!: GPUDevice;
 
+    private frameTextures!: [GPUTexture, GPUTexture];
+
     private fractalSource!: string;
     private fractalPipeline!: GPURenderPipeline;
     private fractalPositions!: GPUBuffer;
     private fractalBindGroup!: GPUBindGroup;
 
-    private fractalTexture!: GPUTexture;
+    private computeSource: string | undefined;
+    private computePipeline!: GPUComputePipeline;
+    private computeBindGroup!: GPUBindGroup;
 
     private fullScreenTexPipeline!: GPURenderPipeline;
     private fullScreenTexBindGroup!: GPUBindGroup;
@@ -39,7 +43,7 @@ export default class Renderer {
     public async Init(
         settings: ContextSettings,
         fractalPath: string,
-        computePath: string
+        computePath?: string
     ): Promise<void> {
         const adapter = discardNull(
             await navigator.gpu.requestAdapter({ powerPreference: "low-power" }),
@@ -47,9 +51,13 @@ export default class Renderer {
         );
         this.device = await adapter.requestDevice();
         this.fractalSource = await fetch(fractalPath).then((res) => res.text());
+        this.computeSource = computePath
+            ? await fetch(computePath).then((res) => res.text())
+            : undefined;
         this.context.configure({
             device: this.device,
             format: this.renderingFormat,
+            alphaMode: "premultiplied",
         });
         this.prepareModel();
         this.updateSettings(settings);
@@ -104,6 +112,20 @@ export default class Renderer {
             GPUBufferUsage.VERTEX
         );
 
+        // compute shader
+        if (this.computeSource) {
+            const computeModule = this.device.createShaderModule({
+                code: this.computeSource,
+            });
+            this.computePipeline = this.device.createComputePipeline({
+                compute: {
+                    module: computeModule,
+                    entryPoint: "main",
+                },
+                layout: "auto",
+            });
+        }
+
         // fullscreen texture display Shader
         const fullScreenTexModule = this.device.createShaderModule({
             code: fullScreenTexSource,
@@ -127,6 +149,32 @@ export default class Renderer {
     public updateSettings(settings: ContextSettings): void {
         this.canvas.width = settings.aWidth;
         this.canvas.height = settings.aHeight;
+
+        this.frameTextures = [
+            this.device.createTexture({
+                size: [this.canvas.width, this.canvas.height],
+                format: this.renderingFormat,
+                usage:
+                    GPUTextureUsage.TEXTURE_BINDING |
+                    GPUTextureUsage.COPY_DST |
+                    GPUTextureUsage.RENDER_ATTACHMENT,
+            }),
+            this.device.createTexture({
+                size: [this.canvas.width, this.canvas.height],
+                format: "rgba8unorm",
+                usage:
+                    GPUTextureUsage.TEXTURE_BINDING |
+                    GPUTextureUsage.COPY_DST |
+                    GPUTextureUsage.STORAGE_BINDING,
+            }),
+        ];
+
+        const sampler = this.device.createSampler({
+            addressModeU: "clamp-to-edge",
+            addressModeV: "clamp-to-edge",
+            magFilter: "linear",
+            minFilter: "linear",
+        });
 
         /**
          * i pasted my shaders into https://webgpufundamentals.org/webgpu/lessons/resources/wgsl-offset-computer.html
@@ -156,28 +204,30 @@ export default class Renderer {
             ],
         });
 
-        this.fractalTexture = this.device.createTexture({
-            size: [this.canvas.width, this.canvas.height],
-            format: this.renderingFormat,
-            usage:
-                GPUTextureUsage.TEXTURE_BINDING |
-                GPUTextureUsage.COPY_DST |
-                GPUTextureUsage.RENDER_ATTACHMENT,
-        });
+        if (this.computeSource) {
+            this.computeBindGroup = this.device.createBindGroup({
+                layout: this.computePipeline.getBindGroupLayout(0),
+                entries: [
+                    { binding: 0, resource: sampler },
+                    ...this.frameTextures.map((tex, index) => ({
+                        binding: index + 1,
+                        resource: tex.createView(),
+                    })),
+                ],
+            });
+        }
 
         this.fullScreenTexBindGroup = this.device.createBindGroup({
             layout: this.fullScreenTexPipeline.getBindGroupLayout(0),
             entries: [
                 {
                     binding: 0,
-                    resource: this.device.createSampler({
-                        addressModeU: "clamp-to-edge",
-                        addressModeV: "clamp-to-edge",
-                        magFilter: "linear",
-                        minFilter: "linear",
-                    }),
+                    resource: sampler,
                 },
-                { binding: 1, resource: this.fractalTexture.createView() },
+                {
+                    binding: 1,
+                    resource: this.frameTextures[this.computeBindGroup ? 1 : 0].createView(),
+                },
             ],
         });
     }
@@ -195,7 +245,7 @@ export default class Renderer {
         const fractalPassDescriptor: GPURenderPassDescriptor = {
             colorAttachments: [
                 {
-                    view: this.fractalTexture.createView(),
+                    view: this.frameTextures[0].createView(),
                     clearValue: { r: 0, g: 0, b: 0.5, a: 1 },
                     loadOp: "clear",
                     storeOp: "store",
@@ -209,7 +259,13 @@ export default class Renderer {
         fractalPass.draw(3);
         fractalPass.end();
 
-        // TODO: compute shader for anti aliasing
+        if (this.computeSource) {
+            const computePass = commandEncoder.beginComputePass();
+            computePass.setPipeline(this.computePipeline);
+            computePass.setBindGroup(0, this.computeBindGroup);
+            computePass.dispatchWorkgroups(this.canvas.width, this.canvas.height, 1);
+            computePass.end();
+        }
 
         // display fractalTexture to canvas
         const fullScreenTexPassDescriptor: GPURenderPassDescriptor = {

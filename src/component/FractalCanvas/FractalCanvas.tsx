@@ -16,7 +16,8 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
         }
         const newRenderer = new Renderer(canvasRef.current);
         newRenderer
-            .Init(settings, "shaders/mandelbrot.wgsl", "shaders/anti_alias.wgsl")
+            .Init(settings, "shaders/mandelbrot.wgsl")
+            // .Init(settings, "shaders/mandelbrot.wgsl", "shaders/compute.wgsl")
             .then(() => setRenderer(newRenderer));
         stats.current = new Stats(50);
     }, []);
