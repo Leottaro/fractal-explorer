@@ -35,14 +35,31 @@ fn getColor(iterations: f32) -> vec3f {
     if iterations >= settings.uMaxIters {
         return settings.uFillingColor;
     }
-    let newI: f32 = (1 + cos(log2(iterations + 10) + settings.uColorOffset)) * 2.5;
-    let col1: u32 = u32(newI);
-    let col2: u32 = (col1 + 1) % 5;
-    let percent: f32 = newI - f32(col1);
-    return settings.uColors[col1].rgb + percent * (settings.uColors[col2].rgb - settings.uColors[col1].rgb);
+    let t: f32 = (1 + cos(log2(iterations + 10) + settings.uColorOffset)) / 2;
+    if t <= settings.uColors[0].w {
+        return settings.uColors[0].rgb;
+    }
+    let colorsLength: u32 = arrayLength(&settings.uColors);
+    if t >= settings.uColors[colorsLength - 1].w {
+        return settings.uColors[colorsLength - 1].rgb;
+    }
+
+    var col2: u32 = 1;
+    while col2 < colorsLength && settings.uColors[col2].w < t {
+        col2 = col2 + 1;
+    }
+    let col1 = col2 - 1;
+
+    let color1 = settings.uColors[col1].rgb;
+    let t1 = settings.uColors[col1].w;
+    let color2 = settings.uColors[col2].rgb;
+    let t2 = settings.uColors[col2].w;
+
+    let finalT: f32 = (t - t1) / (t2 - t1);
+    return color1 + finalT * (color2 - color1);
 }
 
-@fragment
+    @fragment
 fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
     let pointPos: vec2f = fragData.mappedPosition;
 

@@ -4,7 +4,6 @@ interface ThumbProps {
     sliderRef: React.RefObject<HTMLDivElement>;
     offset: number;
     onThumbMouseDown: (thumbRef: React.RefObject<HTMLDivElement>) => void;
-    onThumbMouseUp: () => void;
 }
 
 export default function Thumb(props: ThumbProps) {
