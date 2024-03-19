@@ -5,6 +5,15 @@ export type Point = {
     y: number;
 };
 
+export type Color = {
+    r: number;
+    g: number;
+    b: number;
+    t?: number;
+};
+
+export const colorToVec4 = (color: Color) => [color.r, color.g, color.b, color.t ?? 0];
+
 export interface Attributes {
     aWidth: number;
     aHeight: number;
@@ -19,8 +28,8 @@ export interface Uniforms {
     uZoom: number;
     uMouse: Point;
     uTime: number;
-    uColors: [number, number, number][];
-    uFillingColor: [number, number, number];
+    uColors: Color[];
+    uFillingColor: Color;
 }
 
 export interface Settings {

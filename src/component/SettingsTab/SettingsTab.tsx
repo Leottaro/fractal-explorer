@@ -3,6 +3,7 @@ import "./SettingsTab.css";
 import AppContext from "../../context/AppContext";
 import Slider, { SliderTypes } from "../Inputs/Slider";
 import Toggle from "../Inputs/Toggle";
+import ColorGradient from "../Inputs/ColorGradient";
 
 function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);
@@ -71,6 +72,10 @@ function SettingsTab() {
                             setSettings({ ...settings, uSmoothColors: !settings.uSmoothColors })
                         }
                     />
+                </div>
+                <div className="setting">
+                    <label className="settingTitle">Colors</label>
+                    <ColorGradient />
                 </div>
             </div>
             <svg

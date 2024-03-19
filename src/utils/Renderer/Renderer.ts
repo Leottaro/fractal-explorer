@@ -1,4 +1,4 @@
-import { ContextSettings } from "../../context/AppContext";
+import { colorToVec4, ContextSettings } from "../../context/AppContext";
 import fullScreenTexSource from "./fullScreenTexture.wgsl?raw";
 
 function discardNull(element: any | null | undefined, errorMessage: string) {
@@ -189,9 +189,9 @@ export default class Renderer {
         uniformsValues.set([settings.uZoom], 5);
         uniformsValues.set([settings.uCenter.x, settings.uCenter.y], 6);
         uniformsValues.set([settings.uMouse.x, settings.uMouse.y], 8);
-        uniformsValues.set(settings.uFillingColor, 12);
+        uniformsValues.set(colorToVec4(settings.uFillingColor), 12);
         settings.uColors.forEach((color, index) => {
-            uniformsValues.set(color, 16 + 4 * index);
+            uniformsValues.set(colorToVec4(color), 16 + 4 * index);
         });
 
         this.fractalBindGroup = this.device.createBindGroup({

@@ -10,7 +10,7 @@ struct Settings {
     uCenter: vec2f,
     uMouse: vec2f,
     uFillingColor: vec3f,
-    uColors: array<vec3f>,
+    uColors: array<vec4f>,
 };
 @group(0) @binding(0) var<storage, read> settings: Settings;
 
@@ -39,7 +39,7 @@ fn getColor(iterations: f32) -> vec3f {
     let col1: u32 = u32(newI);
     let col2: u32 = (col1 + 1) % 5;
     let percent: f32 = newI - f32(col1);
-    return settings.uColors[col1] + percent * (settings.uColors[col2] - settings.uColors[col1]);
+    return settings.uColors[col1].rgb + percent * (settings.uColors[col2].rgb - settings.uColors[col1].rgb);
 }
 
 @fragment
