@@ -31,7 +31,7 @@ export default function ColorGradient() {
     const { settings } = useContext(AppContext);
     const [selected, setSelected] = useState<Selected | undefined>();
 
-    window.onmouseup = () => {
+    const deselect = () => {
         if (selected === undefined) {
             return;
         }
@@ -39,7 +39,7 @@ export default function ColorGradient() {
         setSelected(undefined);
     };
 
-    window.onmousemove = (event) => {
+    const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (!selected || !sliderRef.current) return;
 
         const sliderLeft = sliderRef.current.getBoundingClientRect().left;
@@ -68,6 +68,9 @@ export default function ColorGradient() {
                 position: "relative",
                 overflow: "visible",
             }}
+            onMouseUp={deselect}
+            onMouseLeave={deselect}
+            onMouseMove={handleMouseMove}
         >
             {settings.uColors.map((color, index) => (
                 <Thumb
