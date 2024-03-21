@@ -43,8 +43,8 @@ export interface Settings {
     sMaxItersFactorMin: number;
     sMaxItersFactorMax: number;
     sMaxItersZoomDependant: boolean;
-    sMouseDown: boolean;
     sMouse: Point;
+    sMouseDownTarget: HTMLElement | undefined;
 }
 
 export interface ContextSettings extends Attributes, Uniforms, Settings {}

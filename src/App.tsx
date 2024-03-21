@@ -38,8 +38,8 @@ function App() {
         sMaxItersFactorMin: 1,
         sMaxItersFactorMax: 500,
         sMaxItersZoomDependant: true,
-        sMouseDown: false,
         sMouse: { x: 0, y: 0 },
+        sMouseDownTarget: undefined,
     });
 
     // Functions
@@ -103,21 +103,25 @@ function App() {
     }, [settings.sMaxItersZoomDependant ? settings.uZoom : undefined, settings.sMaxItersFactor]);
 
     // sMouseDown
-    window.onmouseup = () => setSettings({ ...settings, sMouseDown: false });
+    window.onmousedown = (event) =>
+        setSettings({ ...settings, sMouseDownTarget: event.target as HTMLElement });
+    window.onmouseup = () => setSettings({ ...settings, sMouseDownTarget: undefined });
 
     // uMouse
-    function handleMouseMove(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    window.onmousemove = (event) => {
         setSettings({
             ...settings,
             sMouse: { x: event.clientX, y: event.clientY },
         });
-    }
+    };
     useEffect(() => {
         const newMouse = PixelToPoint(settings.sMouse);
 
-        if (!settings.sMouseDown) {
+        if (!settings.sMouseDownTarget) {
             setSettings({ ...settings, uMouse: newMouse });
-        } else {
+            return;
+        }
+        if (settings.sMouseDownTarget.classList.contains("FractalCanvas")) {
             const newCenter = {
                 x: settings.uCenter.x - newMouse.x + settings.uMouse.x,
                 y: settings.uCenter.y - newMouse.y + settings.uMouse.y,
@@ -135,9 +139,7 @@ function App() {
         <AppContext.Provider value={{ settings, setSettings }}>
             <FractalCanvas
                 id="FractalCanvas"
-                onMouseDown={() => setSettings({ ...settings, sMouseDown: true })}
                 onWheel={handleWheel}
-                onMouseMove={handleMouseMove}
             />
             <SettingsTab />
         </AppContext.Provider>

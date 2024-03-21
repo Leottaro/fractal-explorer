@@ -46,8 +46,9 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
     return (
         <>
             <canvas
-                ref={canvasRef}
                 {...props}
+                ref={canvasRef}
+                className="FractalCanvas"
             ></canvas>
             <h1 id="stats">{Math.floor(1000 / avgDeltaTime)}fps</h1>
         </>

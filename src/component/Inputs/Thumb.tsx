@@ -15,12 +15,12 @@ export default function Thumb(props: ThumbProps) {
             ref={thumbRef}
             className="colorGradientThumb"
             style={{ left: `${props.offset * 100}%`, background: props.background }}
-            {...props}
             onMouseEnter={() => {
                 if (thumbRef.current !== null) {
                     props.onThumbMouseEnter(thumbRef.current);
                 }
             }}
+            {...props}
         ></div>
     );
 }

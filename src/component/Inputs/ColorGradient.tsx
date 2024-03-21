@@ -1,4 +1,4 @@
-import { createRef, useContext, useState } from "react";
+import { createRef, useContext, useEffect, useState } from "react";
 import AppContext, { Color } from "../../context/AppContext";
 import Thumb from "./Thumb";
 import { RgbColorPicker } from "react-colorful";
@@ -43,12 +43,12 @@ export default function ColorGradient() {
         setSelected(undefined);
     };
 
-    const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    useEffect(() => {
         if (!selected || !dragged || !sliderRef.current) return;
 
         const sliderLeft = sliderRef.current.getBoundingClientRect().left;
         const sliderWidth = sliderRef.current.getBoundingClientRect().width;
-        let newOffset = fromDisplayT((event.clientX - sliderLeft) / sliderWidth);
+        let newOffset = fromDisplayT((settings.sMouse.x - sliderLeft) / sliderWidth);
 
         if (newOffset < 0) {
             newOffset = 0;
@@ -59,13 +59,18 @@ export default function ColorGradient() {
         if (newOffset !== settings.uColors[selected.index].t) {
             settings.uColors[selected.index].t = newOffset;
         }
-    };
+    }, [settings.sMouse]);
+
+    useEffect(() => {
+        if (!settings.sMouseDownTarget) {
+            deselect();
+        }
+    }, [settings.sMouseDownTarget]);
 
     const handleThumbMouseLeave = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (dragged) return;
-        if (!(event.relatedTarget instanceof Element)) return;
-        if (event.relatedTarget.classList.contains("colorGradientPicker")) return;
-        if (event.relatedTarget.classList.contains("colorGradientThumb")) return;
+        if ((event.relatedTarget as HTMLElement).classList.contains("colorGradientPicker")) return;
+        if ((event.relatedTarget as HTMLElement).classList.contains("colorGradientThumb")) return;
         deselect();
     };
 
@@ -78,9 +83,6 @@ export default function ColorGradient() {
                 position: "relative",
                 overflow: "visible",
             }}
-            onMouseUp={deselect}
-            onMouseLeave={deselect}
-            onMouseMove={handleMouseMove}
         >
             {settings.uColors.map((color, index) => (
                 <Thumb
