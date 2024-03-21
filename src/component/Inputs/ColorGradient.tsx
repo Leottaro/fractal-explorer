@@ -102,7 +102,12 @@ export default function ColorGradient() {
             {selected !== undefined && !dragged ? (
                 <RgbColorPicker
                     className="colorGradientPicker"
-                    style={{ left: selected.element.style.left }}
+                    style={{
+                        width: "50%",
+                        aspectRatio: 1,
+                        left:
+                            Math.max(Math.min(parseInt(selected.element.style.left), 75), 25) + "%",
+                    }}
                     color={{
                         r: settings.uColors[selected.index].r * 255,
                         g: settings.uColors[selected.index].g * 255,

@@ -185,9 +185,8 @@
 }
 
 .colorGradientPicker .react-colorful__hue-pointer,
-.colorGradientPicker .react-colorful__alpha-pointer,
+.colorGradientPicker .react-colorful__saturation-pointer,
 .colorGradientThumb {
-    height: 100%;
     width: auto;
     aspect-ratio: 1;
 
@@ -196,7 +195,16 @@
 }
 
 .colorGradientThumb {
+    height: 100%;
     position: absolute;
-    top: 0;
-    transform: translate(-50%, 0%);
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.colorGradientPicker .react-colorful__hue-pointer {
+    height: 100%;
+}
+
+.colorGradientPicker .react-colorful__saturation-pointer {
+    height: calc(var(--width) / 25);
 }
