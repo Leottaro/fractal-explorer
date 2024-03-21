@@ -1,6 +1,7 @@
 import { createRef, useContext, useState } from "react";
 import AppContext, { Color } from "../../context/AppContext";
 import Thumb from "./Thumb";
+import { RgbColorPicker } from "react-colorful";
 
 interface Selected {
     index: number;
@@ -12,7 +13,7 @@ const fromDisplayT = (t: number) => (t - 0.03) / 0.94;
 
 const to256 = (p: number) => Math.round(p * 255);
 const torgb = (color: Color) =>
-    `rgb(${to256(color.r)}, ${to256(color.g)}, ${to256(color.b)}) ${(color.t ?? 0) * 100}`;
+    `rgb(${to256(color.r)},${to256(color.g)},${to256(color.b)}) ${(color.t ?? 0) * 100}`;
 function toLinearGradient(colors: Color[]): string {
     return (
         "linear-gradient(90deg, " +
@@ -30,17 +31,20 @@ function toLinearGradient(colors: Color[]): string {
 export default function ColorGradient() {
     const { settings } = useContext(AppContext);
     const [selected, setSelected] = useState<Selected | undefined>();
+    const [dragged, setDragged] = useState<boolean>(false);
+    const sliderRef = createRef<HTMLDivElement>();
 
     const deselect = () => {
         if (selected === undefined) {
             return;
         }
         selected.element.style.zIndex = "0";
+        setDragged(false);
         setSelected(undefined);
     };
 
     const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (!selected || !sliderRef.current) return;
+        if (!selected || !dragged || !sliderRef.current) return;
 
         const sliderLeft = sliderRef.current.getBoundingClientRect().left;
         const sliderWidth = sliderRef.current.getBoundingClientRect().width;
@@ -57,7 +61,13 @@ export default function ColorGradient() {
         }
     };
 
-    const sliderRef = createRef<HTMLDivElement>();
+    const handleThumbMouseLeave = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (dragged) return;
+        if (!(event.relatedTarget instanceof Element)) return;
+        if (event.relatedTarget.classList.contains("colorGradientPicker")) return;
+        if (event.relatedTarget.classList.contains("colorGradientThumb")) return;
+        deselect();
+    };
 
     return (
         <div
@@ -77,11 +87,37 @@ export default function ColorGradient() {
                     key={index}
                     sliderRef={sliderRef}
                     offset={toDisplayT(color.t)}
-                    onThumbMouseDown={(thumbRef) =>
-                        setSelected({ index, element: thumbRef.current! })
-                    }
+                    background={torgb(color).split(" ")[0]}
+                    onMouseDown={() => {
+                        setDragged(true);
+                    }}
+                    onThumbMouseEnter={(thumbDiv) => {
+                        if (dragged) return;
+                        thumbDiv.style.zIndex = "1";
+                        setSelected({ index, element: thumbDiv });
+                    }}
+                    onMouseLeave={handleThumbMouseLeave}
                 />
             ))}
+            {selected !== undefined && !dragged ? (
+                <RgbColorPicker
+                    className="colorGradientPicker"
+                    style={{ left: selected.element.style.left }}
+                    color={{
+                        r: settings.uColors[selected.index].r * 255,
+                        g: settings.uColors[selected.index].g * 255,
+                        b: settings.uColors[selected.index].b * 255,
+                    }}
+                    onChange={(newColor) => {
+                        settings.uColors[selected.index].r = newColor.r / 255;
+                        settings.uColors[selected.index].g = newColor.g / 255;
+                        settings.uColors[selected.index].b = newColor.b / 255;
+                    }}
+                    onMouseLeave={handleThumbMouseLeave}
+                />
+            ) : (
+                <></>
+            )}
         </div>
     );
 }

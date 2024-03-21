@@ -1,9 +1,10 @@
 import { createRef } from "react";
 
-interface ThumbProps {
+interface ThumbProps extends React.HTMLAttributes<HTMLDivElement> {
     sliderRef: React.RefObject<HTMLDivElement>;
     offset: number;
-    onThumbMouseDown: (thumbRef: React.RefObject<HTMLDivElement>) => void;
+    background: string;
+    onThumbMouseEnter: (element: HTMLDivElement) => void;
 }
 
 export default function Thumb(props: ThumbProps) {
@@ -12,27 +13,13 @@ export default function Thumb(props: ThumbProps) {
     return (
         <div
             ref={thumbRef}
-            style={{
-                height: "100%",
-                aspectRatio: 1,
-
-                position: "absolute",
-                top: 0,
-                left: `${props.offset * 100}%`,
-                transform: "translate(-50%, 0%)",
-
-                borderRadius: "100%",
-                background: "white",
-                border: "2px solid black",
-
-                opacity: 1 / 2,
-            }}
-            draggable={false}
-            onMouseDown={() => {
+            className="colorGradientThumb"
+            style={{ left: `${props.offset * 100}%`, background: props.background }}
+            {...props}
+            onMouseEnter={() => {
                 if (thumbRef.current !== null) {
-                    thumbRef.current.style.zIndex = "1";
+                    props.onThumbMouseEnter(thumbRef.current);
                 }
-                props.onThumbMouseDown(thumbRef);
             }}
         ></div>
     );
