@@ -190,11 +190,9 @@ export default class Renderer {
         uniformsValues.set([settings.uCenter.x, settings.uCenter.y], 6);
         uniformsValues.set([settings.uMouse.x, settings.uMouse.y], 8);
         uniformsValues.set(colorToVec4(settings.uFillingColor), 12);
-        [...settings.uColors]
-            .sort((a, b) => a.t - b.t)
-            .forEach((color, index) => {
-                uniformsValues.set(colorToVec4(color), 16 + 4 * index);
-            });
+        settings.uColors.forEach((color, index) => {
+            uniformsValues.set(colorToVec4(color), 16 + 4 * index);
+        });
 
         this.fractalBindGroup = this.device.createBindGroup({
             layout: this.fractalPipeline.getBindGroupLayout(0),

@@ -29,7 +29,7 @@ function toLinearGradient(colors: ColorT[]): string {
 }
 
 export default function ColorGradient() {
-    const { settings } = useContext(AppContext);
+    const { settings, setSettings } = useContext(AppContext);
     const [selected, setSelected] = useState<Selected | undefined>();
     const [dragged, setDragged] = useState<boolean>(false);
     const sliderRef = createRef<HTMLDivElement>();
@@ -74,27 +74,50 @@ export default function ColorGradient() {
         deselect();
     };
 
+    const addThumb = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (!sliderRef.current) return;
+        if (!(event.target as HTMLElement).classList.contains("colorGradient")) return;
+
+        const sliderLeft = sliderRef.current.getBoundingClientRect().left;
+        const sliderWidth = sliderRef.current.getBoundingClientRect().width;
+        let newOffset = fromDisplayT((settings.sMouse.x - sliderLeft) / sliderWidth);
+
+        const newColors = [...settings.uColors, { r: 0, g: 0, b: 0, t: newOffset }].sort(
+            (a, b) => a.t - b.t
+        );
+        const newColorIndex = newColors.findIndex((color) => color.t === newOffset);
+        const beforeColor = newColors[newColorIndex - 1];
+        const afterColor = newColors[newColorIndex + 1];
+        const percent = (newOffset - beforeColor.t) / (afterColor.t - beforeColor.t);
+
+        newColors[newColorIndex].r = afterColor.r * percent + beforeColor.r * (1 - percent);
+        newColors[newColorIndex].g = afterColor.g * percent + beforeColor.g * (1 - percent);
+        newColors[newColorIndex].b = afterColor.b * percent + beforeColor.b * (1 - percent);
+        setSettings({ ...settings, uColors: newColors });
+    };
+
     return (
         <div
             ref={sliderRef}
-            className="settingRange"
+            className="settingRange colorGradient"
             style={{
                 background: toLinearGradient(settings.uColors),
                 position: "relative",
                 overflow: "visible",
             }}
+            onClick={addThumb}
         >
             {settings.uColors.map((color, index) => (
                 <Thumb
                     key={index}
-                    sliderRef={sliderRef}
                     offset={toDisplayT(color.t)}
                     background={torgb(color).split(" ")[0]}
                     onMouseDown={() => {
                         setDragged(true);
                     }}
-                    onThumbMouseEnter={(thumbDiv) => {
+                    onMouseEnter={(event) => {
                         if (dragged) return;
+                        const thumbDiv = event.target as HTMLDivElement;
                         thumbDiv.style.zIndex = "1";
                         setSelected({ index, element: thumbDiv });
                     }}

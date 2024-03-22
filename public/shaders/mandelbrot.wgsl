@@ -10,7 +10,7 @@ struct Settings {
     uCenter: vec2f,
     uMouse: vec2f,
     uFillingColor: vec3f,
-    uColors: array<vec4f>,
+    uColors: array<vec4f>, // uColors are sorted by t
 };
 @group(0) @binding(0) var<storage, read> settings: Settings;
 
