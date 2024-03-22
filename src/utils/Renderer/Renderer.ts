@@ -180,7 +180,7 @@ export default class Renderer {
          * i pasted my shaders into https://webgpufundamentals.org/webgpu/lessons/resources/wgsl-offset-computer.html
          * to get the offsets i needed, i then divided everything by 4 (the number of bytes of a float32)
          */
-        const uniformsValues = new Float32Array(36);
+        const uniformsValues = new Float32Array(16 + 4 * settings.uColors.length);
         uniformsValues.set([settings.uTime], 0);
         uniformsValues.set([settings.uSmoothColors ? 1 : 0], 1);
         uniformsValues.set([settings.uMaxIters], 2);
@@ -191,7 +191,7 @@ export default class Renderer {
         uniformsValues.set([settings.uMouse.x, settings.uMouse.y], 8);
         uniformsValues.set(colorToVec4(settings.uFillingColor), 12);
         [...settings.uColors]
-            .sort((a, b) => (a.t ?? 0) - (b.t ?? 0))
+            .sort((a, b) => a.t - b.t)
             .forEach((color, index) => {
                 uniformsValues.set(colorToVec4(color), 16 + 4 * index);
             });

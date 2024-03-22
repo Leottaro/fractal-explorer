@@ -9,10 +9,17 @@ export type Color = {
     r: number;
     g: number;
     b: number;
-    t?: number;
 };
 
-export const colorToVec4 = (color: Color) => [color.r, color.g, color.b, color.t ?? 0];
+export type ColorT = {
+    r: number;
+    g: number;
+    b: number;
+    t: number;
+};
+
+export const colorToVec4 = (color: Color | ColorT) =>
+    "t" in color ? [color.r, color.g, color.b, color.t] : [color.r, color.g, color.b];
 
 export interface Attributes {
     aWidth: number;
@@ -28,7 +35,7 @@ export interface Uniforms {
     uZoom: number;
     uMouse: Point;
     uTime: number;
-    uColors: Color[];
+    uColors: ColorT[];
     uFillingColor: Color;
 }
 

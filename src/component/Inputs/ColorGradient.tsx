@@ -1,5 +1,5 @@
 import { createRef, useContext, useEffect, useState } from "react";
-import AppContext, { Color } from "../../context/AppContext";
+import AppContext, { ColorT } from "../../context/AppContext";
 import Thumb from "./Thumb";
 import { RgbColorPicker } from "react-colorful";
 
@@ -8,18 +8,18 @@ interface Selected {
     element: HTMLDivElement;
 }
 
-const toDisplayT = (t: number | undefined) => (t ?? 0) * 0.94 + 0.03;
+const toDisplayT = (t: number) => t * 0.94 + 0.03;
 const fromDisplayT = (t: number) => (t - 0.03) / 0.94;
 
 const to256 = (p: number) => Math.round(p * 255);
-const torgb = (color: Color) =>
-    `rgb(${to256(color.r)},${to256(color.g)},${to256(color.b)}) ${(color.t ?? 0) * 100}`;
-function toLinearGradient(colors: Color[]): string {
+const torgb = (color: ColorT) =>
+    `rgb(${to256(color.r)},${to256(color.g)},${to256(color.b)}) ${color.t * 100}`;
+function toLinearGradient(colors: ColorT[]): string {
     return (
         "linear-gradient(90deg, " +
         [...colors]
             .map((color) => ({ ...color, t: toDisplayT(color.t) }))
-            .sort((a, b) => (a.t ?? 0) - (b.t ?? 0))
+            .sort((a, b) => a.t - b.t)
             .map((color) => torgb(color) + "%")
             .reduce(
                 (previousValue: string, currentValue: string) => previousValue + ", " + currentValue
