@@ -1,6 +1,5 @@
 import { useEffect, useState, WheelEvent } from "react";
 import AppContext, { ContextSettings, Point } from "./context/AppContext";
-import "./App.css";
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
 import SettingsTab from "./component/SettingsTab/SettingsTab";

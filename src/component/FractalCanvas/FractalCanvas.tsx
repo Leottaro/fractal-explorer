@@ -50,7 +50,9 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
                 ref={canvasRef}
                 className="FractalCanvas"
             ></canvas>
-            <h1 id="stats">{Math.floor(1000 / avgDeltaTime)}fps</h1>
+            <h1 className="Stats absolute top-0 left-0 p-2 text-white text-2xl font-bold">
+                {Math.floor(1000 / avgDeltaTime)}fps
+            </h1>
         </>
     );
 }

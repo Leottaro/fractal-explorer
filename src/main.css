@@ -1,15 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 *,
 *::before,
 *::after {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
 html,
-body {
+body,
+#root {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
     background: white;
+}
+
+body {
+    position: relative;
 }
