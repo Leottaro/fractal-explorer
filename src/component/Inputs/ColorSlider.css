@@ -1,0 +1,15 @@
+.colorSliderPicker .react-colorful__saturation {
+    @apply rounded-md border-none;
+}
+
+.colorSliderPicker .react-colorful__hue {
+    @apply -order-1 rounded-md h-3;
+}
+
+.colorSliderPicker .react-colorful__hue-pointer {
+    @apply w-auto h-[150%] aspect-square border-none;
+}
+
+.colorSliderPicker .react-colorful__saturation-pointer {
+    @apply w-4 h-4;
+}

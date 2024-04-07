@@ -2,23 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-*,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+@layer base {
+    @font-face {
+        font-family: "Poppins";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+    }
+
+    @font-face {
+        font-family: "Poppins";
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url("/fonts/Poppins-SemiBold.ttf") format("truetype");
+    }
+
+    @font-face {
+        font-family: "RobotoMono";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("/fonts/RobotoMono-Regular.ttf") format("truetype");
+    }
+
+    @font-face {
+        font-family: "RobotoMono";
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url("/fonts/RobotoMono-SemiBold.ttf") format("truetype");
+    }
 }
 
-html,
-body,
-#root {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background: white;
+.settingSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    @apply h-6 cursor-pointer aspect-square bg-neutral-200 rounded-full;
+    box-shadow: -2rem 0px 0px 0.001rem #fff;
+
 }
 
-body {
-    position: relative;
+.settingSlider:disabled::-webkit-slider-thumb {
+    cursor: auto;
 }

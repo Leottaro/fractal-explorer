@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { createRef, useContext, useEffect, useState } from "react";
+import Label, { LabelBaseColors, LabelFonts } from "../Label/Label";
+import AppContext from "../../context/AppContext";
 
 export enum SliderTypes {
     LINEAR,
@@ -7,7 +9,9 @@ export enum SliderTypes {
 
 export interface SliderProps {
     min: number;
+    printedMin?: string;
     max: number;
+    printedMax?: string;
     getter: number;
     setter: (value: number) => void;
     sliderType: SliderTypes;
@@ -15,6 +19,10 @@ export interface SliderProps {
 }
 
 export default function Slider(props: SliderProps) {
+    const { settings } = useContext(AppContext);
+    const [dragged, setDragged] = useState(false);
+    const sliderRef = createRef<HTMLDivElement>();
+
     const [valueRange, setValueRange] = useState({ min: 0, max: 1 });
     const [value, setValue] = useState(props.getter);
     const [scale, setScale] = useState(props.max - props.min);
@@ -44,28 +52,66 @@ export default function Slider(props: SliderProps) {
         }
     }, [props.getter, scale]);
 
-    function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const sliderVal = parseFloat(e.target.value);
+    useEffect(() => {
+        if (!settings.sMouseDown) {
+            setDragged(false);
+        }
+    }, [settings.sMouseDown]);
+
+    useEffect(() => {
+        if (!dragged || !sliderRef.current) return;
+
+        const sliderLeft = sliderRef.current.getBoundingClientRect().left;
+        const sliderWidth = sliderRef.current.getBoundingClientRect().width;
+        let sliderValue = (settings.sMouse.x - sliderLeft) / sliderWidth;
+
+        if (sliderValue < 0) {
+            sliderValue = 0;
+        } else if (sliderValue > 1) {
+            sliderValue = 1;
+        }
+
         switch (props.sliderType) {
             case SliderTypes.LINEAR:
-                props.setter(valueRange.min + sliderVal * scale);
+                props.setter(valueRange.min + sliderValue * scale);
                 break;
             case SliderTypes.EXPONENTIAL:
-                props.setter(Math.exp(valueRange.min + sliderVal * scale));
+                props.setter(Math.exp(valueRange.min + sliderValue * scale));
                 break;
         }
-    }
+    }, [settings.sMouse]);
 
     return (
-        <input
-            className="settingRange"
-            type="range"
-            min={0}
-            max={1}
-            step={0.000001}
-            value={value}
-            onChange={handleInputChange}
-            disabled={props.disabled ? props.disabled : false}
-        />
+        <div className="flex-grow flex flex-row gap-4 items-center">
+            <Label
+                font={LabelFonts.Poppins}
+                baseColor={LabelBaseColors.Ligth}
+            >
+                {props.printedMin ?? props.min}
+            </Label>
+            <div
+                ref={sliderRef}
+                className={
+                    "relative w-full h-2 bg-neutral-600 rounded-full overflow-visible " +
+                    (props.disabled ? "brightness-50" : "")
+                }
+            >
+                <span
+                    className="absolute left-0 h-full bg-neutral-400 rounded-s-full"
+                    style={{ width: `${Math.round(value * 100)}%` }}
+                />
+                <div
+                    className="absolute h-[250%] top-1/2 aspect-square bg-neutral-200 rounded-full -translate-x-1/2 -translate-y-1/2"
+                    style={{ marginLeft: `${Math.round(value * 100)}%` }}
+                    onMouseDown={props.disabled ? () => {} : () => setDragged(true)}
+                />
+            </div>
+            <Label
+                font={LabelFonts.Poppins}
+                baseColor={LabelBaseColors.Ligth}
+            >
+                {props.printedMax ?? props.max}
+            </Label>
+        </div>
     );
 }
