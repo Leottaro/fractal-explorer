@@ -3,13 +3,13 @@
 }
 
 .colorSliderPicker .react-colorful__hue {
-    @apply -order-1 rounded-md h-3;
+    @apply -order-1 h-3 rounded-md;
 }
 
 .colorSliderPicker .react-colorful__hue-pointer {
-    @apply w-auto h-[150%] aspect-square border-none;
+    @apply aspect-square h-[150%] w-auto border-none;
 }
 
 .colorSliderPicker .react-colorful__saturation-pointer {
-    @apply w-4 h-4;
+    @apply h-4 w-4;
 }

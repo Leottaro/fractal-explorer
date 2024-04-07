@@ -21,7 +21,7 @@ export default function Icon(props: IconProps) {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 40 40"
             fill="none"
-            className="h-full aspect-square"
+            className="aspect-square h-full"
             {...props}
         >
             <path

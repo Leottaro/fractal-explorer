@@ -115,7 +115,7 @@ export default function ColorSlider() {
     return (
         <div
             ref={sliderRef}
-            className="relative w-full h-2 bg-neutral-600 rounded-full overflow-visible"
+            className="relative h-2 w-full overflow-visible rounded-full bg-neutral-600"
             style={{
                 background: toLinearGradient(settings.uColors),
             }}
@@ -126,7 +126,7 @@ export default function ColorSlider() {
                 <>
                     <div
                         key={index}
-                        className="colorSliderThumb absolute h-[250%] top-1/2 aspect-square bg-neutral-200 rounded-full -translate-x-1/2 -translate-y-1/2"
+                        className="colorSliderThumb absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
                         style={{
                             left: `${toDisplayT(color.t) * 100}%`,
                             background: torgb(color).split(" ")[0],
@@ -155,7 +155,7 @@ export default function ColorSlider() {
             ))}
             {selected !== undefined && !dragged ? (
                 <Container
-                    className="colorSliderPicker w-1/2 aspect-square z-10 p-3 rounded-lg absolute top-full -translate-x-1/2"
+                    className="colorSliderPicker absolute top-full z-10 aspect-square w-1/2 -translate-x-1/2 rounded-lg p-3"
                     style={{
                         left:
                             Math.max(Math.min(parseInt(selected.element.style.left), 75), 25) + "%",

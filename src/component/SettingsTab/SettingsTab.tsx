@@ -60,7 +60,7 @@ function SettingsTab() {
                         Newton
                     </Label>
                 </Container>
-                <div className="Settings h-auto flex-grow flex flex-col gap-2">
+                <div className="Settings flex h-auto flex-grow flex-col gap-2">
                     <Accordion>
                         <Label
                             font={LabelFonts.Poppins}
@@ -124,7 +124,7 @@ function SettingsTab() {
                         )}
                     </Accordion>
                     <Accordion className="overflow-visible">
-                        <div className="flex-grow flex flex-row gap-2 items-center pr-2">
+                        <div className="flex flex-grow flex-row items-center gap-2 pr-2">
                             <Label
                                 font={LabelFonts.Poppins}
                                 baseColor={LabelBaseColors.Ligth}

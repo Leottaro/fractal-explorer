@@ -82,7 +82,7 @@ export default function Slider(props: SliderProps) {
     }, [settings.sMouse]);
 
     return (
-        <div className="flex-grow flex flex-row gap-4 items-center">
+        <div className="flex flex-grow flex-row items-center gap-4">
             <Label
                 font={LabelFonts.Poppins}
                 baseColor={LabelBaseColors.Ligth}
@@ -92,16 +92,16 @@ export default function Slider(props: SliderProps) {
             <div
                 ref={sliderRef}
                 className={
-                    "relative w-full h-2 bg-neutral-600 rounded-full overflow-visible " +
+                    "relative h-2 w-full overflow-visible rounded-full bg-neutral-600 " +
                     (props.disabled ? "brightness-50" : "")
                 }
             >
                 <span
-                    className="absolute left-0 h-full bg-neutral-400 rounded-s-full"
+                    className="absolute left-0 h-full rounded-s-full bg-neutral-400"
                     style={{ width: `${Math.round(value * 100)}%` }}
                 />
                 <div
-                    className="absolute h-[250%] top-1/2 aspect-square bg-neutral-200 rounded-full -translate-x-1/2 -translate-y-1/2"
+                    className="absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
                     style={{ marginLeft: `${Math.round(value * 100)}%` }}
                     onMouseDown={props.disabled ? () => {} : () => setDragged(true)}
                 />

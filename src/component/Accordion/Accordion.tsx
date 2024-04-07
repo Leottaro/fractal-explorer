@@ -10,11 +10,11 @@ export default function Accordion(props: ContainerProps) {
             {...props}
             className={(props.className ?? "") + " flex flex-col overflow-hidden"}
         >
-            <div className="flex flex-row gap-2 items-center h-14 p-1 z-10">
+            <div className="z-10 flex h-14 flex-row items-center gap-2 p-1">
                 {(props.children as ReactNode[])[0]}
                 <Container
                     hover
-                    className="h-full ml-auto"
+                    className="ml-auto h-full"
                 >
                     <Icon
                         type={IconType.Arrow}
@@ -24,7 +24,7 @@ export default function Accordion(props: ContainerProps) {
                 </Container>
             </div>
             {opened ? ( // TODO: better (animation etc)
-                <div className="mx-2 transition-all duration-1000 flex flex-col gap-y-1">
+                <div className="mx-2 flex flex-col gap-y-1 transition-all duration-1000">
                     {(props.children as ReactNode[]).slice(1)}
                 </div>
             ) : (

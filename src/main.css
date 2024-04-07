@@ -39,9 +39,8 @@
 .settingSlider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    @apply h-6 cursor-pointer aspect-square bg-neutral-200 rounded-full;
+    @apply aspect-square h-6 cursor-pointer rounded-full bg-neutral-200;
     box-shadow: -2rem 0px 0px 0.001rem #fff;
-
 }
 
 .settingSlider:disabled::-webkit-slider-thumb {
