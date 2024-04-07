@@ -21,7 +21,14 @@
         "noFallthroughCasesInSwitch": true,
 
         /* WebGPU types */
-        "types": ["@webgpu/types"]
+        "types": ["@webgpu/types"],
+
+        /* Custom paths */
+        "paths": {
+            "root/*": ["./*"],
+            "public/*": ["./public/*"],
+            "src/*": ["./src/*"]
+        }
     },
     "include": ["src"],
     "references": [{ "path": "./tsconfig.node.json" }]

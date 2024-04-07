@@ -1,6 +1,5 @@
 import { useEffect, useState, WheelEvent } from "react";
 import AppContext, { ContextSettings, Point } from "./context/AppContext";
-import "./App.css";
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
 import SettingsTab from "./component/SettingsTab/SettingsTab";
@@ -39,7 +38,8 @@ function App() {
         sMaxItersFactorMax: 500,
         sMaxItersZoomDependant: true,
         sMouse: { x: 0, y: 0 },
-        sMouseDownTarget: undefined,
+        sMouseDown: false,
+        sMouseDownTarget: document.createElement("div"),
     });
 
     // Functions
@@ -104,8 +104,12 @@ function App() {
 
     // sMouseDown
     window.onmousedown = (event) =>
-        setSettings({ ...settings, sMouseDownTarget: event.target as HTMLElement });
-    window.onmouseup = () => setSettings({ ...settings, sMouseDownTarget: undefined });
+        setSettings({
+            ...settings,
+            sMouseDown: true,
+            sMouseDownTarget: event.target as HTMLElement,
+        });
+    window.onmouseup = () => setSettings({ ...settings, sMouseDown: false });
 
     // uMouse
     window.onmousemove = (event) => {
@@ -117,11 +121,9 @@ function App() {
     useEffect(() => {
         const newMouse = PixelToPoint(settings.sMouse);
 
-        if (!settings.sMouseDownTarget) {
+        if (!settings.sMouseDown) {
             setSettings({ ...settings, uMouse: newMouse });
-            return;
-        }
-        if (settings.sMouseDownTarget.classList.contains("FractalCanvas")) {
+        } else if (settings.sMouseDownTarget.classList.contains("FractalCanvas")) {
             const newCenter = {
                 x: settings.uCenter.x - newMouse.x + settings.uMouse.x,
                 y: settings.uCenter.y - newMouse.y + settings.uMouse.y,

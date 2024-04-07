@@ -1,7 +1,8 @@
 import { createRef, useContext, useEffect, useState } from "react";
 import AppContext, { ColorT } from "../../context/AppContext";
-import Thumb from "./Thumb";
 import { RgbColorPicker } from "react-colorful";
+import Container from "../Container/Container";
+import "./ColorSlider.css";
 
 interface Selected {
     index: number;
@@ -19,7 +20,7 @@ function toLinearGradient(colors: ColorT[]): string {
         return torgb(colors[0]).split(" ")[0];
     }
     return (
-        "linear-gradient(90deg, " +
+        "linear-Gradient(90deg, " +
         [...colors]
             .map((color) => ({ ...color, t: toDisplayT(color.t) }))
             .sort((a, b) => a.t - b.t)
@@ -31,10 +32,11 @@ function toLinearGradient(colors: ColorT[]): string {
     );
 }
 
-export default function ColorGradient() {
+export default function ColorSlider() {
     const { settings, setSettings } = useContext(AppContext);
     const [selected, setSelected] = useState<Selected | undefined>();
     const [dragged, setDragged] = useState<boolean>(false);
+    const [shouldDeselect, setShouldDeselect] = useState<boolean>(false);
     const sliderRef = createRef<HTMLDivElement>();
 
     const deselect = () => {
@@ -64,21 +66,26 @@ export default function ColorGradient() {
     }, [settings.sMouse]);
 
     useEffect(() => {
-        if (!settings.sMouseDownTarget) {
-            deselect();
-        }
-    }, [settings.sMouseDownTarget]);
+        if (!selected) return;
+        if (settings.sMouseDown) return;
+        if (!dragged && !shouldDeselect) return;
+        deselect();
+    }, [settings.sMouseDown]);
 
     const handleThumbMouseLeave = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (dragged) return;
-        if ((event.relatedTarget as HTMLElement).classList.contains("colorGradientPicker")) return;
-        if ((event.relatedTarget as HTMLElement).classList.contains("colorGradientThumb")) return;
+        if (settings.sMouseDown) {
+            setShouldDeselect(true);
+            return;
+        }
+        if ((event.relatedTarget as HTMLElement).classList.contains("colorSliderPicker")) return;
+        if ((event.relatedTarget as HTMLElement).classList.contains("colorSliderThumb")) return;
         deselect();
     };
 
     const addThumb = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (!sliderRef.current || selected) return;
-        if (!(event.target as HTMLElement).classList.contains("colorGradient")) return;
+        if (!(event.target as HTMLElement).classList.contains("colorSlider")) return;
 
         const sliderLeft = sliderRef.current.getBoundingClientRect().left;
         const sliderWidth = sliderRef.current.getBoundingClientRect().width;
@@ -108,63 +115,69 @@ export default function ColorGradient() {
     return (
         <div
             ref={sliderRef}
-            className="settingRange colorGradient"
+            className="relative h-2 w-full overflow-visible rounded-full bg-neutral-600"
             style={{
                 background: toLinearGradient(settings.uColors),
-                position: "relative",
-                overflow: "visible",
             }}
             onClick={addThumb}
             onContextMenu={(event) => event.preventDefault()}
         >
             {settings.uColors.map((color, index) => (
-                <Thumb
-                    key={index}
-                    offset={toDisplayT(color.t)}
-                    background={torgb(color).split(" ")[0]}
-                    onMouseDown={(event) => {
-                        if (event.button != 0) return;
-                        setDragged(true);
-                    }}
-                    onMouseEnter={(event) => {
-                        if (dragged) return;
-                        const thumbDiv = event.target as HTMLDivElement;
-                        thumbDiv.style.zIndex = "1";
-                        setSelected({ index, element: thumbDiv });
-                    }}
-                    onMouseLeave={handleThumbMouseLeave}
-                    onContextMenu={(event) => {
-                        event.preventDefault();
-                        if (settings.uColors.length == 1) return;
-                        const newColors = [...settings.uColors];
-                        newColors.splice(index, 1);
-                        setSelected(undefined);
-                        setSettings({ ...settings, uColors: newColors });
-                    }}
-                />
+                <>
+                    <div
+                        key={index}
+                        className="colorSliderThumb absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
+                        style={{
+                            left: `${toDisplayT(color.t) * 100}%`,
+                            background: torgb(color).split(" ")[0],
+                        }}
+                        onMouseDown={(event) => {
+                            if (event.button != 0) return;
+                            setDragged(true);
+                        }}
+                        onMouseEnter={(event) => {
+                            if (dragged) return;
+                            const thumbDiv = event.target as HTMLDivElement;
+                            thumbDiv.style.zIndex = "1";
+                            setSelected({ index, element: thumbDiv });
+                        }}
+                        onMouseLeave={handleThumbMouseLeave}
+                        onContextMenu={(event) => {
+                            event.preventDefault();
+                            if (settings.uColors.length == 1) return;
+                            const newColors = [...settings.uColors];
+                            newColors.splice(index, 1);
+                            setSelected(undefined);
+                            setSettings({ ...settings, uColors: newColors });
+                        }}
+                    />
+                </>
             ))}
             {selected !== undefined && !dragged ? (
-                <RgbColorPicker
-                    className="colorGradientPicker"
+                <Container
+                    className="colorSliderPicker absolute top-full z-10 aspect-square w-1/2 -translate-x-1/2 rounded-lg p-3"
                     style={{
-                        width: "50%",
-                        aspectRatio: 1,
                         left:
                             Math.max(Math.min(parseInt(selected.element.style.left), 75), 25) + "%",
                     }}
-                    color={{
-                        r: settings.uColors[selected.index].r * 255,
-                        g: settings.uColors[selected.index].g * 255,
-                        b: settings.uColors[selected.index].b * 255,
-                    }}
-                    onChange={(newColor) => {
-                        settings.uColors[selected.index].r = newColor.r / 255;
-                        settings.uColors[selected.index].g = newColor.g / 255;
-                        settings.uColors[selected.index].b = newColor.b / 255;
-                    }}
-                    onMouseLeave={handleThumbMouseLeave}
-                    onClick={(event) => event.preventDefault()}
-                />
+                    onMouseEnter={() => setShouldDeselect(false)}
+                    onMouseLeave={(event) => handleThumbMouseLeave(event)}
+                >
+                    <RgbColorPicker
+                        className="colorSliderPicker gap-2"
+                        style={{ width: "100%", height: "100%" }}
+                        color={{
+                            r: settings.uColors[selected.index].r * 255,
+                            g: settings.uColors[selected.index].g * 255,
+                            b: settings.uColors[selected.index].b * 255,
+                        }}
+                        onChange={(newColor) => {
+                            settings.uColors[selected.index].r = newColor.r / 255;
+                            settings.uColors[selected.index].g = newColor.g / 255;
+                            settings.uColors[selected.index].b = newColor.b / 255;
+                        }}
+                    />
+                </Container>
             ) : (
                 <></>
             )}

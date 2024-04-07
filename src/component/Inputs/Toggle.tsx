@@ -5,29 +5,19 @@ export interface ToggleProps {
 
 export default function Toggle(props: ToggleProps) {
     return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 45 45"
-            fill="none"
-            className="settingCheckbox"
-            onClick={() => props.onClick()}
+        <div
+            onClick={props.onClick}
+            className={
+                "aspect-[1.9] h-6 overflow-hidden rounded-full p-0.5 transition-colors duration-500 disabled:brightness-75 " +
+                (props.checked ? "bg-neutral-400" : "bg-neutral-600")
+            }
         >
-            <path
-                d="M37 1.5c1.512 0 3.15.771 4.44 2.06C42.728 4.85 43.5 6.489 43.5 8v29c0 1.512-.771 3.15-2.06 4.44-1.29 1.289-2.928 2.06-4.44 2.06H8c-1.512 0-3.15-.771-4.44-2.06C2.272 40.15 1.5 38.511 1.5 37V8c0-1.512.771-3.15 2.06-4.44C4.85 2.272 6.489 1.5 8 1.5h29Z"
-                strokeWidth="3"
-                className="box"
+            <div
+                className={
+                    "relative aspect-square h-full rounded-full bg-neutral-200 transition-all duration-500 " +
+                    (props.checked ? "left-full -translate-x-full" : "left-0")
+                }
             />
-            {props.checked ? (
-                <path
-                    d="M9 23.326 18.58 32 36 13"
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="check"
-                />
-            ) : (
-                <></>
-            )}
-        </svg>
+        </div>
     );
 }

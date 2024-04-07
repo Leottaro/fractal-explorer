@@ -2,6 +2,7 @@ import React, { createRef, useEffect, useContext, useState, useRef } from "react
 import AppContext from "../../context/AppContext";
 import Renderer from "../../utils/Renderer/Renderer";
 import Stats from "../../utils/Stats";
+import Label, { LabelBaseColors, LabelFonts } from "../Label/Label";
 
 export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanvasElement>) {
     const { settings, setSettings } = useContext(AppContext);
@@ -50,7 +51,14 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
                 ref={canvasRef}
                 className="FractalCanvas"
             ></canvas>
-            <h1 id="stats">{Math.floor(1000 / avgDeltaTime)}fps</h1>
+            <Label
+                font={LabelFonts.Roboto}
+                baseColor={LabelBaseColors.Ligth}
+                bold
+                className="absolute left-0 top-0 m-2 "
+            >
+                {Math.floor(1000 / avgDeltaTime)}fps
+            </Label>
         </>
     );
 }
