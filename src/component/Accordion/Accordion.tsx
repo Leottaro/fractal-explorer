@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import Container, { ContainerProps } from "../Container/Container";
 import Icon, { IconType } from "../Icon/Icon";
 

@@ -1,5 +1,3 @@
-import { useEffect, useRef } from "react";
-
 export enum IconType {
     Arrow = "M13.333 33.833 26.666 20.5 13.333 7.167",
     DoubleArrow = "M18.333 33.833 31.667 20.5 18.332 7.167m-10 26.666L21.666 20.5 8.333 7.167",
