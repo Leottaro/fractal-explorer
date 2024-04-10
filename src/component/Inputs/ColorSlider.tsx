@@ -39,13 +39,13 @@ export default function ColorSlider() {
     const [shouldDeselect, setShouldDeselect] = useState<boolean>(false);
     const sliderRef = createRef<HTMLDivElement>();
 
-    const deselect = () => {
+    function deselect() {
         if (selected !== undefined) {
             selected.element.style.zIndex = "0";
         }
         setDragged(false);
         setSelected(undefined);
-    };
+    }
 
     useEffect(() => {
         if (!selected || !dragged || !sliderRef.current) return;
@@ -72,7 +72,7 @@ export default function ColorSlider() {
         deselect();
     }, [selected, settings.sMouseDown, dragged, shouldDeselect, deselect]);
 
-    const handleThumbMouseLeave = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    function handleThumbMouseLeave(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         if (dragged) return;
         if (settings.sMouseDown) {
             setShouldDeselect(true);
@@ -83,7 +83,7 @@ export default function ColorSlider() {
         deselect();
     };
 
-    const addThumb = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    function addThumb(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         if (!sliderRef.current || selected) return;
         if (!(event.target as HTMLElement).classList.contains("colorSlider")) return;
 

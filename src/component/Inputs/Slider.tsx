@@ -79,7 +79,16 @@ export default function Slider(props: SliderProps) {
                 props.setter(Math.exp(valueRange.min + sliderValue * scale));
                 break;
         }
-    }, [dragged, sliderRef, settings.sMouse, props.sliderType, valueRange, scale, props.setter]);
+    }, [
+        dragged,
+        sliderRef,
+        settings.sMouse,
+        props.sliderType,
+        valueRange,
+        scale,
+        props.setter,
+        props,
+    ]);
 
     return (
         <div className="flex flex-grow flex-row items-center gap-4">
