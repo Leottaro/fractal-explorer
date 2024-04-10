@@ -133,7 +133,7 @@ function SettingsTab() {
                             </Label>
                             <ColorSlider />
                         </div>
-                        <div className="flex flex-row gap-2">
+                        <div className="flex flex-row gap-2 items-center">
                             <Label
                                 font={LabelFonts.Poppins}
                                 baseColor={LabelBaseColors.Ligth}
@@ -150,7 +150,7 @@ function SettingsTab() {
                                 }
                             />
                         </div>
-                        <div className="flex flex-row gap-2">
+                        <div className="flex flex-row gap-2 items-center">
                             <Label
                                 font={LabelFonts.Poppins}
                                 baseColor={LabelBaseColors.Ligth}
@@ -169,7 +169,7 @@ function SettingsTab() {
                                 disabled={settings.sColorOffsetTimeDependant}
                             />
                         </div>
-                        <div className="flex flex-row gap-2">
+                        <div className="flex flex-row gap-2 items-center">
                             <Label
                                 font={LabelFonts.Poppins}
                                 baseColor={LabelBaseColors.Ligth}

@@ -1,9 +1,15 @@
-import { ReactNode, useState } from "react";
+import { createRef, ReactNode, useEffect, useState } from "react";
 import Container, { ContainerProps } from "../Container/Container";
 import Icon, { IconType } from "../Icon/Icon";
 
 export default function Accordion(props: ContainerProps) {
     const [opened, setOpened] = useState<Boolean>(false);
+    const [contentHeight, setContentHeight] = useState<number>(0);
+    const contentRef = createRef<HTMLDivElement>();
+
+    useEffect(() => {
+        setContentHeight(contentRef.current ? contentRef.current.scrollHeight : -1);
+    }, [contentRef]);
 
     return (
         <Container
@@ -18,18 +24,23 @@ export default function Accordion(props: ContainerProps) {
                 >
                     <Icon
                         type={IconType.Arrow}
-                        rotate={opened ? "-90" : "90"}
                         onClick={() => setOpened(!opened)}
+                        pathProps={{ className: opened ? "-rotate-90" : "rotate-90" }}
                     />
                 </Container>
             </div>
-            {opened ? ( // TODO: better (animation etc)
-                <div className="mx-2 flex flex-col gap-y-1 transition-all duration-1000">
-                    {(props.children as ReactNode[]).slice(1)}
-                </div>
-            ) : (
-                <></>
-            )}
+            <div
+                ref={contentRef}
+                className={
+                    "mx-2 flex flex-col overflow-hidden gap-y-1 transition-all duration-1000 " +
+                    (opened ? `visible max-h-[${contentHeight}px]` : `invisible max-h-0`)
+                }
+                style={{
+                    maxHeight: opened ? contentHeight : 0,
+                }}
+            >
+                {(props.children as ReactNode[]).slice(1)}
+            </div>
         </Container>
     );
 }

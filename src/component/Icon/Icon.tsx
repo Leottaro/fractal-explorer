@@ -10,7 +10,6 @@ interface IconProps extends React.HTMLAttributes<SVGElement> {
     pathProps?: React.HTMLAttributes<SVGPathElement>;
     type: IconType;
     flipped?: "x" | "y";
-    rotate?: "45" | "-45" | "90" | "-90" | "180";
 }
 
 export default function Icon(props: IconProps) {
@@ -30,14 +29,7 @@ export default function Icon(props: IconProps) {
                 {...props.pathProps}
                 className={
                     (props.pathProps?.className ?? "") +
-                    " origin-center duration-1000" +
-                    " " +
-                    (props.rotate === undefined
-                        ? ""
-                        : props.rotate?.charAt(0) === "-"
-                          ? "-rotate-" + props.rotate.slice(1)
-                          : "rotate-" + props.rotate) +
-                    " " +
+                    " origin-center duration-1000 " +
                     (props.flipped === undefined
                         ? ""
                         : props.flipped === "x"
