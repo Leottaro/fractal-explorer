@@ -1,0 +1,16 @@
+name: Automatic pull request build
+run-name: Testing the build
+on:
+    pull_request:
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run build script
+              run: |
+                  export NODE_OPTIONS="--max_old_space_size=4096"
+                  set -e
+                  npm i
+                  npm run build
+              shell: bash
