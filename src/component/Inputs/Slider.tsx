@@ -39,7 +39,7 @@ export default function Slider(props: SliderProps) {
         }
         setValueRange(newValueRange);
         setScale(newValueRange.max - newValueRange.min);
-    }, [props.min, props.max]);
+    }, [props.sliderType, props.min, props.max]);
 
     useEffect(() => {
         switch (props.sliderType) {
@@ -50,7 +50,7 @@ export default function Slider(props: SliderProps) {
                 setValue((Math.log(props.getter) - valueRange.min) / scale);
                 break;
         }
-    }, [props.getter, scale]);
+    }, [props.sliderType, props.getter, valueRange.min, scale, setValue]);
 
     useEffect(() => {
         if (!settings.sMouseDown) {
@@ -79,7 +79,7 @@ export default function Slider(props: SliderProps) {
                 props.setter(Math.exp(valueRange.min + sliderValue * scale));
                 break;
         }
-    }, [settings.sMouse]);
+    }, [dragged, sliderRef, settings.sMouse, props.sliderType, valueRange, scale, props.setter]);
 
     return (
         <div className="flex flex-grow flex-row items-center gap-4">

@@ -134,8 +134,16 @@ function App() {
 
     // uTime
     useEffect(() => {
-        setSettings({ ...settings, uColorOffset: settings.uTime % settings.sColorOffsetMax });
-    }, [settings.sColorOffsetTimeDependant ? settings.uTime : undefined]);
+        if (settings.sColorOffsetTimeDependant) {
+            setSettings({ ...settings, uColorOffset: settings.uTime % settings.sColorOffsetMax });
+        }
+    }, [
+        settings.sColorOffsetTimeDependant,
+        settings,
+        settings.uTime,
+        settings.sColorOffsetMax,
+        setSettings,
+    ]);
 
     return (
         <AppContext.Provider value={{ settings, setSettings }}>

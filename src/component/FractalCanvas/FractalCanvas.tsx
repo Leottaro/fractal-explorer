@@ -21,7 +21,7 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
             // .Init(settings, "shaders/mandelbrot.wgsl", "shaders/compute.wgsl")
             .then(() => setRenderer(newRenderer));
         stats.current = new Stats(50);
-    }, []);
+    }, [canvasRef, settings]);
 
     const [avgDeltaTime, setAvgDeltaTime] = useState<number>(0);
     useEffect(() => {
@@ -42,7 +42,7 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
             });
         }, 0);
         return () => clearInterval(loop);
-    }, [renderer, settings]);
+    }, [renderer, settings, setSettings]);
 
     return (
         <>

@@ -1,5 +1,5 @@
 export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
-    hover?: Boolean;
+    hover?: boolean;
     blur?: boolean;
 }
 

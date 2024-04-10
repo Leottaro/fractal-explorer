@@ -70,7 +70,7 @@ export default function ColorSlider() {
         if (settings.sMouseDown) return;
         if (!dragged && !shouldDeselect) return;
         deselect();
-    }, [settings.sMouseDown]);
+    }, [selected, settings.sMouseDown, dragged, shouldDeselect, deselect]);
 
     const handleThumbMouseLeave = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (dragged) return;
