@@ -1,8 +1,15 @@
-import { useEffect, useState, WheelEvent } from "react";
+import { useCallback, useEffect, useState, WheelEvent } from "react";
 import AppContext, { ContextSettings, Point } from "./context/AppContext";
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
 import SettingsTab from "./component/SettingsTab/SettingsTab";
+
+function pointLerp(a: Point, b: Point, p: number) {
+    return {
+        x: a.x + p * (b.x - a.x),
+        y: a.y + p * (b.y - a.y),
+    };
+}
 
 function App() {
     const [settings, setSettings] = useState<ContextSettings>({
@@ -42,21 +49,16 @@ function App() {
         sMouseDownTarget: document.createElement("div"),
     });
 
-    // Functions
-    function PixelToPoint(p: Point) {
-        return {
+    // Fonctions
+    const PixelToPoint = useCallback(
+        (p: Point) => ({
             x:
                 (((p.x / settings.aWidth) * 2 - 1) * settings.uAspectRatio) / settings.uZoom +
                 settings.uCenter.x,
             y: ((p.y / settings.aHeight) * -2 + 1) / settings.uZoom + settings.uCenter.y,
-        };
-    }
-    function pointLerp(a: Point, b: Point, p: number) {
-        return {
-            x: a.x + p * (b.x - a.x),
-            y: a.y + p * (b.y - a.y),
-        };
-    }
+        }),
+        [settings.aWidth, settings.aHeight, settings.uAspectRatio, settings.uZoom, settings.uCenter]
+    );
 
     // uSize
     window.onresize = () => {
@@ -69,30 +71,40 @@ function App() {
     };
 
     // uZoom
-    function handleWheel(event: WheelEvent<HTMLCanvasElement>) {
-        let newZoom =
-            event.deltaY < 0
-                ? settings.uZoom * settings.sZoomRate
-                : settings.uZoom / settings.sZoomRate;
-        let effectiveZoomRate = settings.sZoomRate;
-        if (newZoom < settings.sZoomMin) {
-            newZoom = settings.sZoomMin;
-            effectiveZoomRate = settings.uZoom / newZoom;
-        } else if (newZoom > settings.sZoomMax) {
-            newZoom = settings.sZoomMax;
-            effectiveZoomRate = newZoom / settings.uZoom;
-        }
-        if (newZoom === settings.uZoom) {
-            return;
-        }
+    const handleWheel = useCallback(
+        (event: WheelEvent<HTMLCanvasElement>) => {
+            let newZoom =
+                event.deltaY < 0
+                    ? settings.uZoom * settings.sZoomRate
+                    : settings.uZoom / settings.sZoomRate;
+            let effectiveZoomRate = settings.sZoomRate;
+            if (newZoom < settings.sZoomMin) {
+                newZoom = settings.sZoomMin;
+                effectiveZoomRate = settings.uZoom / newZoom;
+            } else if (newZoom > settings.sZoomMax) {
+                newZoom = settings.sZoomMax;
+                effectiveZoomRate = newZoom / settings.uZoom;
+            }
+            if (newZoom === settings.uZoom) {
+                return;
+            }
 
-        const newCenter = pointLerp(
+            const newCenter = pointLerp(
+                settings.uMouse,
+                settings.uCenter,
+                event.deltaY < 0 ? 1 / effectiveZoomRate : effectiveZoomRate
+            );
+            setSettings({ ...settings, uZoom: newZoom, uCenter: newCenter });
+        },
+        [
             settings.uMouse,
             settings.uCenter,
-            event.deltaY < 0 ? 1 / effectiveZoomRate : effectiveZoomRate
-        );
-        setSettings({ ...settings, uZoom: newZoom, uCenter: newCenter });
-    }
+            settings.uZoom,
+            settings.sZoomRate,
+            settings.sZoomMin,
+            settings.sZoomMax,
+        ]
+    );
     useEffect(() => {
         setSettings({
             ...settings,

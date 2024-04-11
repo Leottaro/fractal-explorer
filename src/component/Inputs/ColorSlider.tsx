@@ -1,4 +1,4 @@
-import { createRef, useContext, useEffect, useState } from "react";
+import { createRef, useCallback, useContext, useEffect, useState } from "react";
 import AppContext, { ColorT } from "../../context/AppContext";
 import { RgbColorPicker } from "react-colorful";
 import Container from "../Container/Container";
@@ -39,13 +39,13 @@ export default function ColorSlider() {
     const [shouldDeselect, setShouldDeselect] = useState<boolean>(false);
     const sliderRef = createRef<HTMLDivElement>();
 
-    const deselect = () => {
+    const deselect = useCallback(() => {
         if (selected !== undefined) {
             selected.element.style.zIndex = "0";
         }
         setDragged(false);
         setSelected(undefined);
-    };
+    }, [selected]);
 
     useEffect(() => {
         if (!selected || !dragged || !sliderRef.current) return;
@@ -72,45 +72,52 @@ export default function ColorSlider() {
         deselect();
     }, [settings.sMouseDown]);
 
-    const handleThumbMouseLeave = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (dragged) return;
-        if (settings.sMouseDown) {
-            setShouldDeselect(true);
-            return;
-        }
-        if ((event.relatedTarget as HTMLElement).classList.contains("colorSliderPicker")) return;
-        if ((event.relatedTarget as HTMLElement).classList.contains("colorSliderThumb")) return;
-        deselect();
-    };
+    const handleThumbMouseLeave = useCallback(
+        (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            if (dragged) return;
+            if (settings.sMouseDown) {
+                setShouldDeselect(true);
+                return;
+            }
+            if ((event.relatedTarget as HTMLElement).classList.contains("colorSliderPicker"))
+                return;
+            if ((event.relatedTarget as HTMLElement).classList.contains("colorSliderThumb")) return;
+            deselect();
+        },
+        [dragged, settings.sMouseDown]
+    );
 
-    const addThumb = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (!sliderRef.current || selected) return;
-        if (!(event.target as HTMLElement).classList.contains("colorSlider")) return;
+    const addThumb = useCallback(
+        (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            if (!sliderRef.current || selected) return;
+            if (!(event.target as HTMLElement).classList.contains("colorSlider")) return;
 
-        const sliderLeft = sliderRef.current.getBoundingClientRect().left;
-        const sliderWidth = sliderRef.current.getBoundingClientRect().width;
-        let newOffset = fromDisplayT((settings.sMouse.x - sliderLeft) / sliderWidth);
-        newOffset = Math.max(0, Math.min(1, newOffset));
+            const sliderLeft = sliderRef.current.getBoundingClientRect().left;
+            const sliderWidth = sliderRef.current.getBoundingClientRect().width;
+            let newOffset = fromDisplayT((settings.sMouse.x - sliderLeft) / sliderWidth);
+            newOffset = Math.max(0, Math.min(1, newOffset));
 
-        const newColors = [...settings.uColors, { r: 0, g: 0, b: 0, t: newOffset }].sort(
-            (a, b) => a.t - b.t
-        );
-        const newColorIndex = newColors.findIndex((color) => color.t === newOffset);
-        if (newColorIndex == 0) {
-            newColors[newColorIndex] = { ...newColors[newColorIndex + 1], t: newOffset };
-        } else if (newColorIndex == newColors.length - 1) {
-            newColors[newColorIndex] = { ...newColors[newColorIndex - 1], t: newOffset };
-        } else {
-            const beforeColor = newColors[newColorIndex - 1];
-            const afterColor = newColors[newColorIndex + 1];
-            const percent = (newOffset - beforeColor.t) / (afterColor.t - beforeColor.t);
+            const newColors = [...settings.uColors, { r: 0, g: 0, b: 0, t: newOffset }].sort(
+                (a, b) => a.t - b.t
+            );
+            const newColorIndex = newColors.findIndex((color) => color.t === newOffset);
+            if (newColorIndex == 0) {
+                newColors[newColorIndex] = { ...newColors[newColorIndex + 1], t: newOffset };
+            } else if (newColorIndex == newColors.length - 1) {
+                newColors[newColorIndex] = { ...newColors[newColorIndex - 1], t: newOffset };
+            } else {
+                const beforeColor = newColors[newColorIndex - 1];
+                const afterColor = newColors[newColorIndex + 1];
+                const percent = (newOffset - beforeColor.t) / (afterColor.t - beforeColor.t);
 
-            newColors[newColorIndex].r = afterColor.r * percent + beforeColor.r * (1 - percent);
-            newColors[newColorIndex].g = afterColor.g * percent + beforeColor.g * (1 - percent);
-            newColors[newColorIndex].b = afterColor.b * percent + beforeColor.b * (1 - percent);
-        }
-        setSettings({ ...settings, uColors: newColors });
-    };
+                newColors[newColorIndex].r = afterColor.r * percent + beforeColor.r * (1 - percent);
+                newColors[newColorIndex].g = afterColor.g * percent + beforeColor.g * (1 - percent);
+                newColors[newColorIndex].b = afterColor.b * percent + beforeColor.b * (1 - percent);
+            }
+            setSettings({ ...settings, uColors: newColors });
+        },
+        [sliderRef, selected, settings.sMouse, settings.uColors]
+    );
 
     return (
         <div
