@@ -1,8 +1,15 @@
-import { useEffect, useState, WheelEvent } from "react";
+import { useCallback, useEffect, useState, WheelEvent } from "react";
 import AppContext, { ContextSettings, Point } from "./context/AppContext";
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
 import SettingsTab from "./component/SettingsTab/SettingsTab";
+
+function pointLerp(a: Point, b: Point, p: number) {
+    return {
+        x: a.x + p * (b.x - a.x),
+        y: a.y + p * (b.y - a.y),
+    };
+}
 
 function App() {
     const [settings, setSettings] = useState<ContextSettings>({
@@ -43,20 +50,17 @@ function App() {
     });
 
     // Functions
-    function PixelToPoint(p: Point) {
-        return {
-            x:
-                (((p.x / settings.aWidth) * 2 - 1) * settings.uAspectRatio) / settings.uZoom +
-                settings.uCenter.x,
-            y: ((p.y / settings.aHeight) * -2 + 1) / settings.uZoom + settings.uCenter.y,
-        };
-    }
-    function pointLerp(a: Point, b: Point, p: number) {
-        return {
-            x: a.x + p * (b.x - a.x),
-            y: a.y + p * (b.y - a.y),
-        };
-    }
+    const PixelToPoint = useCallback(
+        (p: Point) => {
+            return {
+                x:
+                    (((p.x / settings.aWidth) * 2 - 1) * settings.uAspectRatio) / settings.uZoom +
+                    settings.uCenter.x,
+                y: ((p.y / settings.aHeight) * -2 + 1) / settings.uZoom + settings.uCenter.y,
+            };
+        },
+        [settings.aWidth, settings.aHeight, settings.uAspectRatio, settings.uZoom, settings.uCenter]
+    );
 
     // uSize
     window.onresize = () => {
