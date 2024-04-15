@@ -124,35 +124,33 @@ export default function ColorSlider() {
             onContextMenu={(event) => event.preventDefault()}
         >
             {settings.uColors.map((color, index) => (
-                <>
-                    <div
-                        key={index}
-                        className="colorSliderThumb absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
-                        style={{
-                            left: `${toDisplayT(color.t) * 100}%`,
-                            background: torgb(color).split(" ")[0],
-                            zIndex: selected ? (selected.index === index ? 1 : 0) : 0,
-                        }}
-                        onMouseDown={(event) => {
-                            if (event.button != 0 || !selected) return;
-                            setDragged(true);
-                        }}
-                        onMouseEnter={(event) => {
-                            if (dragged) return;
-                            const thumbDiv = event.target as HTMLDivElement;
-                            setSelected({ index, element: thumbDiv });
-                        }}
-                        onMouseLeave={handleThumbMouseLeave}
-                        onContextMenu={(event) => {
-                            event.preventDefault();
-                            if (settings.uColors.length == 1) return;
-                            const newColors = [...settings.uColors];
-                            newColors.splice(index, 1);
-                            setSelected(undefined);
-                            setSettings({ ...settings, uColors: newColors });
-                        }}
-                    />
-                </>
+                <div
+                    key={index}
+                    className="colorSliderThumb absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
+                    style={{
+                        left: `${toDisplayT(color.t) * 100}%`,
+                        background: torgb(color).split(" ")[0],
+                        zIndex: selected ? (selected.index === index ? 1 : 0) : 0,
+                    }}
+                    onMouseDown={(event) => {
+                        if (event.button != 0 || !selected) return;
+                        setDragged(true);
+                    }}
+                    onMouseEnter={(event) => {
+                        if (dragged) return;
+                        const thumbDiv = event.target as HTMLDivElement;
+                        setSelected({ index, element: thumbDiv });
+                    }}
+                    onMouseLeave={handleThumbMouseLeave}
+                    onContextMenu={(event) => {
+                        event.preventDefault();
+                        if (settings.uColors.length == 1) return;
+                        const newColors = [...settings.uColors];
+                        newColors.splice(index, 1);
+                        setSelected(undefined);
+                        setSettings({ ...settings, uColors: newColors });
+                    }}
+                />
             ))}
             {selected !== undefined && !dragged ? (
                 <Container
