@@ -98,13 +98,15 @@ function App() {
         setSettings({ ...settings, uZoom: newZoom, uCenter: newCenter });
     }
     useEffect(() => {
-        setSettings({
-            ...settings,
-            uMaxIters:
-                Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) *
-                settings.sMaxItersFactor,
-        });
-    }, [settings.sMaxItersZoomDependant ? settings.uZoom : undefined, settings.sMaxItersFactor]);
+        if (settings.sMaxItersZoomDependant) {
+            setSettings({
+                ...settings,
+                uMaxIters:
+                    Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) *
+                    settings.sMaxItersFactor,
+            });
+        }
+    }, [settings.uZoom, settings.sMaxItersFactor]);
 
     // sMouseDown
     window.onmousedown = (event) =>
@@ -134,12 +136,14 @@ function App() {
             };
             setSettings({ ...settings, uCenter: newCenter });
         }
-    }, [settings.sMouse, settings.aWidth, settings.aHeight, settings.uAspectRatio]);
+    }, [settings.sMouse]);
 
     // uTime
     useEffect(() => {
-        setSettings({ ...settings, uColorOffset: settings.uTime % settings.sColorOffsetMax });
-    }, [settings.sColorOffsetTimeDependant ? settings.uTime : undefined]);
+        if (settings.sColorOffsetTimeDependant) {
+            setSettings({ ...settings, uColorOffset: settings.uTime % settings.sColorOffsetMax });
+        }
+    }, [settings.uTime, settings.sColorOffsetMax]);
 
     return (
         <AppContext.Provider value={{ settings, setSettings }}>

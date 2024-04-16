@@ -40,7 +40,7 @@ export default function Slider({
         let newValueRange = { min: 0, max: 1 };
         switch (sliderType) {
             case SliderTypes.LINEAR:
-                newValueRange = { min: min, max: max };
+                newValueRange = { min, max };
                 break;
             case SliderTypes.EXPONENTIAL:
                 newValueRange = { min: Math.log(min), max: Math.log(max) };
@@ -48,7 +48,7 @@ export default function Slider({
         }
         setValueRange(newValueRange);
         setScale(newValueRange.max - newValueRange.min);
-    }, [min, max]);
+    }, [min, max, sliderType]);
 
     useEffect(() => {
         switch (sliderType) {
@@ -59,7 +59,7 @@ export default function Slider({
                 setValue((Math.log(getter) - valueRange.min) / scale);
                 break;
         }
-    }, [getter, scale]);
+    }, [getter, scale, sliderType]);
 
     useEffect(() => {
         if (!settings.sMouseDown) {

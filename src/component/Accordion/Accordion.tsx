@@ -9,7 +9,7 @@ export default function Accordion({ hover, blur, ...attributes }: ContainerProps
 
     useEffect(() => {
         setContentHeight(contentRef.current ? contentRef.current.scrollHeight : -1);
-    }, [contentRef]);
+    }, [contentRef.current]);
 
     return (
         <Container
