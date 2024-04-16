@@ -39,13 +39,10 @@ export default function ColorSlider() {
     const [shouldDeselect, setShouldDeselect] = useState<boolean>(false);
     const sliderRef = createRef<HTMLDivElement>();
 
-    const deselect = () => {
-        if (selected !== undefined) {
-            selected.element.style.zIndex = "0";
-        }
-        setDragged(false);
+    function deselect() {
         setSelected(undefined);
-    };
+        setDragged(false);
+    }
 
     useEffect(() => {
         if (!selected || !dragged || !sliderRef.current) return;
@@ -61,7 +58,11 @@ export default function ColorSlider() {
         }
 
         if (newOffset !== settings.uColors[selected.index].t) {
-            settings.uColors[selected.index].t = newOffset;
+            const newColors = settings.uColors;
+            newColors[selected.index].t = newOffset;
+            newColors.sort((colorA, colorB) => colorA.t - colorB.t);
+            selected.index = newColors.findIndex((color) => color.t === newOffset);
+            setSettings({ ...settings, uColors: newColors });
         }
     }, [settings.sMouse]);
 
@@ -72,7 +73,7 @@ export default function ColorSlider() {
         deselect();
     }, [settings.sMouseDown]);
 
-    const handleThumbMouseLeave = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    function handleThumbMouseLeave(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         if (dragged) return;
         if (settings.sMouseDown) {
             setShouldDeselect(true);
@@ -81,9 +82,9 @@ export default function ColorSlider() {
         if ((event.relatedTarget as HTMLElement).classList.contains("colorSliderPicker")) return;
         if ((event.relatedTarget as HTMLElement).classList.contains("colorSliderThumb")) return;
         deselect();
-    };
+    }
 
-    const addThumb = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    function addThumb(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         if (!sliderRef.current || selected) return;
         if (!(event.target as HTMLElement).classList.contains("colorSlider")) return;
 
@@ -110,12 +111,12 @@ export default function ColorSlider() {
             newColors[newColorIndex].b = afterColor.b * percent + beforeColor.b * (1 - percent);
         }
         setSettings({ ...settings, uColors: newColors });
-    };
+    }
 
     return (
         <div
             ref={sliderRef}
-            className="relative h-2 w-full overflow-visible rounded-full bg-neutral-600"
+            className="colorSlider relative h-2 w-full overflow-visible rounded-full bg-neutral-600"
             style={{
                 background: toLinearGradient(settings.uColors),
             }}
@@ -123,39 +124,37 @@ export default function ColorSlider() {
             onContextMenu={(event) => event.preventDefault()}
         >
             {settings.uColors.map((color, index) => (
-                <>
-                    <div
-                        key={index}
-                        className="colorSliderThumb absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
-                        style={{
-                            left: `${toDisplayT(color.t) * 100}%`,
-                            background: torgb(color).split(" ")[0],
-                        }}
-                        onMouseDown={(event) => {
-                            if (event.button != 0) return;
-                            setDragged(true);
-                        }}
-                        onMouseEnter={(event) => {
-                            if (dragged) return;
-                            const thumbDiv = event.target as HTMLDivElement;
-                            thumbDiv.style.zIndex = "1";
-                            setSelected({ index, element: thumbDiv });
-                        }}
-                        onMouseLeave={handleThumbMouseLeave}
-                        onContextMenu={(event) => {
-                            event.preventDefault();
-                            if (settings.uColors.length == 1) return;
-                            const newColors = [...settings.uColors];
-                            newColors.splice(index, 1);
-                            setSelected(undefined);
-                            setSettings({ ...settings, uColors: newColors });
-                        }}
-                    />
-                </>
+                <div
+                    key={index}
+                    className="colorSliderThumb absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
+                    style={{
+                        left: `${toDisplayT(color.t) * 100}%`,
+                        background: torgb(color).split(" ")[0],
+                        zIndex: selected ? (selected.index === index ? 1 : 0) : 0,
+                    }}
+                    onMouseDown={(event) => {
+                        if (event.button != 0 || !selected) return;
+                        setDragged(true);
+                    }}
+                    onMouseEnter={(event) => {
+                        if (dragged) return;
+                        const thumbDiv = event.target as HTMLDivElement;
+                        setSelected({ index, element: thumbDiv });
+                    }}
+                    onMouseLeave={handleThumbMouseLeave}
+                    onContextMenu={(event) => {
+                        event.preventDefault();
+                        if (settings.uColors.length == 1) return;
+                        const newColors = [...settings.uColors];
+                        newColors.splice(index, 1);
+                        setSelected(undefined);
+                        setSettings({ ...settings, uColors: newColors });
+                    }}
+                />
             ))}
             {selected !== undefined && !dragged ? (
                 <Container
-                    className="colorSliderPicker absolute top-full z-10 aspect-square w-1/2 -translate-x-1/2 rounded-lg p-3"
+                    className="colorSliderPicker absolute top-[150%] z-20 aspect-square w-1/2 -translate-x-1/2 rounded-lg p-3"
                     style={{
                         left:
                             Math.max(Math.min(parseInt(selected.element.style.left), 75), 25) + "%",

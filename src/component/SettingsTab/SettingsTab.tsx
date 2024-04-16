@@ -48,7 +48,7 @@ function SettingsTab() {
                         font={LabelFonts.Poppins}
                         baseColor={LabelBaseColors.Dark}
                         bold
-                        seleted
+                        selected
                     >
                         Mandelbrot
                     </Label>

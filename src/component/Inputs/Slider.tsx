@@ -18,39 +18,48 @@ export interface SliderProps {
     disabled?: boolean;
 }
 
-export default function Slider(props: SliderProps) {
+export default function Slider({
+    min,
+    printedMin,
+    max,
+    printedMax,
+    getter,
+    setter,
+    sliderType,
+    disabled,
+}: SliderProps) {
     const { settings } = useContext(AppContext);
     const [dragged, setDragged] = useState(false);
     const sliderRef = createRef<HTMLDivElement>();
 
     const [valueRange, setValueRange] = useState({ min: 0, max: 1 });
-    const [value, setValue] = useState(props.getter);
-    const [scale, setScale] = useState(props.max - props.min);
+    const [value, setValue] = useState(getter);
+    const [scale, setScale] = useState(max - min);
 
     useEffect(() => {
         let newValueRange = { min: 0, max: 1 };
-        switch (props.sliderType) {
+        switch (sliderType) {
             case SliderTypes.LINEAR:
-                newValueRange = { min: props.min, max: props.max };
+                newValueRange = { min: min, max: max };
                 break;
             case SliderTypes.EXPONENTIAL:
-                newValueRange = { min: Math.log(props.min), max: Math.log(props.max) };
+                newValueRange = { min: Math.log(min), max: Math.log(max) };
                 break;
         }
         setValueRange(newValueRange);
         setScale(newValueRange.max - newValueRange.min);
-    }, [props.min, props.max]);
+    }, [min, max]);
 
     useEffect(() => {
-        switch (props.sliderType) {
+        switch (sliderType) {
             case SliderTypes.LINEAR:
-                setValue((props.getter - valueRange.min) / scale);
+                setValue((getter - valueRange.min) / scale);
                 break;
             case SliderTypes.EXPONENTIAL:
-                setValue((Math.log(props.getter) - valueRange.min) / scale);
+                setValue((Math.log(getter) - valueRange.min) / scale);
                 break;
         }
-    }, [props.getter, scale]);
+    }, [getter, scale]);
 
     useEffect(() => {
         if (!settings.sMouseDown) {
@@ -71,12 +80,12 @@ export default function Slider(props: SliderProps) {
             sliderValue = 1;
         }
 
-        switch (props.sliderType) {
+        switch (sliderType) {
             case SliderTypes.LINEAR:
-                props.setter(valueRange.min + sliderValue * scale);
+                setter(valueRange.min + sliderValue * scale);
                 break;
             case SliderTypes.EXPONENTIAL:
-                props.setter(Math.exp(valueRange.min + sliderValue * scale));
+                setter(Math.exp(valueRange.min + sliderValue * scale));
                 break;
         }
     }, [settings.sMouse]);
@@ -87,13 +96,13 @@ export default function Slider(props: SliderProps) {
                 font={LabelFonts.Poppins}
                 baseColor={LabelBaseColors.Ligth}
             >
-                {props.printedMin ?? props.min}
+                {printedMin ?? min}
             </Label>
             <div
                 ref={sliderRef}
                 className={
                     "relative h-2 w-full overflow-visible rounded-full bg-neutral-600 " +
-                    (props.disabled ? "brightness-50" : "")
+                    (disabled ? "brightness-50" : "")
                 }
             >
                 <span
@@ -103,14 +112,14 @@ export default function Slider(props: SliderProps) {
                 <div
                     className="absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
                     style={{ marginLeft: `${Math.round(value * 100)}%` }}
-                    onMouseDown={props.disabled ? () => {} : () => setDragged(true)}
+                    onMouseDown={disabled ? () => {} : () => setDragged(true)}
                 />
             </div>
             <Label
                 font={LabelFonts.Poppins}
                 baseColor={LabelBaseColors.Ligth}
             >
-                {props.printedMax ?? props.max}
+                {printedMax ?? max}
             </Label>
         </div>
     );

@@ -1,8 +1,15 @@
-import { useEffect, useState, WheelEvent } from "react";
+import { useCallback, useEffect, useState, WheelEvent } from "react";
 import AppContext, { ContextSettings, Point } from "./context/AppContext";
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
 import SettingsTab from "./component/SettingsTab/SettingsTab";
+
+function pointLerp(a: Point, b: Point, p: number) {
+    return {
+        x: a.x + p * (b.x - a.x),
+        y: a.y + p * (b.y - a.y),
+    };
+}
 
 function App() {
     const [settings, setSettings] = useState<ContextSettings>({
@@ -19,11 +26,11 @@ function App() {
         uTime: 0,
         uColors: [
             // {r, g, b, t} sorted by t
-            { r: 0.0, g: 0.027450980392156862, b: 0.39215686274509803, t: 0 },
-            { r: 0.12549019607843137, g: 0.4196078431372549, b: 0.796078431372549, t: 0.25 },
-            { r: 0.9294117647058824, g: 1.0, b: 1.0, t: 0.5 },
-            { r: 1.0, g: 0.6666666666666666, b: 0.0, t: 0.75 },
-            { r: 0.0, g: 0.00784313725490196, b: 0.0, t: 1 },
+            { r: 0.0, g: 0.027, b: 0.392, t: 0 },
+            { r: 0.125, g: 0.42, b: 0.796, t: 0.25 },
+            { r: 0.929, g: 1.0, b: 1.0, t: 0.5 },
+            { r: 1.0, g: 0.667, b: 0.0, t: 0.75 },
+            { r: 0.0, g: 0.008, b: 0.0, t: 1 },
         ].sort((a, b) => a.t - b.t),
         uFillingColor: { r: 0, g: 0, b: 0 },
 
@@ -43,20 +50,17 @@ function App() {
     });
 
     // Functions
-    function PixelToPoint(p: Point) {
-        return {
-            x:
-                (((p.x / settings.aWidth) * 2 - 1) * settings.uAspectRatio) / settings.uZoom +
-                settings.uCenter.x,
-            y: ((p.y / settings.aHeight) * -2 + 1) / settings.uZoom + settings.uCenter.y,
-        };
-    }
-    function pointLerp(a: Point, b: Point, p: number) {
-        return {
-            x: a.x + p * (b.x - a.x),
-            y: a.y + p * (b.y - a.y),
-        };
-    }
+    const PixelToPoint = useCallback(
+        (p: Point) => {
+            return {
+                x:
+                    (((p.x / settings.aWidth) * 2 - 1) * settings.uAspectRatio) / settings.uZoom +
+                    settings.uCenter.x,
+                y: ((p.y / settings.aHeight) * -2 + 1) / settings.uZoom + settings.uCenter.y,
+            };
+        },
+        [settings.aWidth, settings.aHeight, settings.uAspectRatio, settings.uZoom, settings.uCenter]
+    );
 
     // uSize
     window.onresize = () => {
