@@ -1,3 +1,5 @@
+import { HTMLAttributes } from "react";
+
 export enum LabelFonts {
     Poppins = "font-poppins",
     Roboto = "font-robotomono",
@@ -8,29 +10,36 @@ export enum LabelBaseColors {
     Dark = "text-neutral-400",
 }
 
-interface LabelProps extends React.HTMLAttributes<HTMLLabelElement> {
+interface LabelProps extends HTMLAttributes<HTMLLabelElement> {
     font: LabelFonts;
     baseColor: LabelBaseColors;
     bold?: boolean;
     hover?: boolean;
-    seleted?: boolean;
+    selected?: boolean;
 }
 
-export default function Label(props: LabelProps) {
+export default function Label({
+    font,
+    baseColor,
+    bold,
+    hover,
+    selected,
+    ...attributes
+}: LabelProps) {
     return (
         <label
-            {...props}
+            {...attributes}
             className={
-                (props.bold ? " font-bold " : " ") +
-                props.font.valueOf() +
+                (bold ? " font-bold " : " ") +
+                font.valueOf() +
                 " flex items-center justify-center rounded-lg text-2xl " +
-                (props.seleted
+                (selected
                     ? " bg-neutral-400 bg-opacity-35 text-neutral-200 "
-                    : props.baseColor.valueOf() +
-                      (props.hover
+                    : baseColor.valueOf() +
+                      (hover
                           ? " hover:bg-neutral-400 hover:bg-opacity-15 hover:text-neutral-200 "
                           : " ")) +
-                (props.className ?? "")
+                (attributes.className ?? "")
             }
         />
     );

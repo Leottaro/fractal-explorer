@@ -1,10 +1,10 @@
-import React, { createRef, useEffect, useContext, useState, useRef } from "react";
+import { createRef, useEffect, useContext, useState, useRef, HTMLAttributes } from "react";
 import AppContext from "../../context/AppContext";
 import Renderer from "../../utils/Renderer/Renderer";
 import Stats from "../../utils/Stats";
 import Label, { LabelBaseColors, LabelFonts } from "../Label/Label";
 
-export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanvasElement>) {
+export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasElement>) {
     const { settings, setSettings } = useContext(AppContext);
 
     const canvasRef = createRef<HTMLCanvasElement>();
@@ -47,7 +47,7 @@ export default function FractalCanvas(props: React.CanvasHTMLAttributes<HTMLCanv
     return (
         <>
             <canvas
-                {...props}
+                {...attributes}
                 ref={canvasRef}
                 className="FractalCanvas"
             ></canvas>

@@ -12,29 +12,25 @@ interface IconProps extends React.HTMLAttributes<SVGElement> {
     flipped?: "x" | "y";
 }
 
-export default function Icon(props: IconProps) {
+export default function Icon({ flipped, type, pathProps, ...attributes }: IconProps) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 40 40"
             fill="none"
             className="aspect-square h-full"
-            {...props}
+            {...attributes}
         >
             <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={4}
-                d={props.type.valueOf()} // keyof typeof Enum
-                {...props.pathProps}
+                d={type.valueOf()} // keyof typeof Enum
+                {...pathProps}
                 className={
-                    (props.pathProps?.className ?? "") +
+                    (pathProps?.className ?? "") +
                     " origin-center duration-1000 " +
-                    (props.flipped === undefined
-                        ? ""
-                        : props.flipped === "x"
-                          ? "-scale-x-100 "
-                          : "-scale-y-100 ")
+                    (flipped === "x" ? "-scale-x-100 " : flipped === "y" ? "-scale-y-100 " : "")
                 }
             />
         </svg>
