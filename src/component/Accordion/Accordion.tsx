@@ -3,13 +3,13 @@ import Container, { ContainerProps } from "../Container/Container";
 import Icon, { IconType } from "../Icon/Icon";
 
 export default function Accordion({ hover, blur, ...attributes }: ContainerProps) {
-    const [opened, setOpened] = useState<Boolean>(false);
+    const [opened, setOpened] = useState<boolean>(false);
     const [contentHeight, setContentHeight] = useState<number>(0);
     const contentRef = createRef<HTMLDivElement>();
 
     useEffect(() => {
         setContentHeight(contentRef.current ? contentRef.current.scrollHeight : -1);
-    }, [contentRef]);
+    }, [contentRef.current]);
 
     return (
         <Container
