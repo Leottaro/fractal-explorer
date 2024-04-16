@@ -1,7 +1,7 @@
 import { HTMLAttributes } from "react";
 
 export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
-    hover?: Boolean;
+    hover?: boolean;
     blur?: boolean;
 }
 
