@@ -62,7 +62,10 @@ export default function ColorSlider() {
             newColors[selected.index].t = newOffset;
             newColors.sort((colorA, colorB) => colorA.t - colorB.t);
             selected.index = newColors.findIndex((color) => color.t === newOffset);
-            setSettings({ ...settings, uColors: newColors });
+            setSettings((prevSettings) => ({
+                ...prevSettings,
+                uColors: newColors,
+            }));
         }
     }, [settings.sMouse]);
 
@@ -110,7 +113,10 @@ export default function ColorSlider() {
             newColors[newColorIndex].g = afterColor.g * percent + beforeColor.g * (1 - percent);
             newColors[newColorIndex].b = afterColor.b * percent + beforeColor.b * (1 - percent);
         }
-        setSettings({ ...settings, uColors: newColors });
+        setSettings((prevSettings) => ({
+            ...prevSettings,
+            uColors: newColors,
+        }));
     }
 
     return (
@@ -148,7 +154,10 @@ export default function ColorSlider() {
                         const newColors = [...settings.uColors];
                         newColors.splice(index, 1);
                         setSelected(undefined);
-                        setSettings({ ...settings, uColors: newColors });
+                        setSettings((prevSettings) => ({
+                            ...prevSettings,
+                            uColors: newColors,
+                        }));
                     }}
                 />
             ))}

@@ -47,6 +47,7 @@ function App() {
         sMouse: { x: 0, y: 0 },
         sMouseDown: false,
         sMouseDownTarget: document.createElement("div"),
+        sPlayTime: false,
     });
 
     // Functions
@@ -64,12 +65,12 @@ function App() {
 
     // uSize
     window.onresize = () => {
-        setSettings({
-            ...settings,
+        setSettings((prevSettings) => ({
+            ...prevSettings,
             aWidth: window.innerWidth,
             aHeight: window.innerHeight,
             uAspectRatio: window.innerWidth / window.innerHeight,
-        });
+        }));
     };
 
     // uZoom
@@ -95,53 +96,70 @@ function App() {
             settings.uCenter,
             event.deltaY < 0 ? 1 / effectiveZoomRate : effectiveZoomRate
         );
-        setSettings({ ...settings, uZoom: newZoom, uCenter: newCenter });
+        setSettings((prevSettings) => ({
+            ...prevSettings,
+            uZoom: newZoom,
+            uCenter: newCenter,
+        }));
     }
     useEffect(() => {
         if (settings.sMaxItersZoomDependant) {
-            setSettings({
-                ...settings,
+            setSettings((prevSettings) => ({
+                ...prevSettings,
                 uMaxIters:
                     Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(5 * settings.uZoom)))) *
                     settings.sMaxItersFactor,
-            });
+            }));
         }
     }, [settings.uZoom, settings.sMaxItersFactor]);
 
     // sMouseDown
     window.onmousedown = (event) =>
-        setSettings({
-            ...settings,
+        setSettings((prevSettings) => ({
+            ...prevSettings,
             sMouseDown: true,
             sMouseDownTarget: event.target as HTMLElement,
-        });
-    window.onmouseup = () => setSettings({ ...settings, sMouseDown: false });
+        }));
+    window.onmouseup = () =>
+        setSettings((prevSettings) => ({
+            ...prevSettings,
+            sMouseDown: false,
+        }));
 
     // uMouse
     window.onmousemove = (event) => {
-        setSettings({
-            ...settings,
+        setSettings((prevSettings) => ({
+            ...prevSettings,
             sMouse: { x: event.clientX, y: event.clientY },
-        });
+        }));
     };
     useEffect(() => {
         const newMouse = PixelToPoint(settings.sMouse);
 
         if (!settings.sMouseDown) {
-            setSettings({ ...settings, uMouse: newMouse });
+            setSettings((prevSettings) => ({
+                ...prevSettings,
+                uMouse: newMouse,
+            }));
         } else if (settings.sMouseDownTarget.classList.contains("FractalCanvas")) {
             const newCenter = {
                 x: settings.uCenter.x - newMouse.x + settings.uMouse.x,
                 y: settings.uCenter.y - newMouse.y + settings.uMouse.y,
             };
-            setSettings({ ...settings, uCenter: newCenter });
+            setSettings((prevSettings) => ({
+                ...prevSettings,
+                uCenter: newCenter,
+            }));
         }
     }, [settings.sMouse]);
 
     // uTime
     useEffect(() => {
         if (settings.sColorOffsetTimeDependant) {
-            setSettings({ ...settings, uColorOffset: settings.uTime % settings.sColorOffsetMax });
+            setSettings((prevSettings) => ({
+                ...prevSettings,
+                uColorOffset: settings.uTime % settings.sColorOffsetMax,
+            }));
         }
     }, [settings.uTime, settings.sColorOffsetMax]);
 
@@ -149,6 +167,7 @@ function App() {
         <AppContext.Provider value={{ settings, setSettings }}>
             <FractalCanvas
                 id="FractalCanvas"
+                className="FractalCanvas"
                 onWheel={handleWheel}
             />
             <SettingsTab />

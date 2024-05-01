@@ -11,7 +11,6 @@ import Accordion from "../Accordion/Accordion";
 function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);
     const [hidden, setHidden] = useState(true);
-    const [isPause, setPause] = useState(false);
 
     return (
         <>
@@ -72,7 +71,12 @@ function SettingsTab() {
                             min={settings.sZoomMin}
                             max={settings.sZoomMax}
                             getter={settings.uZoom}
-                            setter={(newZoom) => setSettings({ ...settings, uZoom: newZoom })}
+                            setter={(newZoom) =>
+                                setSettings((prevSettings) => ({
+                                    ...prevSettings,
+                                    uZoom: newZoom,
+                                }))
+                            }
                             sliderType={SliderTypes.EXPONENTIAL}
                         />
                     </Accordion>
@@ -93,10 +97,10 @@ function SettingsTab() {
                             <Toggle
                                 checked={settings.sMaxItersZoomDependant}
                                 onClick={() =>
-                                    setSettings({
-                                        ...settings,
+                                    setSettings((prevSettings) => ({
+                                        ...prevSettings,
                                         sMaxItersZoomDependant: !settings.sMaxItersZoomDependant,
-                                    })
+                                    }))
                                 }
                             />
                         </div>
@@ -114,7 +118,10 @@ function SettingsTab() {
                                     max={settings.sMaxItersFactorMax}
                                     getter={settings.sMaxItersFactor}
                                     setter={(newFactor) =>
-                                        setSettings({ ...settings, sMaxItersFactor: newFactor })
+                                        setSettings((prevSettings) => ({
+                                            ...prevSettings,
+                                            sMaxItersFactor: newFactor,
+                                        }))
                                     }
                                     sliderType={SliderTypes.LINEAR}
                                 />
@@ -143,10 +150,10 @@ function SettingsTab() {
                             <Toggle
                                 checked={settings.uSmoothColors}
                                 onClick={() =>
-                                    setSettings({
-                                        ...settings,
+                                    setSettings((prevSettings) => ({
+                                        ...prevSettings,
                                         uSmoothColors: !settings.uSmoothColors,
-                                    })
+                                    }))
                                 }
                             />
                         </div>
@@ -163,7 +170,10 @@ function SettingsTab() {
                                 printedMax="2π"
                                 getter={settings.uColorOffset}
                                 setter={(newOffset) =>
-                                    setSettings({ ...settings, uColorOffset: newOffset })
+                                    setSettings((prevSettings) => ({
+                                        ...prevSettings,
+                                        uColorOffset: newOffset,
+                                    }))
                                 }
                                 sliderType={SliderTypes.LINEAR}
                                 disabled={settings.sColorOffsetTimeDependant}
@@ -179,11 +189,11 @@ function SettingsTab() {
                             <Toggle
                                 checked={settings.sColorOffsetTimeDependant}
                                 onClick={() =>
-                                    setSettings({
-                                        ...settings,
+                                    setSettings((prevSettings) => ({
+                                        ...prevSettings,
                                         sColorOffsetTimeDependant:
                                             !settings.sColorOffsetTimeDependant,
-                                    })
+                                    }))
                                 }
                             />
                         </div>
@@ -222,9 +232,14 @@ function SettingsTab() {
                     </Container>
                     <Container>
                         <Icon
-                            type={isPause ? IconType.Pause : IconType.Play}
-                            onClick={() => setPause(!isPause)}
-                            pathProps={{ className: isPause ? "" : "fill-neutral-200" }}
+                            type={settings.sPlayTime ? IconType.Pause : IconType.Play}
+                            onClick={() =>
+                                setSettings((prevSettings) => ({
+                                    ...prevSettings,
+                                    sPlayTime: !settings.sPlayTime,
+                                }))
+                            }
+                            pathProps={{ className: settings.sPlayTime ? "" : "fill-neutral-200" }}
                         />
                     </Container>
                 </Container>

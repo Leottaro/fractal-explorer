@@ -232,9 +232,9 @@ export default class Renderer {
         });
     }
 
-    public async draw(): Promise<number | undefined> {
+    public async draw(): Promise<number> {
         if (this.drawing) {
-            return;
+            return -1;
         }
         this.drawing = true;
         const start = performance.now();
