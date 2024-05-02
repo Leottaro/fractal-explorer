@@ -236,7 +236,7 @@ function SettingsTab() {
                             setSettings((prevSettings) => ({
                                 ...prevSettings,
                                 sPlayTime: false,
-                                uTime: prevSettings.uTime - 0.1,
+                                uTime: (prevSettings.uTime + 999.9) % 1000,
                             }))
                         }
                     >
@@ -267,7 +267,7 @@ function SettingsTab() {
                             setSettings((prevSettings) => ({
                                 ...prevSettings,
                                 sPlayTime: false,
-                                uTime: prevSettings.uTime + 0.1,
+                                uTime: (prevSettings.uTime + 0.1) % 1000,
                             }))
                         }
                     >
