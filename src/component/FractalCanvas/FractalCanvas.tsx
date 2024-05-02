@@ -9,7 +9,7 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
 
     const canvasRef = createRef<HTMLCanvasElement>();
     const [renderer, setRenderer] = useState<Renderer>(null!);
-    const stats = useRef<Stats>();
+    const stats = useRef<Stats>(new Stats(50));
 
     useEffect(() => {
         if (!canvasRef.current) {
@@ -20,10 +20,8 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
             .Init(settings, "shaders/mandelbrot.wgsl")
             // .Init(settings, "shaders/mandelbrot.wgsl", "shaders/compute.wgsl")
             .then(() => setRenderer(newRenderer));
-        stats.current = new Stats(50);
     }, [canvasRef.current]);
 
-    const [avgDeltaTime, setAvgDeltaTime] = useState<number>(0);
     useEffect(() => {
         if (!renderer) {
             return;
@@ -31,14 +29,20 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
         const loop = setInterval(() => {
             if (renderer.isDrawing()) return;
 
-            const newSettings = { ...settings, uTime: performance.now() / 1000 };
-            setSettings(newSettings);
-            renderer.updateSettings(newSettings);
-
+            renderer.updateSettings(settings);
             renderer.draw().then((deltaTime) => {
                 if (!deltaTime || !stats.current) return;
+                if (settings.sPlayTime) {
+                    setSettings((prevSettings) => ({
+                        ...prevSettings,
+                        uTime:
+                            (1000 +
+                                prevSettings.uTime +
+                                (prevSettings.sTimeFactor * deltaTime) / 1000) %
+                            1000,
+                    }));
+                }
                 stats.current.update(deltaTime);
-                setAvgDeltaTime(stats.current.getAvgMs());
             });
         }, 0);
         return () => clearInterval(loop);
@@ -49,7 +53,6 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
             <canvas
                 {...attributes}
                 ref={canvasRef}
-                className="FractalCanvas"
             ></canvas>
             <Label
                 font={LabelFonts.Roboto}
@@ -57,7 +60,7 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
                 bold
                 className="absolute left-0 top-0 m-2 "
             >
-                {Math.floor(1000 / avgDeltaTime)}fps
+                {Math.floor(1000 / stats.current.getAvgMs())}fps
             </Label>
         </>
     );
