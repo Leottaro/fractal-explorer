@@ -54,14 +54,18 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
                 {...attributes}
                 ref={canvasRef}
             ></canvas>
-            <Label
-                font={LabelFonts.Roboto}
-                baseColor={LabelBaseColors.Ligth}
-                bold
-                className="absolute left-0 top-0 m-2 "
-            >
-                {Math.floor(1000 / stats.current.getAvgMs())}fps
-            </Label>
+            {settings.sPlayTime ? (
+                <Label
+                    font={LabelFonts.Roboto}
+                    baseColor={LabelBaseColors.Ligth}
+                    bold
+                    className="absolute left-0 top-0 m-2 "
+                >
+                    {Math.floor(1000 / stats.current.getAvgMs())}fps
+                </Label>
+            ) : (
+                <></>
+            )}
         </>
     );
 }
