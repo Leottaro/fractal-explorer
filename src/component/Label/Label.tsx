@@ -16,6 +16,7 @@ interface LabelProps extends HTMLAttributes<HTMLLabelElement> {
     bold?: boolean;
     hover?: boolean;
     selected?: boolean;
+    selectionable?: boolean;
 }
 
 export default function Label({
@@ -24,13 +25,15 @@ export default function Label({
     bold,
     hover,
     selected,
+    selectionable,
     ...attributes
 }: LabelProps) {
     return (
         <label
             {...attributes}
             className={
-                (bold ? " font-bold " : " ") +
+                (bold ? " font-bold " : " font-normal ") +
+                (selectionable ? " select-all " : " select-none ") +
                 font.valueOf() +
                 " flex items-center justify-center rounded-lg text-2xl " +
                 (selected
