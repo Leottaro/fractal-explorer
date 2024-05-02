@@ -54,6 +54,7 @@ export interface Settings {
     sMouseDown: boolean;
     sMouseDownTarget: HTMLElement;
     sPlayTime: boolean;
+    sTimeFactor: number;
 }
 
 export interface ContextSettings extends Attributes, Uniforms, Settings {}

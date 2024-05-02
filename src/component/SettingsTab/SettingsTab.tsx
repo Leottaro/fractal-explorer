@@ -200,22 +200,59 @@ function SettingsTab() {
                     </Accordion>
                 </div>
                 <Container className="flex h-14 flex-row gap-x-2 border-neutral-400">
-                    <Container>
+                    <Container
+                        hover
+                        onClick={() =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                sTimeFactor: 1,
+                                uTime: 0,
+                                sPlayTime: false,
+                            }))
+                        }
+                    >
                         <Icon type={IconType.Reset} />
                     </Container>
-                    <Container>
+                    <Container
+                        hover
+                        onClick={() =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                sTimeFactor:
+                                    prevSettings.sTimeFactor == 1
+                                        ? -1
+                                        : prevSettings.sTimeFactor - 1,
+                            }))
+                        }
+                    >
                         <Icon
                             type={IconType.DoubleArrow}
                             flipped="x"
                         />
                     </Container>
-                    <Container>
+                    <Container
+                        hover
+                        onClick={() =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                sPlayTime: false,
+                                uTime: prevSettings.uTime - 0.1,
+                            }))
+                        }
+                    >
                         <Icon
                             type={IconType.Arrow}
                             flipped="x"
                         />
                     </Container>
-                    <Container className="flex-grow">
+                    <Container className="relative flex-grow">
+                        <Label
+                            font={LabelFonts.Roboto}
+                            baseColor={LabelBaseColors.Ligth}
+                            className="absolute top-0.5 left-1 text-xs"
+                        >
+                            {settings.sTimeFactor}x
+                        </Label>
                         <Label
                             font={LabelFonts.Roboto}
                             baseColor={LabelBaseColors.Ligth}
@@ -224,21 +261,43 @@ function SettingsTab() {
                             {settings.uTime.toFixed(3)}
                         </Label>
                     </Container>
-                    <Container>
+                    <Container
+                        hover
+                        onClick={() =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                sPlayTime: false,
+                                uTime: prevSettings.uTime + 0.1,
+                            }))
+                        }
+                    >
                         <Icon type={IconType.Arrow} />
                     </Container>
-                    <Container>
+                    <Container
+                        hover
+                        onClick={() =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                sTimeFactor:
+                                    prevSettings.sTimeFactor == -1
+                                        ? 1
+                                        : prevSettings.sTimeFactor + 1,
+                            }))
+                        }
+                    >
                         <Icon type={IconType.DoubleArrow} />
                     </Container>
-                    <Container>
+                    <Container
+                        hover
+                        onClick={() =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                sPlayTime: !settings.sPlayTime,
+                            }))
+                        }
+                    >
                         <Icon
                             type={settings.sPlayTime ? IconType.Pause : IconType.Play}
-                            onClick={() =>
-                                setSettings((prevSettings) => ({
-                                    ...prevSettings,
-                                    sPlayTime: !settings.sPlayTime,
-                                }))
-                            }
                             pathProps={{ className: settings.sPlayTime ? "" : "fill-neutral-200" }}
                         />
                     </Container>

@@ -35,7 +35,11 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
                 if (settings.sPlayTime) {
                     setSettings((prevSettings) => ({
                         ...prevSettings,
-                        uTime: prevSettings.uTime + deltaTime / 1000,
+                        uTime:
+                            (1000 +
+                                prevSettings.uTime +
+                                (prevSettings.sTimeFactor * deltaTime) / 1000) %
+                            1000,
                     }));
                 }
                 stats.current.update(deltaTime);

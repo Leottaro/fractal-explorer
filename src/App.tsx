@@ -48,6 +48,7 @@ function App() {
         sMouseDown: false,
         sMouseDownTarget: document.createElement("div"),
         sPlayTime: false,
+        sTimeFactor: 1,
     });
 
     // Functions
