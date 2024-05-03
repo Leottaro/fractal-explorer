@@ -104,6 +104,6 @@ fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
     } else if settings.uFractal == 1 {
         return Mandelbrot(pointPos);
     } else {
-        return vec4f(1, 0, 0, 1);
+        return vec4f(settings.uFillingColor, 1);
     }
 }

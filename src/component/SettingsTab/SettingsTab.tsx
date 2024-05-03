@@ -35,44 +35,29 @@ function SettingsTab() {
                     (hidden ? "-right-128" : "right-2")
                 }
             >
-                <Container className="grid h-14 grid-cols-3 grid-rows-1 p-1.5">
-                    <Label
-                        font={LabelFonts.Poppins}
-                        baseColor={LabelBaseColors.Dark}
-                        bold
-                        hover
-                        selected={settings.uFractal === Fractals.Julia}
-                        onClick={() =>
-                            setSettings((prevSettings) => ({
-                                ...prevSettings,
-                                uFractal: Fractals.Julia,
-                            }))
-                        }
-                    >
-                        Julia
-                    </Label>
-                    <Label
-                        font={LabelFonts.Poppins}
-                        baseColor={LabelBaseColors.Dark}
-                        bold
-                        selected={settings.uFractal === Fractals.Mandelbrot}
-                        hover
-                        onClick={() =>
-                            setSettings((prevSettings) => ({
-                                ...prevSettings,
-                                uFractal: Fractals.Mandelbrot,
-                            }))
-                        }
-                    >
-                        Mandelbrot
-                    </Label>
-                    <Label
-                        font={LabelFonts.Poppins}
-                        baseColor={LabelBaseColors.Dark}
-                        bold
-                    >
-                        Newton
-                    </Label>
+                <Container className={`grid h-14 grid-cols-3 grid-rows-1 p-1.5`}>
+                    {Object.keys(Fractals)
+                        .filter((Fractal) => typeof Fractals[Fractal as any] === "number")
+                        .map((Fractal) => (
+                            <Label
+                                key={Fractal}
+                                font={LabelFonts.Poppins}
+                                baseColor={LabelBaseColors.Dark}
+                                bold
+                                hover
+                                selected={
+                                    settings.uFractal === Fractals[Fractal as keyof typeof Fractals]
+                                }
+                                onClick={() =>
+                                    setSettings((prevSettings) => ({
+                                        ...prevSettings,
+                                        uFractal: Fractals[Fractal as keyof typeof Fractals],
+                                    }))
+                                }
+                            >
+                                {Fractal}
+                            </Label>
+                        ))}
                 </Container>
                 <div className="Settings flex h-auto flex-grow flex-col gap-2">
                     <Accordion>

@@ -19,8 +19,9 @@ export type ColorT = {
 };
 
 export enum Fractals {
-    Julia = 0,
-    Mandelbrot = 1,
+    Julia,
+    Mandelbrot,
+    Newton,
 }
 
 export const colorToVec4 = (color: Color | ColorT) =>
