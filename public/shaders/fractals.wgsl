@@ -7,9 +7,11 @@ struct Settings {
     uColorOffset: f32,
     uAspectRatio: f32,
     uZoom: f32,
+    uJuliaC: vec2f,
     uCenter: vec2f,
     uMouse: vec2f,
     uFillingColor: vec3f,
+    uFractal: f32,
     uColors: array<vec4f>, // uColors are sorted by t
 };
 @group(0) @binding(0) var<storage, read> settings: Settings;
@@ -59,28 +61,13 @@ fn getColor(iterations: f32) -> vec3f {
     return color1 + finalT * (color2 - color1);
 }
 
-    @fragment
-fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
-    let pointPos: vec2f = fragData.mappedPosition;
-
-    // skip if the point is in the 1st cardioid
-    let y2: f32 = pointPos.y * pointPos.y;
-    let q: f32 = pow(pointPos.x - 0.25, 2) + y2;
-    if q * (q + (pointPos.x - 0.25)) <= 0.25 * y2 {
-        return vec4f(settings.uFillingColor, 1);
-    }
-
-    // skip if the point is in the 2nd cardioid
-    if pow(pointPos.x + 1, 2) + y2 < 0.0625 {
-        return vec4f(settings.uFillingColor, 1);
-    }
-
+fn Julia(point: vec2f, constant: vec2f) -> vec4f {
     // Usual algorithm
-    var z: vec2f = pointPos;
+    var z: vec2f = point;
     var i: f32 = 0;
     for (i = 0; i <= settings.uMaxIters; i = i + 1) {
-        z = vec2f(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + pointPos;
-        if z.x == pointPos.x && z.y == pointPos.y { // periodicity check
+        z = vec2f(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + constant;
+        if z.x == point.x && z.y == point.y { // periodicity check
             return vec4f(settings.uFillingColor, 1);
         }
         if length(z) > 16. {
@@ -90,6 +77,33 @@ fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
     if settings.uSmoothColors == 1 && i < settings.uMaxIters {
         i = smoothIters(i, z);
     }
-
     return vec4(getColor(i), 1.);
+}
+
+fn Mandelbrot(point: vec2f) -> vec4f {
+    // skip if the point is in the 1st cardioid
+    let y2: f32 = point.y * point.y;
+    let q: f32 = pow(point.x - 0.25, 2) + y2;
+    if q * (q + (point.x - 0.25)) <= 0.25 * y2 {
+        return vec4f(settings.uFillingColor, 1);
+    }
+
+    // skip if the point is in the 2nd cardioid
+    if pow(point.x + 1, 2) + y2 < 0.0625 {
+        return vec4f(settings.uFillingColor, 1);
+    }
+
+    return Julia(point, point);
+}
+
+@fragment
+fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
+    let pointPos: vec2f = fragData.mappedPosition;
+    if settings.uFractal == 0 {
+        return Julia(pointPos, settings.uJuliaC);
+    } else if settings.uFractal == 1 {
+        return Mandelbrot(pointPos);
+    } else {
+        return vec4f(1, 0, 0, 1);
+    }
 }

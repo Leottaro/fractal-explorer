@@ -18,6 +18,11 @@ export type ColorT = {
     t: number;
 };
 
+export enum Fractals {
+    Julia = 0,
+    Mandelbrot = 1,
+}
+
 export const colorToVec4 = (color: Color | ColorT) =>
     "t" in color ? [color.r, color.g, color.b, color.t] : [color.r, color.g, color.b];
 
@@ -37,6 +42,8 @@ export interface Uniforms {
     uTime: number;
     uColors: ColorT[];
     uFillingColor: Color;
+    uFractal: Fractals;
+    uJuliaC: Point;
 }
 
 export interface Settings {

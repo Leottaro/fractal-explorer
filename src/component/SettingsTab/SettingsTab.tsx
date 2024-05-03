@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import AppContext from "../../context/AppContext";
+import AppContext, { Fractals } from "../../context/AppContext";
 import Slider, { SliderTypes } from "../Inputs/Slider";
 import Toggle from "../Inputs/Toggle";
 import ColorSlider from "../Inputs/ColorSlider";
@@ -40,6 +40,14 @@ function SettingsTab() {
                         font={LabelFonts.Poppins}
                         baseColor={LabelBaseColors.Dark}
                         bold
+                        hover
+                        selected={settings.uFractal === Fractals.Julia}
+                        onClick={() =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                uFractal: Fractals.Julia,
+                            }))
+                        }
                     >
                         Julia
                     </Label>
@@ -47,7 +55,14 @@ function SettingsTab() {
                         font={LabelFonts.Poppins}
                         baseColor={LabelBaseColors.Dark}
                         bold
-                        selected
+                        selected={settings.uFractal === Fractals.Mandelbrot}
+                        hover
+                        onClick={() =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                uFractal: Fractals.Mandelbrot,
+                            }))
+                        }
                     >
                         Mandelbrot
                     </Label>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, WheelEvent } from "react";
-import AppContext, { ContextSettings, Point } from "./context/AppContext";
+import AppContext, { ContextSettings, Fractals, Point } from "./context/AppContext";
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
 import SettingsTab from "./component/SettingsTab/SettingsTab";
@@ -33,6 +33,8 @@ function App() {
             { r: 0.0, g: 0.008, b: 0.0, t: 1 },
         ].sort((a, b) => a.t - b.t),
         uFillingColor: { r: 0, g: 0, b: 0 },
+        uFractal: Fractals.Mandelbrot,
+        uJuliaC: { x: 0, y: 0 },
 
         sZoomMin: 0.5,
         sZoomMax: 40000,
@@ -42,7 +44,7 @@ function App() {
         sColorOffsetTimeDependant: false,
         sMaxItersFactor: 125,
         sMaxItersFactorMin: 1,
-        sMaxItersFactorMax: 500,
+        sMaxItersFactorMax: 1000,
         sMaxItersZoomDependant: true,
         sMouse: { x: 0, y: 0 },
         sMouseDown: false,
