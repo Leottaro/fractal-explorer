@@ -26,7 +26,7 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
         if (!renderer) {
             return;
         }
-        const loop = setInterval(() => {
+        function reRender() {
             if (renderer.isDrawing()) return;
 
             renderer.updateSettings(settings);
@@ -44,7 +44,12 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
                 }
                 stats.current.update(deltaTime);
             });
-        }, 0);
+        }
+        reRender();
+        if (!settings.sPlayTime) {
+            return;
+        }
+        const loop = setInterval(reRender, 0);
         return () => clearInterval(loop);
     }, [renderer, settings]);
 
