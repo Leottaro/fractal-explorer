@@ -3,6 +3,7 @@ import AppContext, { ContextSettings, Fractals, Point } from "./context/AppConte
 
 import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
 import SettingsTab from "./component/SettingsTab/SettingsTab";
+import ControlPoint from "./component/ControlPoint/ControlPoint";
 
 function pointLerp(a: Point, b: Point, p: number) {
     return {
@@ -33,7 +34,7 @@ function App() {
             { r: 0.0, g: 0.008, b: 0.0, t: 1 },
         ].sort((a, b) => a.t - b.t),
         uFillingColor: { r: 0, g: 0, b: 0 },
-        uFractal: Fractals.Mandelbrot,
+        uFractal: Fractals.Julia,
         uJuliaC: { x: 0, y: 0 },
 
         sZoomMin: 0.5,
@@ -51,6 +52,7 @@ function App() {
         sMouseDownTarget: document.createElement("div"),
         sPlayTime: false,
         sTimeFactor: 1,
+        sJuliaC: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
     });
 
     // Functions
@@ -63,6 +65,28 @@ function App() {
                 y: ((p.y / settings.aHeight) * -2 + 1) / settings.uZoom + settings.uCenter.y,
             };
         },
+        [settings.aWidth, settings.aHeight, settings.uAspectRatio, settings.uZoom, settings.uCenter]
+    );
+    const PointToPixel = useCallback(
+        (p: Point) => {
+            return {
+                x:
+                    ((((p.x - settings.uCenter.x) * settings.uZoom) / settings.uAspectRatio + 1) /
+                        2) *
+                    settings.aWidth,
+                y: (((p.y - settings.uCenter.y) * settings.uZoom - 1) / -2) * settings.aHeight,
+            };
+        },
+        [settings.aWidth, settings.aHeight, settings.uAspectRatio, settings.uZoom, settings.uCenter]
+    );
+
+    // ControlPoints updates
+    useEffect(
+        () =>
+            setSettings((prevSettings) => ({
+                ...prevSettings,
+                sJuliaC: PointToPixel(settings.uJuliaC),
+            })),
         [settings.aWidth, settings.aHeight, settings.uAspectRatio, settings.uZoom, settings.uCenter]
     );
 
@@ -93,12 +117,8 @@ function App() {
         if (newZoom === settings.uZoom) {
             return;
         }
-
-        const newCenter = pointLerp(
-            settings.uMouse,
-            settings.uCenter,
-            event.deltaY < 0 ? 1 / effectiveZoomRate : effectiveZoomRate
-        );
+        effectiveZoomRate = event.deltaY < 0 ? 1 / effectiveZoomRate : effectiveZoomRate;
+        const newCenter = pointLerp(settings.uMouse, settings.uCenter, effectiveZoomRate);
         setSettings((prevSettings) => ({
             ...prevSettings,
             uZoom: newZoom,
@@ -174,6 +194,24 @@ function App() {
                 onWheel={handleWheel}
             />
             <SettingsTab />
+            {settings.uFractal == Fractals.Julia ? (
+                <ControlPoint
+                    getter={settings.sJuliaC}
+                    setter={(newPoint) =>
+                        setSettings((prevSettings) => ({
+                            ...prevSettings,
+                            sJuliaC: newPoint,
+                            uJuliaC: PixelToPoint(newPoint),
+                        }))
+                    }
+                />
+            ) : settings.uFractal == Fractals.Mandelbrot ? (
+                <></>
+            ) : settings.uFractal == Fractals.Newton ? (
+                <></>
+            ) : (
+                <></>
+            )}
         </AppContext.Provider>
     );
 }
