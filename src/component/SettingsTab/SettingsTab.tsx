@@ -1,14 +1,22 @@
 import { useContext, useState } from "react";
-import AppContext, { Fractals } from "@context/AppContext";
-import Slider, { SliderTypes } from "@component/Inputs/Slider";
+
+import {
+    AppContext,
+    Fractals,
+    IconType,
+    LabelBaseColors,
+    LabelFonts,
+    SliderTypes,
+} from "@utils/exports";
+import Slider from "@component/Inputs/Slider";
 import Toggle from "@component/Inputs/Toggle";
 import ColorSlider from "@component/Inputs/ColorSlider";
 import Container from "@component/Container/Container";
-import Icon, { IconType } from "@component/Icon/Icon";
-import Label, { LabelBaseColors, LabelFonts } from "@component/Label/Label";
+import Icon from "@component/Icon/Icon";
+import Label from "@component/Label/Label";
 import Accordion from "@component/Accordion/Accordion";
 
-function SettingsTab() {
+export default function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);
     const [hidden, setHidden] = useState(true);
 
@@ -309,4 +317,3 @@ function SettingsTab() {
         </>
     );
 }
-export default SettingsTab;

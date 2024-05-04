@@ -1,9 +1,4 @@
-import { HTMLAttributes } from "react";
-
-export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
-    hover?: boolean;
-    blur?: boolean;
-}
+import { ContainerProps } from "@utils/exports";
 
 export default function Container({ hover, blur, ...attributes }: ContainerProps) {
     return (

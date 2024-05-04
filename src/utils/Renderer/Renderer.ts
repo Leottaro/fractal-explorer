@@ -1,14 +1,5 @@
-import { colorToVec4, ContextSettings } from "@context/AppContext";
+import { colorToVec4, ContextSettings, discardNull } from "@utils/exports";
 import fullScreenTexSource from "./fullScreenTexture.wgsl?raw";
-
-function discardNull(element: any | null | undefined, errorMessage: string) {
-    if (!element) {
-        console.error(errorMessage);
-        alert(errorMessage);
-        throw new Error(errorMessage);
-    }
-    return element;
-}
 
 export default class Renderer {
     private readonly canvas: HTMLCanvasElement;

@@ -1,18 +1,11 @@
 import { useCallback, useEffect, useState, WheelEvent } from "react";
-import AppContext, { ContextSettings, Fractals, Point } from "@context/AppContext";
 
+import { AppContext, ContextSettings, Fractals, Point, pointLerp } from "@utils/exports";
 import FractalCanvas from "@component/FractalCanvas/FractalCanvas";
 import SettingsTab from "@component/SettingsTab/SettingsTab";
 import ControlPoint from "@component/ControlPoint/ControlPoint";
 
-function pointLerp(a: Point, b: Point, p: number) {
-    return {
-        x: a.x + p * (b.x - a.x),
-        y: a.y + p * (b.y - a.y),
-    };
-}
-
-function App() {
+export default function App() {
     const [settings, setSettings] = useState<ContextSettings>({
         aWidth: window.innerWidth,
         aHeight: window.innerHeight,
@@ -215,4 +208,3 @@ function App() {
         </AppContext.Provider>
     );
 }
-export default App;

@@ -1,35 +1,13 @@
 import { createRef, useContext, useEffect, useState } from "react";
 import { RgbColorPicker } from "react-colorful";
-import AppContext, { ColorT } from "@context/AppContext";
+
+import { AppContext, fromDisplayT, toDisplayT, toLinearGradient, torgb } from "@utils/exports";
 import Container from "@component/Container/Container";
 import "./ColorSlider.css";
 
 interface Selected {
     index: number;
     element: HTMLDivElement;
-}
-
-const toDisplayT = (t: number) => t * 0.94 + 0.03;
-const fromDisplayT = (t: number) => (t - 0.03) / 0.94;
-
-const to256 = (p: number) => Math.round(p * 255);
-const torgb = (color: ColorT) =>
-    `rgb(${to256(color.r)},${to256(color.g)},${to256(color.b)}) ${color.t * 100}`;
-function toLinearGradient(colors: ColorT[]): string {
-    if (colors.length == 1) {
-        return torgb(colors[0]).split(" ")[0];
-    }
-    return (
-        "linear-Gradient(90deg, " +
-        [...colors]
-            .map((color) => ({ ...color, t: toDisplayT(color.t) }))
-            .sort((a, b) => a.t - b.t)
-            .map((color) => torgb(color) + "%")
-            .reduce(
-                (previousValue: string, currentValue: string) => previousValue + ", " + currentValue
-            ) +
-        ")"
-    );
 }
 
 export default function ColorSlider() {

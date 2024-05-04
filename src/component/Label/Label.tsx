@@ -1,14 +1,6 @@
 import { HTMLAttributes } from "react";
 
-export enum LabelFonts {
-    Poppins = "font-poppins",
-    Roboto = "font-robotomono",
-}
-
-export enum LabelBaseColors {
-    Ligth = "text-neutral-200",
-    Dark = "text-neutral-400",
-}
+import { LabelBaseColors, LabelFonts } from "@utils/exports";
 
 interface LabelProps extends HTMLAttributes<HTMLLabelElement> {
     font: LabelFonts;

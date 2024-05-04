@@ -1,13 +1,9 @@
 import { createRef, useContext, useEffect, useState } from "react";
-import Label, { LabelBaseColors, LabelFonts } from "@component/Label/Label";
-import AppContext from "@context/AppContext";
 
-export enum SliderTypes {
-    LINEAR,
-    EXPONENTIAL,
-}
+import { AppContext, LabelBaseColors, LabelFonts, SliderTypes } from "@utils/exports";
+import Label from "@component/Label/Label";
 
-export interface SliderProps {
+interface SliderProps {
     min: number;
     printedMin?: string;
     max: number;

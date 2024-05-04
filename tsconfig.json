@@ -29,7 +29,6 @@
             "@public/*": ["./public/*"],
             "@src/*": ["./src/*"],
             "@component/*": ["./src/component/*"],
-            "@context/*": ["./src/context/*"],
             "@utils/*": ["./src/utils/*"]
         }
     },
