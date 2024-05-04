@@ -18,6 +18,12 @@ export type ColorT = {
     t: number;
 };
 
+export enum Fractals {
+    Julia,
+    Mandelbrot,
+    Newton,
+}
+
 export const colorToVec4 = (color: Color | ColorT) =>
     "t" in color ? [color.r, color.g, color.b, color.t] : [color.r, color.g, color.b];
 
@@ -37,6 +43,8 @@ export interface Uniforms {
     uTime: number;
     uColors: ColorT[];
     uFillingColor: Color;
+    uFractal: Fractals;
+    uJuliaC: Point;
 }
 
 export interface Settings {
@@ -55,6 +63,7 @@ export interface Settings {
     sMouseDownTarget: HTMLElement;
     sPlayTime: boolean;
     sTimeFactor: number;
+    sJuliaC: Point;
 }
 
 export interface ContextSettings extends Attributes, Uniforms, Settings {}

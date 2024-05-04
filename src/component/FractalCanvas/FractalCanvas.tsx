@@ -16,10 +16,7 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
             throw new Error("can't find the canvas");
         }
         const newRenderer = new Renderer(canvasRef.current);
-        newRenderer
-            .Init(settings, "shaders/mandelbrot.wgsl")
-            // .Init(settings, "shaders/mandelbrot.wgsl", "shaders/compute.wgsl")
-            .then(() => setRenderer(newRenderer));
+        newRenderer.Init(settings, "shaders/fractals.wgsl").then(() => setRenderer(newRenderer));
     }, [canvasRef.current]);
 
     useEffect(() => {
