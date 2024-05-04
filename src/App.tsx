@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, WheelEvent } from "react";
 import { AppContext, ContextSettings, Fractals, Point, pointLerp } from "@utils/exports";
 import FractalCanvas from "@component/FractalCanvas/FractalCanvas";
 import SettingsTab from "@component/SettingsTab/SettingsTab";
-import ControlPoint from "@component/ControlPoint/ControlPoint";
+import ControlPoint from "@component/Inputs/ControlPoint";
 
 export default function App() {
     const [settings, setSettings] = useState<ContextSettings>({
