@@ -37,7 +37,10 @@ function SettingsTab() {
             >
                 <Container className={`grid h-14 grid-cols-3 grid-rows-1 p-1.5`}>
                     {Object.keys(Fractals)
-                        .filter((Fractal) => typeof Fractals[Fractal as any] === "number")
+                        .filter(
+                            (Fractal) =>
+                                typeof Fractals[Fractal as keyof typeof Fractals] === "number"
+                        )
                         .map((Fractal) => (
                             <Label
                                 key={Fractal}
