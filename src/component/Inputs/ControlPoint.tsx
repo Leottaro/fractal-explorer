@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import AppContext, { Point } from "../..//context/AppContext";
+import { AppContext, Point } from "@utils/exports";
 
-export interface ControlPointProps {
+interface ControlPointProps {
     getter: Point;
     setter: (point: Point) => void;
 }

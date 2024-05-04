@@ -1,8 +1,9 @@
 import { createRef, useEffect, useContext, useState, useRef, HTMLAttributes } from "react";
-import AppContext from "../../context/AppContext";
-import Renderer from "../../utils/Renderer/Renderer";
-import Stats from "../../utils/Stats";
-import Label, { LabelBaseColors, LabelFonts } from "../Label/Label";
+
+import { AppContext, LabelBaseColors, LabelFonts } from "@utils/exports";
+import Renderer from "@utils/Renderer/Renderer";
+import Stats from "@utils/Stats";
+import Label from "@component/Label/Label";
 
 export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasElement>) {
     const { settings, setSettings } = useContext(AppContext);

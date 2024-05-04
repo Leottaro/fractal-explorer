@@ -1,4 +1,4 @@
-export interface ToggleProps {
+interface ToggleProps {
     checked: boolean;
     onClick: () => void;
 }
