@@ -1,4 +1,4 @@
-import { colorToVec4, ContextSettings } from "../../context/AppContext";
+import { colorToVec4, ContextSettings } from "@context/AppContext";
 import fullScreenTexSource from "./fullScreenTexture.wgsl?raw";
 
 function discardNull(element: any | null | undefined, errorMessage: string) {

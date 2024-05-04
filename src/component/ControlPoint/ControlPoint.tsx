@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import AppContext, { Point } from "../..//context/AppContext";
+import AppContext, { Point } from "@context/AppContext";
 
 export interface ControlPointProps {
     getter: Point;

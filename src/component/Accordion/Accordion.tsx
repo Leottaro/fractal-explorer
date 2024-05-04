@@ -1,6 +1,6 @@
 import { createRef, ReactNode, useEffect, useState } from "react";
-import Container, { ContainerProps } from "../Container/Container";
-import Icon, { IconType } from "../Icon/Icon";
+import Container, { ContainerProps } from "@component/Container/Container";
+import Icon, { IconType } from "@component/Icon/Icon";
 
 export default function Accordion({ hover, blur, ...attributes }: ContainerProps) {
     const [opened, setOpened] = useState<boolean>(false);

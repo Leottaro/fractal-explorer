@@ -25,9 +25,12 @@
 
         /* Custom paths */
         "paths": {
-            "root/*": ["./*"],
-            "public/*": ["./public/*"],
-            "src/*": ["./src/*"]
+            "@root/*": ["./*"],
+            "@public/*": ["./public/*"],
+            "@src/*": ["./src/*"],
+            "@component/*": ["./src/component/*"],
+            "@context/*": ["./src/context/*"],
+            "@utils/*": ["./src/utils/*"]
         }
     },
     "include": ["src"],

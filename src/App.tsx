@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState, WheelEvent } from "react";
-import AppContext, { ContextSettings, Fractals, Point } from "./context/AppContext";
+import AppContext, { ContextSettings, Fractals, Point } from "@context/AppContext";
 
-import FractalCanvas from "./component/FractalCanvas/FractalCanvas";
-import SettingsTab from "./component/SettingsTab/SettingsTab";
-import ControlPoint from "./component/ControlPoint/ControlPoint";
+import FractalCanvas from "@component/FractalCanvas/FractalCanvas";
+import SettingsTab from "@component/SettingsTab/SettingsTab";
+import ControlPoint from "@component/ControlPoint/ControlPoint";
 
 function pointLerp(a: Point, b: Point, p: number) {
     return {

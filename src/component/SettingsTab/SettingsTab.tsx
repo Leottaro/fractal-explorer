@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
-import AppContext, { Fractals } from "../../context/AppContext";
-import Slider, { SliderTypes } from "../Inputs/Slider";
-import Toggle from "../Inputs/Toggle";
-import ColorSlider from "../Inputs/ColorSlider";
-import Container from "../Container/Container";
-import Icon, { IconType } from "../Icon/Icon";
-import Label, { LabelBaseColors, LabelFonts } from "../Label/Label";
-import Accordion from "../Accordion/Accordion";
+import AppContext, { Fractals } from "@context/AppContext";
+import Slider, { SliderTypes } from "@component/Inputs/Slider";
+import Toggle from "@component/Inputs/Toggle";
+import ColorSlider from "@component/Inputs/ColorSlider";
+import Container from "@component/Container/Container";
+import Icon, { IconType } from "@component/Icon/Icon";
+import Label, { LabelBaseColors, LabelFonts } from "@component/Label/Label";
+import Accordion from "@component/Accordion/Accordion";
 
 function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);

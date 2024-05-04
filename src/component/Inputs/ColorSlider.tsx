@@ -1,7 +1,7 @@
 import { createRef, useContext, useEffect, useState } from "react";
-import AppContext, { ColorT } from "../../context/AppContext";
 import { RgbColorPicker } from "react-colorful";
-import Container from "../Container/Container";
+import AppContext, { ColorT } from "@context/AppContext";
+import Container from "@component/Container/Container";
 import "./ColorSlider.css";
 
 interface Selected {

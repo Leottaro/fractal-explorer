@@ -1,6 +1,6 @@
 import { createRef, useContext, useEffect, useState } from "react";
-import Label, { LabelBaseColors, LabelFonts } from "../Label/Label";
-import AppContext from "../../context/AppContext";
+import Label, { LabelBaseColors, LabelFonts } from "@component/Label/Label";
+import AppContext from "@context/AppContext";
 
 export enum SliderTypes {
     LINEAR,
