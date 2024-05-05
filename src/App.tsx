@@ -15,7 +15,7 @@ export default function App() {
         uMaxIters: 186,
         uColorOffset: 0,
         uSmoothColors: true,
-        uZoom: 1,
+        uZoom: 0.75,
         uMouse: { x: 0, y: 0 },
         uTime: 0,
         uColors: [
@@ -179,6 +179,16 @@ export default function App() {
         }
     }, [settings.uTime, settings.sColorOffsetMax]);
 
+    // Keys Pressing
+    window.onkeydown = (event) => {
+        if (event.key === " ") {
+            setSettings((prevSettings) => ({
+                ...prevSettings,
+                sPlayTime: !settings.sPlayTime,
+            }));
+        }
+    };
+
     return (
         <AppContext.Provider value={{ settings, setSettings }}>
             <FractalCanvas
@@ -187,24 +197,26 @@ export default function App() {
                 onWheel={handleWheel}
             />
             <SettingsTab />
-            {settings.uFractal == Fractals.Julia ? (
-                <ControlPoint
-                    getter={settings.sJuliaC}
-                    setter={(newPoint) =>
-                        setSettings((prevSettings) => ({
-                            ...prevSettings,
-                            sJuliaC: newPoint,
-                            uJuliaC: PixelToPoint(newPoint),
-                        }))
-                    }
-                />
-            ) : settings.uFractal == Fractals.Mandelbrot ? (
-                <></>
-            ) : settings.uFractal == Fractals.Newton ? (
-                <></>
-            ) : (
-                <></>
-            )}
+            <span onWheel={handleWheel}>
+                {settings.uFractal == Fractals.Julia ? (
+                    <ControlPoint
+                        getter={settings.sJuliaC}
+                        setter={(newPoint) =>
+                            setSettings((prevSettings) => ({
+                                ...prevSettings,
+                                sJuliaC: newPoint,
+                                uJuliaC: PixelToPoint(newPoint),
+                            }))
+                        }
+                    />
+                ) : settings.uFractal == Fractals.Mandelbrot ? (
+                    <></>
+                ) : settings.uFractal == Fractals.Newton ? (
+                    <></>
+                ) : (
+                    <></>
+                )}
+            </span>
         </AppContext.Provider>
     );
 }
