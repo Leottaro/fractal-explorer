@@ -1,4 +1,5 @@
 import { createRef, ReactNode, useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 import { ContainerProps, IconType } from "@utils/exports";
 import Container from "@component/Container/Container";
@@ -18,7 +19,7 @@ export default function Accordion({ hover, blur, ...attributes }: ContainerProps
             hover={hover}
             blur={blur}
             {...attributes}
-            className={(attributes.className ?? "") + " flex flex-col overflow-hidden"}
+            className={twMerge("flex flex-col overflow-hidden " + (attributes.className ?? ""))}
         >
             <div className="z-10 flex h-14 flex-row items-center gap-2 p-1">
                 {(attributes.children as ReactNode[])[0]}

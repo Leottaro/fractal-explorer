@@ -1,4 +1,5 @@
 import { HTMLAttributes } from "react";
+import { twMerge } from "tailwind-merge";
 
 import { LabelBaseColors, LabelFonts } from "@utils/exports";
 
@@ -20,22 +21,20 @@ export default function Label({
     selectionable,
     ...attributes
 }: LabelProps) {
+    const Classes = [
+        "flex items-center justify-center rounded-lg text-2xl",
+        font.valueOf(),
+        baseColor.valueOf(),
+        bold ? "font-bold" : "font-normal",
+        hover ? " hover:bg-neutral-400 hover:bg-opacity-15 hover:text-neutral-200 " : "",
+        selected ? " bg-neutral-400 bg-opacity-35 text-neutral-200 " : "",
+        selectionable ? "select-all" : "select-none",
+        attributes.className ?? "",
+    ];
     return (
         <label
             {...attributes}
-            className={
-                (bold ? " font-bold " : " font-normal ") +
-                (selectionable ? " select-all " : " select-none ") +
-                font.valueOf() +
-                " flex items-center justify-center rounded-lg text-2xl " +
-                (selected
-                    ? " bg-neutral-400 bg-opacity-35 text-neutral-200 "
-                    : baseColor.valueOf() +
-                      (hover
-                          ? " hover:bg-neutral-400 hover:bg-opacity-15 hover:text-neutral-200 "
-                          : " ")) +
-                (attributes.className ?? "")
-            }
+            className={twMerge(Classes.join(" "))}
         />
     );
 }
