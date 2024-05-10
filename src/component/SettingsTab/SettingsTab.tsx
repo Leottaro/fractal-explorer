@@ -8,13 +8,14 @@ import {
     LabelFonts,
     SliderTypes,
 } from "@utils/exports";
-import Slider from "@component/Inputs/Slider";
-import Toggle from "@component/Inputs/Toggle";
-import ColorSlider from "@component/Inputs/ColorSlider";
+import Accordion from "@component/Accordion/Accordion";
 import Container from "@component/Container/Container";
 import Icon from "@component/Icon/Icon";
+import ColorSlider from "@component/Inputs/ColorSlider";
+import Input from "@component/Inputs/Input";
+import Slider from "@component/Inputs/Slider";
+import Toggle from "@component/Inputs/Toggle";
 import Label from "@component/Label/Label";
-import Accordion from "@component/Accordion/Accordion";
 
 export default function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);
@@ -92,12 +93,27 @@ export default function SettingsTab() {
                         />
                     </Accordion>
                     <Accordion>
-                        <Label
-                            font={LabelFonts.Poppins}
-                            baseColor={LabelBaseColors.Ligth}
-                        >
-                            Maximum iterations: {settings.uMaxIters.toFixed(0)}
-                        </Label>
+                        <>
+                            <Label
+                                font={LabelFonts.Poppins}
+                                baseColor={LabelBaseColors.Ligth}
+                            >
+                                Maximum iterations
+                                {settings.sMaxItersZoomDependant ? (
+                                    ": " + settings.uMaxIters.toFixed(0)
+                                ) : (
+                                    <Input
+                                        value={Math.round(settings.uMaxIters)}
+                                        onChange={(value) =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uMaxIters: value,
+                                            }))
+                                        }
+                                    />
+                                )}
+                            </Label>
+                        </>
                         <div className="flex flex-row items-center gap-2">
                             <Label
                                 font={LabelFonts.Poppins}
