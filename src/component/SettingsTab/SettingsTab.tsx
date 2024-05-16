@@ -8,13 +8,14 @@ import {
     LabelFonts,
     SliderTypes,
 } from "@utils/exports";
-import Slider from "@component/Inputs/Slider";
-import Toggle from "@component/Inputs/Toggle";
-import ColorSlider from "@component/Inputs/ColorSlider";
+import Accordion from "@component/Accordion/Accordion";
 import Container from "@component/Container/Container";
 import Icon from "@component/Icon/Icon";
+import ColorSlider from "@component/Inputs/ColorSlider";
+import Input from "@component/Inputs/Input";
+import Slider from "@component/Inputs/Slider";
+import Toggle from "@component/Inputs/Toggle";
 import Label from "@component/Label/Label";
-import Accordion from "@component/Accordion/Accordion";
 
 export default function SettingsTab() {
     const { settings, setSettings } = useContext(AppContext);
@@ -76,7 +77,10 @@ export default function SettingsTab() {
                             font={LabelFonts.Poppins}
                             baseColor={LabelBaseColors.Ligth}
                         >
-                            Zoom factor: {settings.uZoom.toFixed(10)}
+                            Zoom factor:&nbsp;
+                            <span className="font-robotomono">
+                                {settings.uZoom.toPrecision(16)}
+                            </span>
                         </Label>
                         <Slider
                             min={settings.sZoomMin}
@@ -92,12 +96,29 @@ export default function SettingsTab() {
                         />
                     </Accordion>
                     <Accordion>
-                        <Label
-                            font={LabelFonts.Poppins}
-                            baseColor={LabelBaseColors.Ligth}
-                        >
-                            Maximum iterations: {settings.uMaxIters.toFixed(0)}
-                        </Label>
+                        <>
+                            <Label
+                                font={LabelFonts.Poppins}
+                                baseColor={LabelBaseColors.Ligth}
+                            >
+                                Maximum iterations:&nbsp;
+                                {settings.sMaxItersZoomDependant ? (
+                                    "  " + settings.uMaxIters.toFixed(0)
+                                ) : (
+                                    <Input
+                                        value={Math.round(settings.uMaxIters)}
+                                        font={LabelFonts.Poppins}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputChange={(value) =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uMaxIters: value,
+                                            }))
+                                        }
+                                    />
+                                )}
+                            </Label>
+                        </>
                         <div className="flex flex-row items-center gap-2">
                             <Label
                                 font={LabelFonts.Poppins}
@@ -141,6 +162,75 @@ export default function SettingsTab() {
                             <></>
                         )}
                     </Accordion>
+                    <Accordion>
+                        <Label
+                            font={LabelFonts.Poppins}
+                            baseColor={LabelBaseColors.Ligth}
+                        >
+                            Center ≈&nbsp;
+                            <span className="text-xl font-robotomono">
+                                {settings.uCenter.x.toPrecision(8)}
+                                {settings.uCenter.y > 0 ? " + " : " - "}
+                                {Math.abs(settings.uCenter.y).toPrecision(8)}i
+                            </span>
+                        </Label>
+                        <span className="font-robotomono">
+                            <div className="flex flex-row gap-2">
+                                <Label
+                                    font={LabelFonts.Roboto}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    x:
+                                </Label>
+                                <Input
+                                    value={settings.uCenter.x}
+                                    font={LabelFonts.Roboto}
+                                    baseColor={LabelBaseColors.Ligth}
+                                    onInputChange={(value) =>
+                                        setSettings((prevSettings) => ({
+                                            ...prevSettings,
+                                            uCenter: { x: value, y: settings.uCenter.y },
+                                        }))
+                                    }
+                                />
+                            </div>
+                            <div className="flex flex-row gap-2">
+                                <Label
+                                    font={LabelFonts.Roboto}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    y:
+                                </Label>
+                                <Input
+                                    value={settings.uCenter.y}
+                                    font={LabelFonts.Roboto}
+                                    baseColor={LabelBaseColors.Ligth}
+                                    onInputChange={(value) =>
+                                        setSettings((prevSettings) => ({
+                                            ...prevSettings,
+                                            uCenter: { x: settings.uCenter.x, y: value },
+                                        }))
+                                    }
+                                />
+                            </div>
+                        </span>
+                    </Accordion>
+                    <Container className="justify-start p-2">
+                        <Label
+                            font={LabelFonts.Poppins}
+                            baseColor={LabelBaseColors.Ligth}
+                        >
+                            Mouse:&nbsp;
+                        </Label>
+                        <Label
+                            font={LabelFonts.Roboto}
+                            baseColor={LabelBaseColors.Ligth}
+                        >
+                            {settings.uMouse.x.toFixed(8)}
+                            {settings.uMouse.y > 0 ? " + " : " - "}
+                            {Math.abs(settings.uMouse.y).toFixed(8)}i
+                        </Label>
+                    </Container>
                     <Accordion className="overflow-visible">
                         <div className="flex flex-grow flex-row items-center gap-2 pr-2">
                             <Label

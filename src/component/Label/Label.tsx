@@ -1,16 +1,6 @@
-import { HTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { LabelBaseColors, LabelFonts } from "@utils/exports";
-
-interface LabelProps extends HTMLAttributes<HTMLLabelElement> {
-    font: LabelFonts;
-    baseColor: LabelBaseColors;
-    bold?: boolean;
-    hover?: boolean;
-    selected?: boolean;
-    selectionable?: boolean;
-}
+import { LabelProps } from "@utils/exports";
 
 export default function Label({
     font,
@@ -19,6 +9,7 @@ export default function Label({
     hover,
     selected,
     selectionable,
+    wrapText,
     ...attributes
 }: LabelProps) {
     const Classes = [
@@ -29,6 +20,7 @@ export default function Label({
         hover ? " hover:bg-neutral-400 hover:bg-opacity-15 hover:text-neutral-200 " : "",
         selected ? " bg-neutral-400 bg-opacity-35 text-neutral-200 " : "",
         selectionable ? "select-all" : "select-none",
+        wrapText ? "text-wrap" : "text-nowrap",
         attributes.className ?? "",
     ];
     return (
