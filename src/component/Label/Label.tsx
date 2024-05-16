@@ -1,17 +1,6 @@
-import { HTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { LabelBaseColors, LabelFonts } from "@utils/exports";
-
-interface LabelProps extends HTMLAttributes<HTMLLabelElement> {
-    font: LabelFonts;
-    baseColor: LabelBaseColors;
-    bold?: boolean;
-    hover?: boolean;
-    selected?: boolean;
-    selectionable?: boolean;
-    wrapText?: boolean;
-}
+import { LabelProps } from "@utils/exports";
 
 export default function Label({
     font,

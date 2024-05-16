@@ -28,6 +28,16 @@ export enum Fractals {
     Newton,
 }
 
+export interface LabelProps extends HTMLAttributes<HTMLLabelElement> {
+    font: LabelFonts;
+    baseColor: LabelBaseColors;
+    bold?: boolean;
+    hover?: boolean;
+    selected?: boolean;
+    selectionable?: boolean;
+    wrapText?: boolean;
+}
+
 export enum LabelFonts {
     Poppins = "font-poppins",
     Roboto = "font-robotomono",
