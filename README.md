@@ -92,7 +92,7 @@ If your device or browser isn't compatible with webGPU, the website WILL not wor
     -   [x] Zoom
     -   [x] Maximum iterations
         -   [x] Automatic
-        -   [ ] Manual
+        -   [x] Manual
     -   [x] Color gradient
         -   [x] Smooth colors
         -   [x] colors offset

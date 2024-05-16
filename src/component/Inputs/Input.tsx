@@ -1,6 +1,6 @@
 import Container from "@component/Container/Container";
 import { LabelProps } from "@utils/exports";
-import Label from "../Label/Label";
+import Label from "@component/Label/Label";
 
 interface TextInputProps extends LabelProps {
     value: number;
