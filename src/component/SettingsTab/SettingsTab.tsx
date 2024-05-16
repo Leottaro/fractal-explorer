@@ -78,7 +78,9 @@ export default function SettingsTab() {
                             baseColor={LabelBaseColors.Ligth}
                         >
                             Zoom factor:&nbsp;
-                            <span className="font-robotomono">{settings.uZoom.toFixed(16)}</span>
+                            <span className="font-robotomono">
+                                {settings.uZoom.toPrecision(16)}
+                            </span>
                         </Label>
                         <Slider
                             min={settings.sZoomMin}
@@ -167,9 +169,9 @@ export default function SettingsTab() {
                         >
                             Center ≈&nbsp;
                             <span className="text-xl font-robotomono">
-                                {settings.uCenter.x.toFixed(8)}
+                                {settings.uCenter.x.toPrecision(8)}
                                 {settings.uCenter.y > 0 ? " + " : " - "}
-                                {Math.abs(settings.uCenter.y).toFixed(8)}i
+                                {Math.abs(settings.uCenter.y).toPrecision(8)}i
                             </span>
                         </Label>
                         <span className="font-robotomono">
@@ -213,12 +215,12 @@ export default function SettingsTab() {
                             </div>
                         </span>
                     </Accordion>
-                    <Container className="justify-start p-2 gap-2">
+                    <Container className="justify-start p-2">
                         <Label
                             font={LabelFonts.Poppins}
                             baseColor={LabelBaseColors.Ligth}
                         >
-                            Mouse:
+                            Mouse:&nbsp;
                         </Label>
                         <Label
                             font={LabelFonts.Roboto}
