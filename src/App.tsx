@@ -29,6 +29,9 @@ export default function App() {
         uFillingColor: { r: 0, g: 0, b: 0 },
         uFractal: Fractals.Julia,
         uJuliaC: { x: 0, y: 0 },
+        uNewtonC1: { x: -1, y: -1 },
+        uNewtonC2: { x: -1, y: 1 },
+        uNewtonC3: { x: 1.95, y: 0 },
 
         sZoomMin: 0.5,
         sZoomMax: 40000,
@@ -45,7 +48,10 @@ export default function App() {
         sMouseDownTarget: document.createElement("div"),
         sPlayTime: false,
         sTimeFactor: 1,
-        sJuliaC: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+        sJuliaC: { x: 0, y: 0 },
+        sNewtonC1: { x: 0, y: 0 },
+        sNewtonC2: { x: 0, y: 0 },
+        sNewtonC3: { x: 0, y: 0 },
     });
 
     // Functions
@@ -79,6 +85,9 @@ export default function App() {
             setSettings((prevSettings) => ({
                 ...prevSettings,
                 sJuliaC: PointToPixel(settings.uJuliaC),
+                sNewtonC1: PointToPixel(settings.uNewtonC1),
+                sNewtonC2: PointToPixel(settings.uNewtonC2),
+                sNewtonC3: PointToPixel(settings.uNewtonC3),
             })),
         [settings.aWidth, settings.aHeight, settings.uAspectRatio, settings.uZoom, settings.uCenter]
     );
@@ -212,7 +221,38 @@ export default function App() {
                 ) : settings.uFractal == Fractals.Mandelbrot ? (
                     <></>
                 ) : settings.uFractal == Fractals.Newton ? (
-                    <></>
+                    <>
+                        <ControlPoint
+                            getter={settings.sNewtonC1}
+                            setter={(newPoint) =>
+                                setSettings((prevSettings) => ({
+                                    ...prevSettings,
+                                    sNewtonC1: newPoint,
+                                    uNewtonC1: PixelToPoint(newPoint),
+                                }))
+                            }
+                        />
+                        <ControlPoint
+                            getter={settings.sNewtonC2}
+                            setter={(newPoint) =>
+                                setSettings((prevSettings) => ({
+                                    ...prevSettings,
+                                    sNewtonC2: newPoint,
+                                    uNewtonC2: PixelToPoint(newPoint),
+                                }))
+                            }
+                        />
+                        <ControlPoint
+                            getter={settings.sNewtonC3}
+                            setter={(newPoint) =>
+                                setSettings((prevSettings) => ({
+                                    ...prevSettings,
+                                    sNewtonC3: newPoint,
+                                    uNewtonC3: PixelToPoint(newPoint),
+                                }))
+                            }
+                        />
+                    </>
                 ) : (
                     <></>
                 )}
