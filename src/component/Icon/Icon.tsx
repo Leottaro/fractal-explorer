@@ -20,7 +20,7 @@ export default function Icon({ flipped, type, pathProps, ...attributes }: IconPr
             viewBox="0 0 40 40"
             fill="none"
             {...attributes}
-            className={twMerge("aspect-square h-full " + (attributes.className ?? ""))}
+            className={twMerge("aspect-square h-full felx-grow " + (attributes.className ?? ""))}
         >
             <path
                 strokeLinecap="round"

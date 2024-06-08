@@ -171,7 +171,7 @@ export default class Renderer {
          * i pasted my shaders into https://webgpufundamentals.org/webgpu/lessons/resources/wgsl-offset-computer.html
          * to get the offsets i needed, i then divided everything by 4 (the number of bytes of a float32)
          */
-        const uniformsValues = new Float32Array(16 + 4 * settings.uColors.length);
+        const uniformsValues = new Float32Array(24 + 4 * settings.uColors.length);
         uniformsValues.set([settings.uTime], 0);
         uniformsValues.set([settings.uSmoothColors ? 1 : 0], 1);
         uniformsValues.set([settings.uMaxIters], 2);
@@ -179,12 +179,16 @@ export default class Renderer {
         uniformsValues.set([settings.uAspectRatio], 4);
         uniformsValues.set([settings.uZoom], 5);
         uniformsValues.set([settings.uJuliaC.x, settings.uJuliaC.y], 6);
-        uniformsValues.set([settings.uCenter.x, settings.uCenter.y], 8);
-        uniformsValues.set([settings.uMouse.x, settings.uMouse.y], 10);
-        uniformsValues.set(colorToVec4(settings.uFillingColor), 12);
-        uniformsValues.set([settings.uFractal.valueOf()], 15);
+        uniformsValues.set([settings.uNewtonR.x, settings.uNewtonR.y], 8);
+        uniformsValues.set([settings.uNewtonG.x, settings.uNewtonG.y], 10);
+        uniformsValues.set([settings.uNewtonB.x, settings.uNewtonB.y], 12);
+        uniformsValues.set([settings.uCenter.x, settings.uCenter.y], 14);
+        uniformsValues.set([settings.uMouse.x, settings.uMouse.y], 16);
+        uniformsValues.set([settings.uFractal.valueOf()], 18);
+        uniformsValues.set([settings.uNewtonCChecked], 19);
+        uniformsValues.set(colorToVec4(settings.uFillingColor), 20);
         settings.uColors.forEach((color, index) => {
-            uniformsValues.set(colorToVec4(color), 16 + 4 * index);
+            uniformsValues.set(colorToVec4(color), 24 + 4 * index);
         });
 
         this.fractalBindGroup = this.device.createBindGroup({

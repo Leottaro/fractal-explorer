@@ -8,10 +8,14 @@ struct Settings {
     uAspectRatio: f32,
     uZoom: f32,
     uJuliaC: vec2f,
+    uNewtonR: vec2f,
+    uNewtonG: vec2f,
+    uNewtonB: vec2f,
     uCenter: vec2f,
     uMouse: vec2f,
-    uFillingColor: vec3f,
     uFractal: f32,
+    uNewtonCChecked: f32,
+    uFillingColor: vec3f,
     uColors: array<vec4f>, // uColors are sorted by t
 };
 @group(0) @binding(0) var<storage, read> settings: Settings;
@@ -27,6 +31,38 @@ fn vertexMain(@location(0) position: vec2f) -> VertexOut {
     output.mappedPosition = vec2f(position.x * settings.uAspectRatio, position.y) / settings.uZoom + settings.uCenter;
     return output;
 }
+
+// Since we will work with complex numbers, we need to define some operations
+fn add(a: vec2f, b: vec2f) -> vec2f {
+    return vec2f(a.x + b.x, a.y + b.y);
+}
+fn add3(a: vec2f, b: vec2f, c: vec2f) -> vec2f {
+    return vec2f(a.x + b.x + c.x, a.y + b.y + c.y);
+}
+
+fn sub(a: vec2f, b: vec2f) -> vec2f {
+    return vec2f(a.x - b.x, a.y - b.y);
+}
+fn sub3(a: vec2f, b: vec2f, c: vec2f) -> vec2f {
+    return vec2f(a.x - b.x - c.x, a.y - b.y - c.y);
+}
+
+fn mult(a: vec2f, b: vec2f) -> vec2f {
+    return vec2f(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+fn mult3(a: vec2f, b: vec2f, c: vec2f) -> vec2f {
+    return mult(a, mult(b, c));
+}
+
+fn div(a: vec2f, b: vec2f) -> vec2f {
+    let d: f32 = b.x * b.x + b.y * b.y;
+    return vec2f((a.x * b.x + a.y * b.y) / d, (a.y * b.x - a.x * b.y) / d);
+}
+fn div3(a: vec2f, b: vec2f, c: vec2f) -> vec2f {
+    return div(a, mult(b, c));
+}
+
+// Julia and Mandelbrot visual functions
 
 fn smoothIters(i: f32, z: vec2f) -> f32 {
     let log_zn: f32 = log(z.x * z.x + z.y * z.y) / 2;
@@ -61,18 +97,21 @@ fn getColor(iterations: f32) -> vec3f {
     return color1 + finalT * (color2 - color1);
 }
 
+// Julia and Mandelbrot
+
 fn Julia(point: vec2f, constant: vec2f) -> vec4f {
     // Usual algorithm
     var z: vec2f = point;
     var i: f32 = 0;
-    for (i = 0; i <= settings.uMaxIters; i = i + 1) {
-        z = vec2f(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + constant;
+    while i < settings.uMaxIters && length(z) < 16. {
+        z = add(mult(z, z), constant);
         if z.x == point.x && z.y == point.y { // periodicity check
             return vec4f(settings.uFillingColor, 1);
         }
         if length(z) > 16. {
             break;
         }
+        i = i + 1;
     }
     if settings.uSmoothColors == 1 && i < settings.uMaxIters {
         i = smoothIters(i, z);
@@ -96,6 +135,58 @@ fn Mandelbrot(point: vec2f) -> vec4f {
     return Julia(point, point);
 }
 
+// Newton 
+fn Newton(point: vec2f, r1: vec2f, r2: vec2f, r3: vec2f) -> vec4f {
+    // did the logic there https://www.desmos.com/calculator/abb3n0sehd
+    // we have 3 roots: r1, r2, r3
+    // f(x) = (x-r1)(x-r2)(x-r3)
+    // f'(x) = g(x) = (x-r1)(x-r2) + (x-r2)(x-r3) + (x-r1)(x-r3)
+    // h(x) is the tangent to f(x) at x
+    // the new x is x - f(x)/g(x)
+
+    let treshold: f32 = 1. / 1000.;
+    var dR1: f32;
+    var dR2: f32;
+    var dR3: f32;
+    var num: vec2f;
+    var denom: vec2f;
+
+    var z: vec2f = point;
+    var i: f32 = 0;
+    var dMin: f32 = 1;
+    while dMin > treshold && i < settings.uMaxIters {
+        num = mult3(sub(z, r1), sub(z, r2), sub(z, r3));
+        denom = add3(mult(sub(z, r1), sub(z, r2)), mult(sub(z, r2), sub(z, r3)), mult(sub(z, r1), sub(z, r3)));
+        z = sub(z, div(num, denom));
+        dR1 = length(sub(z, r1));
+        dR2 = length(sub(z, r2));
+        dR3 = length(sub(z, r3));
+        dMin = min(dR1, min(dR2, dR3));
+        i = i + 1;
+    }
+
+    if dMin > treshold {
+        return vec4f(settings.uFillingColor, 1);
+    }
+
+    var color: vec3f;
+    var dist: f32;
+    if dR1 < dR2 && dR1 < dR3 {
+        color = vec3f(1, 0, 0);
+        dist = dot(z - r1, z - r1);
+    } else if dR2 < dR1 && dR2 < dR3 {
+        color = vec3f(0, 1, 0);
+        dist = dot(z - r2, z - r2);
+    } else {
+        color = vec3f(0, 0, 1);
+        dist = dot(z - r3, z - r3);
+    }
+    if settings.uSmoothColors == 1 {
+        color *= 0.75 + 0.25 * cos(0.25 * (i - log2(log(dist) / log(treshold))));
+    }
+    return vec4f(color, 1);
+}
+
 @fragment
 fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
     let pointPos: vec2f = fragData.mappedPosition;
@@ -103,7 +194,19 @@ fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
         return Julia(pointPos, settings.uJuliaC);
     } else if settings.uFractal == 1 {
         return Mandelbrot(pointPos);
-    } else {
-        return vec4f(settings.uFillingColor, 1);
+    } else if settings.uFractal == 2 {
+        if settings.uNewtonCChecked == 0 {
+            return Newton(pointPos, settings.uNewtonR, settings.uNewtonG, settings.uNewtonB);
+        } else if settings.uNewtonCChecked == 1 {
+            let average: vec2f = add3(pointPos, settings.uNewtonG, settings.uNewtonB) / 3;
+            return Newton(average, pointPos, settings.uNewtonG, settings.uNewtonB);
+        } else if settings.uNewtonCChecked == 2 {
+            let average: vec2f = add3(settings.uNewtonR, pointPos, settings.uNewtonB) / 3;
+            return Newton(average, settings.uNewtonR, pointPos, settings.uNewtonB);
+        } else if settings.uNewtonCChecked == 3 {
+            let average: vec2f = add3(settings.uNewtonR, settings.uNewtonG, pointPos) / 3;
+            return Newton(average, settings.uNewtonR, settings.uNewtonG, pointPos);
+        }
     }
+    return vec4f(settings.uFillingColor, 1);
 }

@@ -86,6 +86,10 @@ export interface Uniforms {
     uFillingColor: Color;
     uFractal: Fractals;
     uJuliaC: Point;
+    uNewtonR: Point;
+    uNewtonG: Point;
+    uNewtonB: Point;
+    uNewtonCChecked: number;
 }
 
 export interface Settings {
@@ -105,6 +109,9 @@ export interface Settings {
     sPlayTime: boolean;
     sTimeFactor: number;
     sJuliaC: Point;
+    sNewtonR: Point;
+    sNewtonG: Point;
+    sNewtonB: Point;
 }
 
 export interface ContextSettings extends Attributes, Uniforms, Settings {}

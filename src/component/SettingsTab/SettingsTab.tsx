@@ -71,7 +71,7 @@ export default function SettingsTab() {
                             </Label>
                         ))}
                 </Container>
-                <div className="Settings flex h-auto flex-grow flex-col gap-2">
+                <div className="flex h-full flex-col flex-grow gap-2 overflow-scroll">
                     <Accordion>
                         <Label
                             font={LabelFonts.Poppins}
@@ -299,6 +299,299 @@ export default function SettingsTab() {
                             />
                         </div>
                     </Accordion>
+                    {settings.uFractal === Fractals.Julia ? (
+                        <>
+                            <Accordion>
+                                <Label
+                                    font={LabelFonts.Poppins}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    Constant ≈&nbsp;
+                                    <span className="text-xl font-robotomono">
+                                        {settings.uJuliaC.x > 0 ? "+" : "-"}
+                                        {Math.abs(settings.uJuliaC.x).toFixed(7)}
+                                        {settings.uJuliaC.y > 0 ? " + " : " - "}
+                                        {Math.abs(settings.uJuliaC.y).toFixed(7)}i
+                                    </span>
+                                </Label>
+                                <span className="font-robotomono">
+                                    <div className="flex flex-row gap-2">
+                                        <Label
+                                            font={LabelFonts.Roboto}
+                                            baseColor={LabelBaseColors.Ligth}
+                                        >
+                                            x:
+                                        </Label>
+                                        <Input
+                                            value={settings.uJuliaC.x}
+                                            font={LabelFonts.Roboto}
+                                            baseColor={LabelBaseColors.Ligth}
+                                            onInputChange={(value) =>
+                                                setSettings((prevSettings) => ({
+                                                    ...prevSettings,
+                                                    uJuliaC: { x: value, y: settings.uJuliaC.y },
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                    <div className="flex flex-row gap-2">
+                                        <Label
+                                            font={LabelFonts.Roboto}
+                                            baseColor={LabelBaseColors.Ligth}
+                                        >
+                                            y:
+                                        </Label>
+                                        <Input
+                                            value={settings.uJuliaC.y}
+                                            font={LabelFonts.Roboto}
+                                            baseColor={LabelBaseColors.Ligth}
+                                            onInputChange={(value) =>
+                                                setSettings((prevSettings) => ({
+                                                    ...prevSettings,
+                                                    uJuliaC: { x: settings.uJuliaC.x, y: value },
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                </span>
+                            </Accordion>
+                        </>
+                    ) : settings.uFractal === Fractals.Mandelbrot ? (
+                        <></>
+                    ) : settings.uFractal === Fractals.Newton ? (
+                        <>
+                            <Accordion>
+                                <Label
+                                    font={LabelFonts.Poppins}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    ConstantR ≈&nbsp;
+                                    <span className="text-xl font-robotomono">
+                                        {settings.uNewtonR.x > 0 ? "+" : "-"}
+                                        {Math.abs(settings.uNewtonR.x).toFixed(7)}
+                                        {settings.uNewtonR.y > 0 ? " + " : " - "}
+                                        {Math.abs(settings.uNewtonR.y).toFixed(7)}i
+                                    </span>
+                                </Label>
+                                <div className="flex flex-row gap-2">
+                                    <Label
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        x:
+                                    </Label>
+                                    <Input
+                                        value={settings.uNewtonR.x}
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputChange={(value) =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonR: {
+                                                    x: value,
+                                                    y: settings.uNewtonR.y,
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="flex flex-row gap-2">
+                                    <Label
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        y:
+                                    </Label>
+                                    <Input
+                                        value={settings.uNewtonR.y}
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputChange={(value) =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonR: {
+                                                    x: settings.uNewtonR.x,
+                                                    y: value,
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="flex flex-row items-center gap-2">
+                                    <Label
+                                        font={LabelFonts.Poppins}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        Fixed
+                                    </Label>
+                                    <Toggle
+                                        checked={settings.uNewtonCChecked != 1}
+                                        onClick={() =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonCChecked:
+                                                    settings.uNewtonCChecked != 1 ? 1 : 0,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                            </Accordion>
+                            <Accordion>
+                                <Label
+                                    font={LabelFonts.Poppins}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    ConstantG ≈&nbsp;
+                                    <span className="text-xl font-robotomono">
+                                        {settings.uNewtonG.x > 0 ? "+" : "-"}
+                                        {Math.abs(settings.uNewtonG.x).toFixed(7)}
+                                        {settings.uNewtonG.y > 0 ? " + " : " - "}
+                                        {Math.abs(settings.uNewtonG.y).toFixed(7)}i
+                                    </span>
+                                </Label>
+                                <div className="flex flex-row gap-2">
+                                    <Label
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        x:
+                                    </Label>
+                                    <Input
+                                        value={settings.uNewtonG.x}
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputChange={(value) =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonG: {
+                                                    x: value,
+                                                    y: settings.uNewtonG.y,
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="flex flex-row gap-2">
+                                    <Label
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        y:
+                                    </Label>
+                                    <Input
+                                        value={settings.uNewtonG.y}
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputChange={(value) =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonG: {
+                                                    x: settings.uNewtonG.x,
+                                                    y: value,
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="flex flex-row items-center gap-2">
+                                    <Label
+                                        font={LabelFonts.Poppins}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        Fixed
+                                    </Label>
+                                    <Toggle
+                                        checked={settings.uNewtonCChecked != 2}
+                                        onClick={() =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonCChecked:
+                                                    settings.uNewtonCChecked != 2 ? 2 : 0,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                            </Accordion>
+                            <Accordion>
+                                <Label
+                                    font={LabelFonts.Poppins}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    ConstantB ≈&nbsp;
+                                    <span className="text-xl font-robotomono">
+                                        {settings.uNewtonB.x > 0 ? "+" : "-"}
+                                        {Math.abs(settings.uNewtonB.x).toFixed(7)}
+                                        {settings.uNewtonB.y > 0 ? " + " : " - "}
+                                        {Math.abs(settings.uNewtonB.y).toFixed(7)}i
+                                    </span>
+                                </Label>
+                                <div className="flex flex-row gap-2">
+                                    <Label
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        x:
+                                    </Label>
+                                    <Input
+                                        value={settings.uNewtonB.x}
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputChange={(value) =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonB: {
+                                                    x: value,
+                                                    y: settings.uNewtonB.y,
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="flex flex-row gap-2">
+                                    <Label
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        y:
+                                    </Label>
+                                    <Input
+                                        value={settings.uNewtonB.y}
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputChange={(value) =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonB: {
+                                                    x: settings.uNewtonB.x,
+                                                    y: value,
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="flex flex-row items-center gap-2">
+                                    <Label
+                                        font={LabelFonts.Poppins}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        Fixed
+                                    </Label>
+                                    <Toggle
+                                        checked={settings.uNewtonCChecked != 3}
+                                        onClick={() =>
+                                            setSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                uNewtonCChecked:
+                                                    settings.uNewtonCChecked != 3 ? 3 : 0,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                            </Accordion>
+                        </>
+                    ) : (
+                        <></>
+                    )}
                 </div>
                 <Container className="flex h-14 flex-row gap-x-2 border-neutral-400">
                     <Container

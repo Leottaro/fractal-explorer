@@ -29,6 +29,10 @@ export default function App() {
         uFillingColor: { r: 0, g: 0, b: 0 },
         uFractal: Fractals.Julia,
         uJuliaC: { x: 0, y: 0 },
+        uNewtonR: { x: -1, y: -1 },
+        uNewtonG: { x: -1, y: 1 },
+        uNewtonB: { x: 1.95, y: 0 },
+        uNewtonCChecked: 0,
 
         sZoomMin: 0.5,
         sZoomMax: 40000,
@@ -45,7 +49,10 @@ export default function App() {
         sMouseDownTarget: document.createElement("div"),
         sPlayTime: false,
         sTimeFactor: 1,
-        sJuliaC: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+        sJuliaC: { x: 0, y: 0 },
+        sNewtonR: { x: 0, y: 0 },
+        sNewtonG: { x: 0, y: 0 },
+        sNewtonB: { x: 0, y: 0 },
     });
 
     // Functions
@@ -79,6 +86,9 @@ export default function App() {
             setSettings((prevSettings) => ({
                 ...prevSettings,
                 sJuliaC: PointToPixel(settings.uJuliaC),
+                sNewtonR: PointToPixel(settings.uNewtonR),
+                sNewtonG: PointToPixel(settings.uNewtonG),
+                sNewtonB: PointToPixel(settings.uNewtonB),
             })),
         [settings.aWidth, settings.aHeight, settings.uAspectRatio, settings.uZoom, settings.uCenter]
     );
@@ -196,7 +206,6 @@ export default function App() {
                 className="FractalCanvas"
                 onWheel={handleWheel}
             />
-            <SettingsTab />
             <span onWheel={handleWheel}>
                 {settings.uFractal == Fractals.Julia ? (
                     <ControlPoint
@@ -212,11 +221,46 @@ export default function App() {
                 ) : settings.uFractal == Fractals.Mandelbrot ? (
                     <></>
                 ) : settings.uFractal == Fractals.Newton ? (
-                    <></>
+                    <>
+                        <ControlPoint
+                            hidden={settings.uNewtonCChecked == 1}
+                            getter={settings.sNewtonR}
+                            setter={(newPoint) =>
+                                setSettings((prevSettings) => ({
+                                    ...prevSettings,
+                                    sNewtonR: newPoint,
+                                    uNewtonR: PixelToPoint(newPoint),
+                                }))
+                            }
+                        />
+                        <ControlPoint
+                            hidden={settings.uNewtonCChecked == 2}
+                            getter={settings.sNewtonG}
+                            setter={(newPoint) =>
+                                setSettings((prevSettings) => ({
+                                    ...prevSettings,
+                                    sNewtonG: newPoint,
+                                    uNewtonG: PixelToPoint(newPoint),
+                                }))
+                            }
+                        />
+                        <ControlPoint
+                            hidden={settings.uNewtonCChecked == 3}
+                            getter={settings.sNewtonB}
+                            setter={(newPoint) =>
+                                setSettings((prevSettings) => ({
+                                    ...prevSettings,
+                                    sNewtonB: newPoint,
+                                    uNewtonB: PixelToPoint(newPoint),
+                                }))
+                            }
+                        />
+                    </>
                 ) : (
                     <></>
                 )}
             </span>
+            <SettingsTab />
         </AppContext.Provider>
     );
 }
