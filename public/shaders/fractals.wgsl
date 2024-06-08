@@ -1,22 +1,20 @@
 const OneOverlogOfTwo: f32 = 1 / log(2);
 
 struct Settings {
-    uTime: f32,
-    uSmoothColors: f32,
-    uMaxIters: f32,
-    uColorOffset: f32,
-    uAspectRatio: f32,
-    uZoom: f32,
-    uJuliaC: vec2f,
-    uNewtonR: vec2f,
-    uNewtonG: vec2f,
-    uNewtonB: vec2f,
-    uCenter: vec2f,
-    uMouse: vec2f,
-    uFractal: f32,
-    uNewtonCChecked: f32,
-    uFillingColor: vec3f,
-    uColors: array<vec4f>, // uColors are sorted by t
+    smoothColors: f32,
+    maxIters: f32,
+    aspectRatio: f32,
+    zoom: f32,
+    fractal: f32,
+    newtonCChecked: f32,
+    juliaC: vec2f,
+    newtonR: vec2f,
+    newtonG: vec2f,
+    newtonB: vec2f,
+    center: vec2f,
+    fillingColor: vec3f,
+    colorOffset: f32,
+    colors: array<vec4f>, // colors are sorted by t
 };
 @group(0) @binding(0) var<storage, read> settings: Settings;
 
@@ -28,7 +26,7 @@ struct VertexOut {
 fn vertexMain(@location(0) position: vec2f) -> VertexOut {
     var output: VertexOut;
     output.position = vec4f(position, 0., 1.);
-    output.mappedPosition = vec2f(position.x * settings.uAspectRatio, position.y) / settings.uZoom + settings.uCenter;
+    output.mappedPosition = vec2f(position.x * settings.aspectRatio, position.y) / settings.zoom + settings.center;
     return output;
 }
 
@@ -70,28 +68,28 @@ fn smoothIters(i: f32, z: vec2f) -> f32 {
 }
 
 fn getColor(iterations: f32) -> vec3f {
-    if iterations >= settings.uMaxIters {
-        return settings.uFillingColor;
+    if iterations >= settings.maxIters {
+        return settings.fillingColor;
     }
-    let t: f32 = (1 + cos(log2(iterations + 10) + settings.uColorOffset)) / 2;
-    if t <= settings.uColors[0].w {
-        return settings.uColors[0].rgb;
+    let t: f32 = (1 + cos(log2(iterations + 10) + settings.colorOffset)) / 2;
+    if t <= settings.colors[0].w {
+        return settings.colors[0].rgb;
     }
-    let colorsLength: u32 = arrayLength(&settings.uColors);
-    if t >= settings.uColors[colorsLength - 1].w {
-        return settings.uColors[colorsLength - 1].rgb;
+    let colorsLength: u32 = arrayLength(&settings.colors);
+    if t >= settings.colors[colorsLength - 1].w {
+        return settings.colors[colorsLength - 1].rgb;
     }
 
     var col2: u32 = 1;
-    while col2 < colorsLength && settings.uColors[col2].w < t {
+    while col2 < colorsLength && settings.colors[col2].w < t {
         col2 = col2 + 1;
     }
     let col1 = col2 - 1;
 
-    let color1 = settings.uColors[col1].rgb;
-    let t1 = settings.uColors[col1].w;
-    let color2 = settings.uColors[col2].rgb;
-    let t2 = settings.uColors[col2].w;
+    let color1 = settings.colors[col1].rgb;
+    let t1 = settings.colors[col1].w;
+    let color2 = settings.colors[col2].rgb;
+    let t2 = settings.colors[col2].w;
 
     let finalT: f32 = (t - t1) / (t2 - t1);
     return color1 + finalT * (color2 - color1);
@@ -103,17 +101,17 @@ fn Julia(point: vec2f, constant: vec2f) -> vec4f {
     // Usual algorithm
     var z: vec2f = point;
     var i: f32 = 0;
-    while i < settings.uMaxIters && length(z) < 16. {
+    while i < settings.maxIters && length(z) < 16. {
         z = add(mult(z, z), constant);
         if z.x == point.x && z.y == point.y { // periodicity check
-            return vec4f(settings.uFillingColor, 1);
+            return vec4f(settings.fillingColor, 1);
         }
         if length(z) > 16. {
             break;
         }
         i = i + 1;
     }
-    if settings.uSmoothColors == 1 && i < settings.uMaxIters {
+    if settings.smoothColors == 1 && i < settings.maxIters {
         i = smoothIters(i, z);
     }
     return vec4(getColor(i), 1.);
@@ -124,12 +122,12 @@ fn Mandelbrot(point: vec2f) -> vec4f {
     let y2: f32 = point.y * point.y;
     let q: f32 = pow(point.x - 0.25, 2) + y2;
     if q * (q + (point.x - 0.25)) <= 0.25 * y2 {
-        return vec4f(settings.uFillingColor, 1);
+        return vec4f(settings.fillingColor, 1);
     }
 
     // skip if the point is in the 2nd cardioid
     if pow(point.x + 1, 2) + y2 < 0.0625 {
-        return vec4f(settings.uFillingColor, 1);
+        return vec4f(settings.fillingColor, 1);
     }
 
     return Julia(point, point);
@@ -154,7 +152,7 @@ fn Newton(point: vec2f, r1: vec2f, r2: vec2f, r3: vec2f) -> vec4f {
     var z: vec2f = point;
     var i: f32 = 0;
     var dMin: f32 = 1;
-    while dMin > treshold && i < settings.uMaxIters {
+    while dMin > treshold && i < settings.maxIters {
         num = mult3(sub(z, r1), sub(z, r2), sub(z, r3));
         denom = add3(mult(sub(z, r1), sub(z, r2)), mult(sub(z, r2), sub(z, r3)), mult(sub(z, r1), sub(z, r3)));
         z = sub(z, div(num, denom));
@@ -166,7 +164,7 @@ fn Newton(point: vec2f, r1: vec2f, r2: vec2f, r3: vec2f) -> vec4f {
     }
 
     if dMin > treshold {
-        return vec4f(settings.uFillingColor, 1);
+        return vec4f(settings.fillingColor, 1);
     }
 
     var color: vec3f;
@@ -181,7 +179,7 @@ fn Newton(point: vec2f, r1: vec2f, r2: vec2f, r3: vec2f) -> vec4f {
         color = vec3f(0, 0, 1);
         dist = dot(z - r3, z - r3);
     }
-    if settings.uSmoothColors == 1 {
+    if settings.smoothColors == 1 {
         color *= 0.75 + 0.25 * cos(0.25 * (i - log2(log(dist) / log(treshold))));
     }
     return vec4f(color, 1);
@@ -190,23 +188,23 @@ fn Newton(point: vec2f, r1: vec2f, r2: vec2f, r3: vec2f) -> vec4f {
 @fragment
 fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
     let pointPos: vec2f = fragData.mappedPosition;
-    if settings.uFractal == 0 {
-        return Julia(pointPos, settings.uJuliaC);
-    } else if settings.uFractal == 1 {
+    if settings.fractal == 0 {
+        return Julia(pointPos, settings.juliaC);
+    } else if settings.fractal == 1 {
         return Mandelbrot(pointPos);
-    } else if settings.uFractal == 2 {
-        if settings.uNewtonCChecked == 0 {
-            return Newton(pointPos, settings.uNewtonR, settings.uNewtonG, settings.uNewtonB);
-        } else if settings.uNewtonCChecked == 1 {
-            let average: vec2f = add3(pointPos, settings.uNewtonG, settings.uNewtonB) / 3;
-            return Newton(average, pointPos, settings.uNewtonG, settings.uNewtonB);
-        } else if settings.uNewtonCChecked == 2 {
-            let average: vec2f = add3(settings.uNewtonR, pointPos, settings.uNewtonB) / 3;
-            return Newton(average, settings.uNewtonR, pointPos, settings.uNewtonB);
-        } else if settings.uNewtonCChecked == 3 {
-            let average: vec2f = add3(settings.uNewtonR, settings.uNewtonG, pointPos) / 3;
-            return Newton(average, settings.uNewtonR, settings.uNewtonG, pointPos);
+    } else if settings.fractal == 2 {
+        if settings.newtonCChecked == 0 {
+            return Newton(pointPos, settings.newtonR, settings.newtonG, settings.newtonB);
+        } else if settings.newtonCChecked == 1 {
+            let average: vec2f = add3(pointPos, settings.newtonG, settings.newtonB) / 3;
+            return Newton(average, pointPos, settings.newtonG, settings.newtonB);
+        } else if settings.newtonCChecked == 2 {
+            let average: vec2f = add3(settings.newtonR, pointPos, settings.newtonB) / 3;
+            return Newton(average, settings.newtonR, pointPos, settings.newtonB);
+        } else if settings.newtonCChecked == 3 {
+            let average: vec2f = add3(settings.newtonR, settings.newtonG, pointPos) / 3;
+            return Newton(average, settings.newtonR, settings.newtonG, pointPos);
         }
     }
-    return vec4f(settings.uFillingColor, 1);
+    return vec4f(settings.fillingColor, 1);
 }

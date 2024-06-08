@@ -24,7 +24,7 @@ export default function Slider({
     sliderType,
     disabled,
 }: SliderProps) {
-    const { settings } = useContext(AppContext);
+    const { appSettings } = useContext(AppContext);
     const [dragged, setDragged] = useState(false);
     const sliderRef = createRef<HTMLDivElement>();
 
@@ -58,17 +58,17 @@ export default function Slider({
     }, [getter, scale, sliderType]);
 
     useEffect(() => {
-        if (!settings.sMouseDown) {
+        if (!appSettings.mouseDown) {
             setDragged(false);
         }
-    }, [settings.sMouseDown]);
+    }, [appSettings.mouseDown]);
 
     useEffect(() => {
         if (!dragged || !sliderRef.current) return;
 
         const sliderLeft = sliderRef.current.getBoundingClientRect().left;
         const sliderWidth = sliderRef.current.getBoundingClientRect().width;
-        let sliderValue = (settings.sMouse.x - sliderLeft) / sliderWidth;
+        let sliderValue = (appSettings.mousePixel.x - sliderLeft) / sliderWidth;
 
         if (sliderValue < 0) {
             sliderValue = 0;
@@ -84,7 +84,7 @@ export default function Slider({
                 setter(Math.exp(valueRange.min + sliderValue * scale));
                 break;
         }
-    }, [settings.sMouse]);
+    }, [appSettings.mousePixel]);
 
     return (
         <div className="flex flex-grow flex-row items-center gap-4">

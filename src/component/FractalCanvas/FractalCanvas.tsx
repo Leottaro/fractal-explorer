@@ -6,7 +6,7 @@ import Stats from "@utils/Stats";
 import Label from "@component/Label/Label";
 
 export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasElement>) {
-    const { settings, setSettings } = useContext(AppContext);
+    const { shaderSettings, appSettings, setAppSettings } = useContext(AppContext);
 
     const canvasRef = createRef<HTMLCanvasElement>();
     const [renderer, setRenderer] = useState<Renderer>(null!);
@@ -17,7 +17,9 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
             throw new Error("can't find the canvas");
         }
         const newRenderer = new Renderer(canvasRef.current);
-        newRenderer.Init(settings, "shaders/fractals.wgsl").then(() => setRenderer(newRenderer));
+        newRenderer
+            .Init(shaderSettings, "shaders/fractals.wgsl")
+            .then(() => setRenderer(newRenderer));
     }, [canvasRef.current]);
 
     useEffect(() => {
@@ -26,17 +28,18 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
         }
         function reRender() {
             if (renderer.isDrawing()) return;
+            console.log("re render");
 
-            renderer.updateSettings(settings);
+            renderer.updateSettings(shaderSettings);
             renderer.draw().then((deltaTime) => {
                 if (!deltaTime || !stats.current) return;
-                if (settings.sPlayTime) {
-                    setSettings((prevSettings) => ({
+                if (appSettings.playTime) {
+                    setAppSettings((prevSettings) => ({
                         ...prevSettings,
-                        uTime:
+                        time:
                             (1000 +
-                                prevSettings.uTime +
-                                (prevSettings.sTimeFactor * deltaTime) / 1000) %
+                                prevSettings.time +
+                                (prevSettings.timeFactor * deltaTime) / 1000) %
                             1000,
                     }));
                 }
@@ -44,12 +47,12 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
             });
         }
         reRender();
-        if (!settings.sPlayTime) {
+        if (!appSettings.playTime) {
             return;
         }
         const loop = setInterval(reRender, 0);
         return () => clearInterval(loop);
-    }, [renderer, settings]);
+    }, [renderer, shaderSettings, appSettings.time, appSettings.playTime]);
 
     return (
         <>
@@ -57,7 +60,7 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
                 {...attributes}
                 ref={canvasRef}
             ></canvas>
-            {settings.sPlayTime ? (
+            {appSettings.playTime ? (
                 <Label
                     font={LabelFonts.Roboto}
                     baseColor={LabelBaseColors.Ligth}

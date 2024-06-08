@@ -11,7 +11,7 @@ interface Selected {
 }
 
 export default function ColorSlider() {
-    const { settings, setSettings } = useContext(AppContext);
+    const { appSettings, shaderSettings, setShaderSettings } = useContext(AppContext);
     const [selected, setSelected] = useState<Selected | undefined>();
     const [dragged, setDragged] = useState<boolean>(false);
     const [shouldDeselect, setShouldDeselect] = useState<boolean>(false);
@@ -27,7 +27,7 @@ export default function ColorSlider() {
 
         const sliderLeft = sliderRef.current.getBoundingClientRect().left;
         const sliderWidth = sliderRef.current.getBoundingClientRect().width;
-        let newOffset = fromDisplayT((settings.sMouse.x - sliderLeft) / sliderWidth);
+        let newOffset = fromDisplayT((appSettings.mousePixel.x - sliderLeft) / sliderWidth);
 
         if (newOffset < 0) {
             newOffset = 0;
@@ -35,28 +35,28 @@ export default function ColorSlider() {
             newOffset = 1;
         }
 
-        if (newOffset !== settings.uColors[selected.index].t) {
-            const newColors = settings.uColors;
+        if (newOffset !== shaderSettings.colors[selected.index].t) {
+            const newColors = shaderSettings.colors;
             newColors[selected.index].t = newOffset;
             newColors.sort((colorA, colorB) => colorA.t - colorB.t);
             selected.index = newColors.findIndex((color) => color.t === newOffset);
-            setSettings((prevSettings) => ({
+            setShaderSettings((prevSettings) => ({
                 ...prevSettings,
-                uColors: newColors,
+                colors: newColors,
             }));
         }
-    }, [settings.sMouse]);
+    }, [appSettings.mousePixel]);
 
     useEffect(() => {
         if (!selected) return;
-        if (settings.sMouseDown) return;
+        if (appSettings.mouseDown) return;
         if (!dragged && !shouldDeselect) return;
         deselect();
-    }, [settings.sMouseDown]);
+    }, [appSettings.mouseDown]);
 
     function handleThumbMouseLeave(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         if (dragged) return;
-        if (settings.sMouseDown) {
+        if (appSettings.mouseDown) {
             setShouldDeselect(true);
             return;
         }
@@ -71,10 +71,10 @@ export default function ColorSlider() {
 
         const sliderLeft = sliderRef.current.getBoundingClientRect().left;
         const sliderWidth = sliderRef.current.getBoundingClientRect().width;
-        let newOffset = fromDisplayT((settings.sMouse.x - sliderLeft) / sliderWidth);
+        let newOffset = fromDisplayT((appSettings.mousePixel.x - sliderLeft) / sliderWidth);
         newOffset = Math.max(0, Math.min(1, newOffset));
 
-        const newColors = [...settings.uColors, { r: 0, g: 0, b: 0, t: newOffset }].sort(
+        const newColors = [...shaderSettings.colors, { r: 0, g: 0, b: 0, t: newOffset }].sort(
             (a, b) => a.t - b.t
         );
         const newColorIndex = newColors.findIndex((color) => color.t === newOffset);
@@ -91,9 +91,9 @@ export default function ColorSlider() {
             newColors[newColorIndex].g = afterColor.g * percent + beforeColor.g * (1 - percent);
             newColors[newColorIndex].b = afterColor.b * percent + beforeColor.b * (1 - percent);
         }
-        setSettings((prevSettings) => ({
+        setShaderSettings((prevSettings) => ({
             ...prevSettings,
-            uColors: newColors,
+            colors: newColors,
         }));
     }
 
@@ -102,12 +102,12 @@ export default function ColorSlider() {
             ref={sliderRef}
             className="colorSlider relative h-2 w-full overflow-visible rounded-full bg-neutral-600"
             style={{
-                background: toLinearGradient(settings.uColors),
+                background: toLinearGradient(shaderSettings.colors),
             }}
             onClick={addThumb}
             onContextMenu={(event) => event.preventDefault()}
         >
-            {settings.uColors.map((color, index) => (
+            {shaderSettings.colors.map((color, index) => (
                 <div
                     key={index}
                     className="colorSliderThumb absolute top-1/2 aspect-square h-[250%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-200"
@@ -128,13 +128,13 @@ export default function ColorSlider() {
                     onMouseLeave={handleThumbMouseLeave}
                     onContextMenu={(event) => {
                         event.preventDefault();
-                        if (settings.uColors.length == 1) return;
-                        const newColors = [...settings.uColors];
+                        if (shaderSettings.colors.length == 1) return;
+                        const newColors = [...shaderSettings.colors];
                         newColors.splice(index, 1);
                         setSelected(undefined);
-                        setSettings((prevSettings) => ({
+                        setShaderSettings((prevSettings) => ({
                             ...prevSettings,
-                            uColors: newColors,
+                            colors: newColors,
                         }));
                     }}
                 />
@@ -153,14 +153,14 @@ export default function ColorSlider() {
                         className="colorSliderPicker gap-2"
                         style={{ width: "100%", height: "100%" }}
                         color={{
-                            r: settings.uColors[selected.index].r * 255,
-                            g: settings.uColors[selected.index].g * 255,
-                            b: settings.uColors[selected.index].b * 255,
+                            r: shaderSettings.colors[selected.index].r * 255,
+                            g: shaderSettings.colors[selected.index].g * 255,
+                            b: shaderSettings.colors[selected.index].b * 255,
                         }}
                         onChange={(newColor) => {
-                            settings.uColors[selected.index].r = newColor.r / 255;
-                            settings.uColors[selected.index].g = newColor.g / 255;
-                            settings.uColors[selected.index].b = newColor.b / 255;
+                            shaderSettings.colors[selected.index].r = newColor.r / 255;
+                            shaderSettings.colors[selected.index].g = newColor.g / 255;
+                            shaderSettings.colors[selected.index].b = newColor.b / 255;
                         }}
                     />
                 </Container>
