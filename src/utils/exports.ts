@@ -68,53 +68,49 @@ export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
     blur?: boolean;
 }
 
-export interface Attributes {
-    aWidth: number;
-    aHeight: number;
+export interface ShaderSettings {
+    width: number;
+    height: number;
+
+    smoothColors: boolean;
+    maxIters: number;
+    aspectRatio: number;
+    zoom: number;
+    fractal: Fractals;
+    newtonCChecked: number;
+    juliaC: Point;
+    newtonR: Point;
+    newtonG: Point;
+    newtonB: Point;
+    center: Point;
+    fillingColor: Color;
+    colorOffset: number;
+    colors: ColorT[];
 }
 
-export interface Uniforms {
-    uAspectRatio: number;
-    uCenter: Point;
-    uMaxIters: number;
-    uColorOffset: number;
-    uSmoothColors: boolean;
-    uZoom: number;
-    uMouse: Point;
-    uTime: number;
-    uColors: ColorT[];
-    uFillingColor: Color;
-    uFractal: Fractals;
-    uJuliaC: Point;
-    uNewtonR: Point;
-    uNewtonG: Point;
-    uNewtonB: Point;
-    uNewtonCChecked: number;
+export interface AppSettings {
+    colorOffsetMax: number;
+    colorOffsetMin: number;
+    colorOffsetTimeDependant: boolean;
+    juliaC: Point;
+    maxItersFactor: number;
+    maxItersFactorMax: number;
+    maxItersFactorMin: number;
+    maxItersZoomDependant: boolean;
+    mouseDown: boolean;
+    mouseDownTarget: HTMLElement;
+    mousePixel: Point;
+    mousePoint: Point;
+    newtonB: Point;
+    newtonG: Point;
+    newtonR: Point;
+    playTime: boolean;
+    time: number;
+    timeFactor: number;
+    zoomMax: number;
+    zoomMin: number;
+    zoomRate: number;
 }
-
-export interface Settings {
-    sZoomMin: number;
-    sZoomMax: number;
-    sZoomRate: number;
-    sColorOffsetMin: number;
-    sColorOffsetMax: number;
-    sColorOffsetTimeDependant: boolean;
-    sMaxItersFactor: number;
-    sMaxItersFactorMin: number;
-    sMaxItersFactorMax: number;
-    sMaxItersZoomDependant: boolean;
-    sMouse: Point;
-    sMouseDown: boolean;
-    sMouseDownTarget: HTMLElement;
-    sPlayTime: boolean;
-    sTimeFactor: number;
-    sJuliaC: Point;
-    sNewtonR: Point;
-    sNewtonG: Point;
-    sNewtonB: Point;
-}
-
-export interface ContextSettings extends Attributes, Uniforms, Settings {}
 
 // FUNCTIONS
 
@@ -124,7 +120,10 @@ export function pointLerp(a: Point, b: Point, p: number) {
         y: a.y + p * (b.y - a.y),
     };
 }
-export const colorToVec4 = (color: Color | ColorT) =>
+
+export const pointToVec2 = (point: Point) => [point.x, point.y];
+
+export const colorToVec = (color: Color | ColorT) =>
     "t" in color ? [color.r, color.g, color.b, color.t] : [color.r, color.g, color.b];
 
 export const toDisplayT = (t: number) => t * 0.94 + 0.03;
@@ -163,6 +162,8 @@ export function discardNull(element: any | null | undefined, errorMessage: strin
 // OTHERS
 
 export const AppContext = createContext<{
-    settings: ContextSettings;
-    setSettings: React.Dispatch<React.SetStateAction<ContextSettings>>;
+    appSettings: AppSettings;
+    setAppSettings: React.Dispatch<React.SetStateAction<AppSettings>>;
+    shaderSettings: ShaderSettings;
+    setShaderSettings: React.Dispatch<React.SetStateAction<ShaderSettings>>;
 }>(null!);

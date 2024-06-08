@@ -8,21 +8,24 @@ interface ControlPointProps {
 }
 
 export default function ControlPoint({ hidden, getter, setter }: ControlPointProps) {
-    const { settings } = useContext(AppContext);
+    const { appSettings } = useContext(AppContext);
     const [dragged, setDragged] = useState<boolean>(false);
     const [offset, setOffset] = useState<Point>({ x: 0, y: 0 });
 
     useEffect(() => {
-        if (!settings.sMouseDown) {
+        if (!appSettings.mouseDown) {
             setDragged(false);
         }
-    }, [settings.sMouseDown]);
+    }, [appSettings.mouseDown]);
 
     useEffect(() => {
         if (dragged) {
-            setter({ x: settings.sMouse.x - offset.x, y: settings.sMouse.y - offset.y });
+            setter({
+                x: appSettings.mousePixel.x - offset.x,
+                y: appSettings.mousePixel.y - offset.y,
+            });
         }
-    }, [settings.sMouse]);
+    }, [appSettings.mousePixel]);
 
     return (
         <div
@@ -34,7 +37,10 @@ export default function ControlPoint({ hidden, getter, setter }: ControlPointPro
             }
             style={{ left: getter.x, top: getter.y }}
             onMouseDown={() => {
-                setOffset({ x: settings.sMouse.x - getter.x, y: settings.sMouse.y - getter.y });
+                setOffset({
+                    x: appSettings.mousePixel.x - getter.x,
+                    y: appSettings.mousePixel.y - getter.y,
+                });
                 setDragged(true);
             }}
         ></div>

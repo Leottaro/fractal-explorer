@@ -1,4 +1,4 @@
-import { colorToVec4, ContextSettings, discardNull } from "@utils/exports";
+import { colorToVec, ShaderSettings, discardNull, pointToVec2 } from "@utils/exports";
 import fullScreenTexSource from "./fullScreenTexture.wgsl?raw";
 
 export default class Renderer {
@@ -32,7 +32,7 @@ export default class Renderer {
     }
 
     public async Init(
-        settings: ContextSettings,
+        settings: ShaderSettings,
         fractalPath: string,
         computePath?: string
     ): Promise<void> {
@@ -137,9 +137,9 @@ export default class Renderer {
         });
     }
 
-    public updateSettings(settings: ContextSettings): void {
-        this.canvas.width = settings.aWidth;
-        this.canvas.height = settings.aHeight;
+    public updateSettings(settings: ShaderSettings): void {
+        this.canvas.width = settings.width;
+        this.canvas.height = settings.height;
 
         this.frameTextures = [
             this.device.createTexture({
@@ -171,24 +171,22 @@ export default class Renderer {
          * i pasted my shaders into https://webgpufundamentals.org/webgpu/lessons/resources/wgsl-offset-computer.html
          * to get the offsets i needed, i then divided everything by 4 (the number of bytes of a float32)
          */
-        const uniformsValues = new Float32Array(24 + 4 * settings.uColors.length);
-        uniformsValues.set([settings.uTime], 0);
-        uniformsValues.set([settings.uSmoothColors ? 1 : 0], 1);
-        uniformsValues.set([settings.uMaxIters], 2);
-        uniformsValues.set([settings.uColorOffset], 3);
-        uniformsValues.set([settings.uAspectRatio], 4);
-        uniformsValues.set([settings.uZoom], 5);
-        uniformsValues.set([settings.uJuliaC.x, settings.uJuliaC.y], 6);
-        uniformsValues.set([settings.uNewtonR.x, settings.uNewtonR.y], 8);
-        uniformsValues.set([settings.uNewtonG.x, settings.uNewtonG.y], 10);
-        uniformsValues.set([settings.uNewtonB.x, settings.uNewtonB.y], 12);
-        uniformsValues.set([settings.uCenter.x, settings.uCenter.y], 14);
-        uniformsValues.set([settings.uMouse.x, settings.uMouse.y], 16);
-        uniformsValues.set([settings.uFractal.valueOf()], 18);
-        uniformsValues.set([settings.uNewtonCChecked], 19);
-        uniformsValues.set(colorToVec4(settings.uFillingColor), 20);
-        settings.uColors.forEach((color, index) => {
-            uniformsValues.set(colorToVec4(color), 24 + 4 * index);
+        const uniformsValues = new Float32Array(20 + 4 * settings.colors.length);
+        uniformsValues.set([settings.smoothColors ? 1 : 0], 0);
+        uniformsValues.set([settings.maxIters], 1);
+        uniformsValues.set([settings.aspectRatio], 2);
+        uniformsValues.set([settings.zoom], 3);
+        uniformsValues.set([settings.fractal], 4);
+        uniformsValues.set([settings.newtonCChecked], 5);
+        uniformsValues.set(pointToVec2(settings.juliaC), 6);
+        uniformsValues.set(pointToVec2(settings.newtonR), 8);
+        uniformsValues.set(pointToVec2(settings.newtonG), 10);
+        uniformsValues.set(pointToVec2(settings.newtonB), 12);
+        uniformsValues.set(pointToVec2(settings.center), 14);
+        uniformsValues.set(colorToVec(settings.fillingColor), 16);
+        uniformsValues.set([settings.colorOffset], 19);
+        settings.colors.forEach((color, index) => {
+            uniformsValues.set(colorToVec(color), 20 + 4 * index);
         });
 
         this.fractalBindGroup = this.device.createBindGroup({
