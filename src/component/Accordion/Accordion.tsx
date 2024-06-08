@@ -19,9 +19,9 @@ export default function Accordion({ hover, blur, ...attributes }: ContainerProps
             hover={hover}
             blur={blur}
             {...attributes}
-            className={twMerge("flex flex-col overflow-hidden " + (attributes.className ?? ""))}
+            className={twMerge("flex flex-col overflow-visible " + (attributes.className ?? ""))}
         >
-            <div className="z-10 flex h-14 flex-row items-center gap-2 p-1">
+            <div className="z-10 flex h-12 flex-row items-center gap-2 p-1">
                 {(attributes.children as ReactNode[])[0]}
                 <Container
                     hover

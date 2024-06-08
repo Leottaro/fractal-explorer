@@ -206,7 +206,6 @@ export default function App() {
                 className="FractalCanvas"
                 onWheel={handleWheel}
             />
-            <SettingsTab />
             <span onWheel={handleWheel}>
                 {settings.uFractal == Fractals.Julia ? (
                     <ControlPoint
@@ -261,6 +260,7 @@ export default function App() {
                     <></>
                 )}
             </span>
+            <SettingsTab />
         </AppContext.Provider>
     );
 }
