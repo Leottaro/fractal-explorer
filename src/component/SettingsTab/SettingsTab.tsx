@@ -6,6 +6,8 @@ import {
     IconType,
     LabelBaseColors,
     LabelFonts,
+    Point,
+    ShaderSettings,
     SliderTypes,
 } from "@utils/exports";
 import Accordion from "@component/Accordion/Accordion";
@@ -311,9 +313,9 @@ export default function SettingsTab() {
                                     Constant ≈&nbsp;
                                     <span className="text-xl font-robotomono">
                                         {shaderSettings.juliaC.x > 0 ? "+" : "-"}
-                                        {Math.abs(shaderSettings.juliaC.x).toFixed(7)}
+                                        {Math.abs(shaderSettings.juliaC.x).toFixed(6)}
                                         {shaderSettings.juliaC.y > 0 ? " + " : " - "}
-                                        {Math.abs(shaderSettings.juliaC.y).toFixed(7)}i
+                                        {Math.abs(shaderSettings.juliaC.y).toFixed(6)}i
                                     </span>
                                 </Label>
                                 <span className="font-robotomono">
@@ -368,234 +370,93 @@ export default function SettingsTab() {
                         <></>
                     ) : shaderSettings.fractal === Fractals.Newton ? (
                         <>
-                            <Accordion>
-                                <Label
-                                    font={LabelFonts.Poppins}
-                                    baseColor={LabelBaseColors.Ligth}
-                                >
-                                    ConstantR ≈&nbsp;
-                                    <span className="text-xl font-robotomono">
-                                        {shaderSettings.newtonR.x > 0 ? "+" : "-"}
-                                        {Math.abs(shaderSettings.newtonR.x).toFixed(7)}
-                                        {shaderSettings.newtonR.y > 0 ? " + " : " - "}
-                                        {Math.abs(shaderSettings.newtonR.y).toFixed(7)}i
-                                    </span>
-                                </Label>
-                                <div className="flex flex-row gap-2">
-                                    <Label
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        x:
-                                    </Label>
-                                    <Input
-                                        value={shaderSettings.newtonR.x}
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                        onInputChange={(value) =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonR: {
-                                                    x: value,
-                                                    y: shaderSettings.newtonR.y,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="flex flex-row gap-2">
-                                    <Label
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        y:
-                                    </Label>
-                                    <Input
-                                        value={shaderSettings.newtonR.y}
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                        onInputChange={(value) =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonR: {
-                                                    x: shaderSettings.newtonR.x,
-                                                    y: value,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="flex flex-row items-center gap-2">
-                                    <Label
-                                        font={LabelFonts.Poppins}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        Fixed
-                                    </Label>
-                                    <Toggle
-                                        checked={shaderSettings.newtonCChecked != 1}
-                                        onClick={() =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonCChecked:
-                                                    shaderSettings.newtonCChecked != 1 ? 1 : 0,
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            </Accordion>
-                            <Accordion>
-                                <Label
-                                    font={LabelFonts.Poppins}
-                                    baseColor={LabelBaseColors.Ligth}
-                                >
-                                    ConstantG ≈&nbsp;
-                                    <span className="text-xl font-robotomono">
-                                        {shaderSettings.newtonG.x > 0 ? "+" : "-"}
-                                        {Math.abs(shaderSettings.newtonG.x).toFixed(7)}
-                                        {shaderSettings.newtonG.y > 0 ? " + " : " - "}
-                                        {Math.abs(shaderSettings.newtonG.y).toFixed(7)}i
-                                    </span>
-                                </Label>
-                                <div className="flex flex-row gap-2">
-                                    <Label
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        x:
-                                    </Label>
-                                    <Input
-                                        value={shaderSettings.newtonG.x}
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                        onInputChange={(value) =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonG: {
-                                                    x: value,
-                                                    y: shaderSettings.newtonG.y,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="flex flex-row gap-2">
-                                    <Label
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        y:
-                                    </Label>
-                                    <Input
-                                        value={shaderSettings.newtonG.y}
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                        onInputChange={(value) =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonG: {
-                                                    x: shaderSettings.newtonG.x,
-                                                    y: value,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="flex flex-row items-center gap-2">
-                                    <Label
-                                        font={LabelFonts.Poppins}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        Fixed
-                                    </Label>
-                                    <Toggle
-                                        checked={shaderSettings.newtonCChecked != 2}
-                                        onClick={() =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonCChecked:
-                                                    shaderSettings.newtonCChecked != 2 ? 2 : 0,
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            </Accordion>
-                            <Accordion>
-                                <Label
-                                    font={LabelFonts.Poppins}
-                                    baseColor={LabelBaseColors.Ligth}
-                                >
-                                    ConstantB ≈&nbsp;
-                                    <span className="text-xl font-robotomono">
-                                        {shaderSettings.newtonB.x > 0 ? "+" : "-"}
-                                        {Math.abs(shaderSettings.newtonB.x).toFixed(7)}
-                                        {shaderSettings.newtonB.y > 0 ? " + " : " - "}
-                                        {Math.abs(shaderSettings.newtonB.y).toFixed(7)}i
-                                    </span>
-                                </Label>
-                                <div className="flex flex-row gap-2">
-                                    <Label
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        x:
-                                    </Label>
-                                    <Input
-                                        value={shaderSettings.newtonB.x}
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                        onInputChange={(value) =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonB: {
-                                                    x: value,
-                                                    y: shaderSettings.newtonB.y,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="flex flex-row gap-2">
-                                    <Label
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        y:
-                                    </Label>
-                                    <Input
-                                        value={shaderSettings.newtonB.y}
-                                        font={LabelFonts.Roboto}
-                                        baseColor={LabelBaseColors.Ligth}
-                                        onInputChange={(value) =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonB: {
-                                                    x: shaderSettings.newtonB.x,
-                                                    y: value,
-                                                },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="flex flex-row items-center gap-2">
-                                    <Label
-                                        font={LabelFonts.Poppins}
-                                        baseColor={LabelBaseColors.Ligth}
-                                    >
-                                        Fixed
-                                    </Label>
-                                    <Toggle
-                                        checked={shaderSettings.newtonCChecked != 3}
-                                        onClick={() =>
-                                            setShaderSettings((prevSettings) => ({
-                                                ...prevSettings,
-                                                newtonCChecked:
-                                                    shaderSettings.newtonCChecked != 3 ? 3 : 0,
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            </Accordion>
+                            {["R", "G", "B"].map((color, index) => {
+                                const key: keyof ShaderSettings =
+                                    `newton${color}` as keyof ShaderSettings;
+                                const constant = shaderSettings[key] as Point;
+
+                                return (
+                                    <Accordion key={index}>
+                                        <Label
+                                            font={LabelFonts.Poppins}
+                                            baseColor={LabelBaseColors.Ligth}
+                                        >
+                                            Constant{color} ≈&nbsp;
+                                            <span className="text-xl font-robotomono">
+                                                {constant.x > 0 ? "+" : "-"}
+                                                {Math.abs(constant.x).toFixed(6)}
+                                                {constant.y > 0 ? " + " : " - "}
+                                                {Math.abs(constant.y).toFixed(6)}i
+                                            </span>
+                                        </Label>
+                                        <div className="flex flex-row gap-2">
+                                            <Label
+                                                font={LabelFonts.Roboto}
+                                                baseColor={LabelBaseColors.Ligth}
+                                            >
+                                                x:
+                                            </Label>
+                                            <Input
+                                                value={constant.x}
+                                                font={LabelFonts.Roboto}
+                                                baseColor={LabelBaseColors.Ligth}
+                                                onInputChange={(value) =>
+                                                    setShaderSettings((prevSettings) => ({
+                                                        ...prevSettings,
+                                                        [key]: {
+                                                            x: value,
+                                                            y: constant.y,
+                                                        },
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                        <div className="flex flex-row gap-2">
+                                            <Label
+                                                font={LabelFonts.Roboto}
+                                                baseColor={LabelBaseColors.Ligth}
+                                            >
+                                                y:
+                                            </Label>
+                                            <Input
+                                                value={constant.y}
+                                                font={LabelFonts.Roboto}
+                                                baseColor={LabelBaseColors.Ligth}
+                                                onInputChange={(value) =>
+                                                    setShaderSettings((prevSettings) => ({
+                                                        ...prevSettings,
+                                                        [key]: {
+                                                            x: constant.x,
+                                                            y: value,
+                                                        },
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                        <div className="flex flex-row items-center gap-2">
+                                            <Label
+                                                font={LabelFonts.Poppins}
+                                                baseColor={LabelBaseColors.Ligth}
+                                            >
+                                                Fixed
+                                            </Label>
+                                            <Toggle
+                                                checked={shaderSettings.newtonCChecked != index + 1}
+                                                onClick={() =>
+                                                    setShaderSettings((prevSettings) => ({
+                                                        ...prevSettings,
+                                                        newtonCChecked:
+                                                            shaderSettings.newtonCChecked !=
+                                                            index + 1
+                                                                ? index + 1
+                                                                : 0,
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                    </Accordion>
+                                );
+                            })}
                         </>
                     ) : (
                         <></>
