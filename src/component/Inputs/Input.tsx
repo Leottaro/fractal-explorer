@@ -15,8 +15,11 @@ export default function TextInput({
     ...labelProps
 }: TextInputProps) {
     return (
-        <Container className="w-full h-10 bg-opacity-100 bg-neutral-200 border-neutral-800">
-            <Label {...labelProps}>
+        <Container className="w-full px-2 h-10 bg-opacity-100 bg-neutral-200 border-neutral-800">
+            <Label
+                {...labelProps}
+                className={labelProps.className + " w-full"}
+            >
                 <input
                     value={value}
                     onChange={(e) => {

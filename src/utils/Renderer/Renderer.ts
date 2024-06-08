@@ -179,13 +179,14 @@ export default class Renderer {
         uniformsValues.set([settings.uAspectRatio], 4);
         uniformsValues.set([settings.uZoom], 5);
         uniformsValues.set([settings.uJuliaC.x, settings.uJuliaC.y], 6);
-        uniformsValues.set([settings.uNewtonC1.x, settings.uNewtonC1.y], 8);
-        uniformsValues.set([settings.uNewtonC2.x, settings.uNewtonC2.y], 10);
-        uniformsValues.set([settings.uNewtonC3.x, settings.uNewtonC3.y], 12);
+        uniformsValues.set([settings.uNewtonR.x, settings.uNewtonR.y], 8);
+        uniformsValues.set([settings.uNewtonG.x, settings.uNewtonG.y], 10);
+        uniformsValues.set([settings.uNewtonB.x, settings.uNewtonB.y], 12);
         uniformsValues.set([settings.uCenter.x, settings.uCenter.y], 14);
         uniformsValues.set([settings.uMouse.x, settings.uMouse.y], 16);
-        uniformsValues.set(colorToVec4(settings.uFillingColor), 18);
-        uniformsValues.set([settings.uFractal.valueOf()], 23);
+        uniformsValues.set([settings.uFractal.valueOf()], 18);
+        uniformsValues.set([settings.uNewtonCChecked], 19);
+        uniformsValues.set(colorToVec4(settings.uFillingColor), 20);
         settings.uColors.forEach((color, index) => {
             uniformsValues.set(colorToVec4(color), 24 + 4 * index);
         });

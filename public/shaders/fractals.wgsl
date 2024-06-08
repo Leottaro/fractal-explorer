@@ -8,13 +8,14 @@ struct Settings {
     uAspectRatio: f32,
     uZoom: f32,
     uJuliaC: vec2f,
-    uNewtonC1: vec2f,
-    uNewtonC2: vec2f,
-    uNewtonC3: vec2f,
+    uNewtonR: vec2f,
+    uNewtonG: vec2f,
+    uNewtonB: vec2f,
     uCenter: vec2f,
     uMouse: vec2f,
-    uFillingColor: vec3f,
     uFractal: f32,
+    uNewtonCChecked: f32,
+    uFillingColor: vec3f,
     uColors: array<vec4f>, // uColors are sorted by t
 };
 @group(0) @binding(0) var<storage, read> settings: Settings;
@@ -143,36 +144,37 @@ fn Newton(point: vec2f, r1: vec2f, r2: vec2f, r3: vec2f) -> vec4f {
     // h(x) is the tangent to f(x) at x
     // the new x is x - f(x)/g(x)
 
-    var dC1: f32;
-    var dC2: f32;
-    var dC3: f32;
+    let treshold: f32 = 1. / 1000.;
+    var dR1: f32;
+    var dR2: f32;
+    var dR3: f32;
     var num: vec2f;
     var denom: vec2f;
 
     var z: vec2f = point;
     var i: f32 = 0;
     var dMin: f32 = 1;
-    while dMin > 0.001 && i < settings.uMaxIters {
+    while dMin > treshold && i < settings.uMaxIters {
         num = mult3(sub(z, r1), sub(z, r2), sub(z, r3));
         denom = add3(mult(sub(z, r1), sub(z, r2)), mult(sub(z, r2), sub(z, r3)), mult(sub(z, r1), sub(z, r3)));
         z = sub(z, div(num, denom));
-        dC1 = length(z - settings.uNewtonC1);
-        dC2 = length(z - settings.uNewtonC2);
-        dC3 = length(z - settings.uNewtonC3);
-        dMin = min(dC1, min(dC2, dC3));
+        dR1 = length(sub(z, r1));
+        dR2 = length(sub(z, r2));
+        dR3 = length(sub(z, r3));
+        dMin = min(dR1, min(dR2, dR3));
         i = i + 1;
     }
 
-    if dMin > 0.001 {
+    if dMin > treshold {
         return vec4f(settings.uFillingColor, 1);
     }
 
     var color: vec3f;
     var dist: f32;
-    if dC1 < dC2 && dC1 < dC3 {
+    if dR1 < dR2 && dR1 < dR3 {
         color = vec3f(1, 0, 0);
         dist = dot(z - r1, z - r1);
-    } else if dC2 < dC1 && dC2 < dC3 {
+    } else if dR2 < dR1 && dR2 < dR3 {
         color = vec3f(0, 1, 0);
         dist = dot(z - r2, z - r2);
     } else {
@@ -180,7 +182,7 @@ fn Newton(point: vec2f, r1: vec2f, r2: vec2f, r3: vec2f) -> vec4f {
         dist = dot(z - r3, z - r3);
     }
     if settings.uSmoothColors == 1 {
-        color *= 0.75 + 0.25 * cos(0.25 * (i - log2(log(dist) / log(0.001))));
+        color *= 0.75 + 0.25 * cos(0.25 * (i - log2(log(dist) / log(treshold))));
     }
     return vec4f(color, 1);
 }
@@ -193,8 +195,18 @@ fn fragmentMain(fragData: VertexOut) -> @location(0) vec4f {
     } else if settings.uFractal == 1 {
         return Mandelbrot(pointPos);
     } else if settings.uFractal == 2 {
-        return Newton(pointPos, settings.uNewtonC1, settings.uNewtonC2, settings.uNewtonC3);
-    } else {
-        return vec4f(settings.uFillingColor, 1);
+        if settings.uNewtonCChecked == 0 {
+            return Newton(pointPos, settings.uNewtonR, settings.uNewtonG, settings.uNewtonB);
+        } else if settings.uNewtonCChecked == 1 {
+            let average: vec2f = add3(pointPos, settings.uNewtonG, settings.uNewtonB) / 3;
+            return Newton(average, pointPos, settings.uNewtonG, settings.uNewtonB);
+        } else if settings.uNewtonCChecked == 2 {
+            let average: vec2f = add3(settings.uNewtonR, pointPos, settings.uNewtonB) / 3;
+            return Newton(average, settings.uNewtonR, pointPos, settings.uNewtonB);
+        } else if settings.uNewtonCChecked == 3 {
+            let average: vec2f = add3(settings.uNewtonR, settings.uNewtonG, pointPos) / 3;
+            return Newton(average, settings.uNewtonR, settings.uNewtonG, pointPos);
+        }
     }
+    return vec4f(settings.uFillingColor, 1);
 }
