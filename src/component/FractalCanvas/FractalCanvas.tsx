@@ -28,7 +28,6 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
         }
         function reRender() {
             if (renderer.isDrawing()) return;
-            console.log("re render");
 
             renderer.updateSettings(shaderSettings);
             renderer.draw().then((deltaTime) => {
