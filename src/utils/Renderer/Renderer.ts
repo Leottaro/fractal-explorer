@@ -1,5 +1,17 @@
-import { colorToVec, ShaderSettings, discardNull, pointToVec2 } from "@utils/exports";
+import { colorToVec, ShaderSettings, pointToVec2 } from "@utils/exports";
 import fullScreenTexSource from "./fullScreenTexture.wgsl?raw";
+
+function discardNull(
+    element: GPUCanvasContext | GPUAdapter | null,
+    errorMessage: string
+): GPUCanvasContext | GPUAdapter {
+    if (!element) {
+        console.error(errorMessage);
+        alert(errorMessage);
+        throw new Error(errorMessage);
+    }
+    return element;
+}
 
 export default class Renderer {
     private readonly canvas: HTMLCanvasElement;
@@ -26,7 +38,10 @@ export default class Renderer {
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-        this.context = discardNull(this.canvas.getContext("webgpu"), "WebGPU not supported");
+        this.context = discardNull(
+            this.canvas.getContext("webgpu"),
+            "WebGPU not supported"
+        ) as GPUCanvasContext;
         this.renderingFormat = navigator.gpu.getPreferredCanvasFormat();
         this.drawing = false;
     }
@@ -39,7 +54,7 @@ export default class Renderer {
         const adapter = discardNull(
             await navigator.gpu.requestAdapter({ powerPreference: "low-power" }),
             "No adapter found"
-        );
+        ) as GPUAdapter;
         this.device = await adapter.requestDevice();
         this.fractalSource = await fetch(fractalPath).then((res) => res.text());
         this.computeSource = computePath

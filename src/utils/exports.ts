@@ -150,15 +150,6 @@ export function toLinearGradient(colors: ColorT[]): string {
     );
 }
 
-export function discardNull(element: any | null | undefined, errorMessage: string) {
-    if (!element) {
-        console.error(errorMessage);
-        alert(errorMessage);
-        throw new Error(errorMessage);
-    }
-    return element;
-}
-
 // OTHERS
 
 export const AppContext = createContext<{
