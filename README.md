@@ -87,7 +87,7 @@ If your device or browser isn't compatible with webGPU, the website WILL not wor
 
 -   [x] Julia
 -   [x] Mandelbrot
--   [ ] Newton
+-   [x] Newton
 -   [x] Settings
     -   [x] Zoom
     -   [x] Maximum iterations
@@ -102,6 +102,9 @@ If your device or browser isn't compatible with webGPU, the website WILL not wor
         -   [x] forward / backward step
         -   [x] fast forward / backward
         -   [x] play/pause
+    -   [ ] Screen system
+        -   [ ] resolution control
+        -   [ ] settings export
 -   [ ] Record system
 
 See the [open issues](https://github.com/leottaro/fractal-explorer/issues) for a full list of proposed features (and known issues).

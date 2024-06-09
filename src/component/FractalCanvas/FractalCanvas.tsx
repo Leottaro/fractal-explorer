@@ -51,7 +51,13 @@ export default function FractalCanvas(attributes: HTMLAttributes<HTMLCanvasEleme
         }
         const loop = setInterval(reRender, 0);
         return () => clearInterval(loop);
-    }, [renderer, shaderSettings, appSettings.time, appSettings.playTime]);
+    }, [
+        renderer,
+        shaderSettings,
+        appSettings.time,
+        appSettings.playTime,
+        ...shaderSettings.colors.map((color) => Object.values(color).reduce((a, b) => a + b)), // trigger when a color r, g, b or t change
+    ]);
 
     return (
         <>

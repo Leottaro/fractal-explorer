@@ -19,6 +19,13 @@ import Slider from "@component/Inputs/Slider";
 import Toggle from "@component/Inputs/Toggle";
 import Label from "@component/Label/Label";
 
+function goodDisplay(value: number, precision: number): string {
+    const n = Math.round((value + Number.EPSILON) * 1000000000) / 1000000000;
+    const exp = n.toExponential(precision);
+    const pres = n.toPrecision(precision + 3);
+    return (value >= 0 ? "+" : "") + (exp.length < pres.length ? exp : pres);
+}
+
 export default function SettingsTab() {
     const { shaderSettings, setShaderSettings, appSettings, setAppSettings } =
         useContext(AppContext);
@@ -113,7 +120,7 @@ export default function SettingsTab() {
                                         value={Math.round(shaderSettings.maxIters)}
                                         font={LabelFonts.Poppins}
                                         baseColor={LabelBaseColors.Ligth}
-                                        onInputChange={(value) =>
+                                        onInputValid={(value) =>
                                             setShaderSettings((prevSettings) => ({
                                                 ...prevSettings,
                                                 maxIters: value,
@@ -173,9 +180,8 @@ export default function SettingsTab() {
                         >
                             Center ≈&nbsp;
                             <span className="text-xl font-robotomono">
-                                {shaderSettings.center.x.toPrecision(8)}
-                                {shaderSettings.center.y > 0 ? " + " : " - "}
-                                {Math.abs(shaderSettings.center.y).toPrecision(8)}i
+                                {goodDisplay(shaderSettings.center.x, 6)}{" "}
+                                {goodDisplay(shaderSettings.center.y, 6)}i
                             </span>
                         </Label>
                         <span className="font-robotomono">
@@ -190,7 +196,7 @@ export default function SettingsTab() {
                                     value={shaderSettings.center.x}
                                     font={LabelFonts.Roboto}
                                     baseColor={LabelBaseColors.Ligth}
-                                    onInputChange={(value) =>
+                                    onInputValid={(value) =>
                                         setShaderSettings((prevSettings) => ({
                                             ...prevSettings,
                                             center: { x: value, y: shaderSettings.center.y },
@@ -209,7 +215,7 @@ export default function SettingsTab() {
                                     value={shaderSettings.center.y}
                                     font={LabelFonts.Roboto}
                                     baseColor={LabelBaseColors.Ligth}
-                                    onInputChange={(value) =>
+                                    onInputValid={(value) =>
                                         setShaderSettings((prevSettings) => ({
                                             ...prevSettings,
                                             center: { x: shaderSettings.center.x, y: value },
@@ -219,33 +225,8 @@ export default function SettingsTab() {
                             </div>
                         </span>
                     </Accordion>
-                    <Container className="justify-start p-2">
-                        <Label
-                            font={LabelFonts.Poppins}
-                            baseColor={LabelBaseColors.Ligth}
-                        >
-                            Mouse:&nbsp;
-                        </Label>
-                        <Label
-                            font={LabelFonts.Roboto}
-                            baseColor={LabelBaseColors.Ligth}
-                        >
-                            {appSettings.mousePoint.x.toFixed(8)}
-                            {appSettings.mousePoint.y > 0 ? " + " : " - "}
-                            {Math.abs(appSettings.mousePoint.y).toFixed(8)}i
-                        </Label>
-                    </Container>
-                    <Accordion className="overflow-visible">
-                        <div className="flex flex-grow flex-row items-center gap-2 pr-2">
-                            <Label
-                                font={LabelFonts.Poppins}
-                                baseColor={LabelBaseColors.Ligth}
-                            >
-                                Colors:
-                            </Label>
-                            <ColorSlider />
-                        </div>
-                        <div className="flex flex-row gap-2 items-center">
+                    {shaderSettings.fractal === Fractals.Newton ? (
+                        <Container className="flex w-full justify-start h-14 flex-row items-center gap-2 p-2">
                             <Label
                                 font={LabelFonts.Poppins}
                                 baseColor={LabelBaseColors.Ligth}
@@ -261,48 +242,77 @@ export default function SettingsTab() {
                                     }))
                                 }
                             />
-                        </div>
-                        <div className="flex flex-row gap-2 items-center">
-                            <Label
-                                font={LabelFonts.Poppins}
-                                baseColor={LabelBaseColors.Ligth}
-                            >
-                                Colors offset
-                            </Label>
-                            <Slider
-                                min={appSettings.colorOffsetMin}
-                                max={appSettings.colorOffsetMax}
-                                printedMax="2π"
-                                getter={shaderSettings.colorOffset}
-                                setter={(newOffset) =>
-                                    setShaderSettings((prevSettings) => ({
-                                        ...prevSettings,
-                                        colorOffset: newOffset,
-                                    }))
-                                }
-                                sliderType={SliderTypes.LINEAR}
-                                disabled={appSettings.colorOffsetTimeDependant}
-                            />
-                        </div>
-                        <div className="flex flex-row gap-2 items-center">
-                            <Label
-                                font={LabelFonts.Poppins}
-                                baseColor={LabelBaseColors.Ligth}
-                            >
-                                Colors offset time dependant
-                            </Label>
-                            <Toggle
-                                checked={appSettings.colorOffsetTimeDependant}
-                                onClick={() =>
-                                    setAppSettings((prevSettings) => ({
-                                        ...prevSettings,
-                                        colorOffsetTimeDependant:
-                                            !appSettings.colorOffsetTimeDependant,
-                                    }))
-                                }
-                            />
-                        </div>
-                    </Accordion>
+                        </Container>
+                    ) : (
+                        <Accordion className="overflow-visible">
+                            <div className="flex flex-grow flex-row items-center gap-2 pr-2">
+                                <Label
+                                    font={LabelFonts.Poppins}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    Colors:
+                                </Label>
+                                <ColorSlider />
+                            </div>
+                            <div className="flex flex-row gap-2 items-center">
+                                <Label
+                                    font={LabelFonts.Poppins}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    Smooth colors
+                                </Label>
+                                <Toggle
+                                    checked={shaderSettings.smoothColors}
+                                    onClick={() =>
+                                        setShaderSettings((prevSettings) => ({
+                                            ...prevSettings,
+                                            smoothColors: !shaderSettings.smoothColors,
+                                        }))
+                                    }
+                                />
+                            </div>
+                            <div className="flex flex-row gap-2 items-center">
+                                <Label
+                                    font={LabelFonts.Poppins}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    Colors offset
+                                </Label>
+                                <Slider
+                                    min={appSettings.colorOffsetMin}
+                                    max={appSettings.colorOffsetMax}
+                                    printedMax="2π"
+                                    getter={shaderSettings.colorOffset}
+                                    setter={(newOffset) =>
+                                        setShaderSettings((prevSettings) => ({
+                                            ...prevSettings,
+                                            colorOffset: newOffset,
+                                        }))
+                                    }
+                                    sliderType={SliderTypes.LINEAR}
+                                    disabled={appSettings.colorOffsetTimeDependant}
+                                />
+                            </div>
+                            <div className="flex flex-row gap-2 items-center">
+                                <Label
+                                    font={LabelFonts.Poppins}
+                                    baseColor={LabelBaseColors.Ligth}
+                                >
+                                    Colors offset time dependant
+                                </Label>
+                                <Toggle
+                                    checked={appSettings.colorOffsetTimeDependant}
+                                    onClick={() =>
+                                        setAppSettings((prevSettings) => ({
+                                            ...prevSettings,
+                                            colorOffsetTimeDependant:
+                                                !appSettings.colorOffsetTimeDependant,
+                                        }))
+                                    }
+                                />
+                            </div>
+                        </Accordion>
+                    )}
                     {shaderSettings.fractal === Fractals.Julia ? (
                         <>
                             <Accordion>
@@ -312,10 +322,8 @@ export default function SettingsTab() {
                                 >
                                     Constant ≈&nbsp;
                                     <span className="text-xl font-robotomono">
-                                        {shaderSettings.juliaC.x > 0 ? "+" : "-"}
-                                        {Math.abs(shaderSettings.juliaC.x).toFixed(6)}
-                                        {shaderSettings.juliaC.y > 0 ? " + " : " - "}
-                                        {Math.abs(shaderSettings.juliaC.y).toFixed(6)}i
+                                        {goodDisplay(shaderSettings.juliaC.x, 5)}{" "}
+                                        {goodDisplay(shaderSettings.juliaC.y, 5)}i
                                     </span>
                                 </Label>
                                 <span className="font-robotomono">
@@ -330,7 +338,7 @@ export default function SettingsTab() {
                                             value={shaderSettings.juliaC.x}
                                             font={LabelFonts.Roboto}
                                             baseColor={LabelBaseColors.Ligth}
-                                            onInputChange={(value) =>
+                                            onInputValid={(value) =>
                                                 setShaderSettings((prevSettings) => ({
                                                     ...prevSettings,
                                                     juliaC: {
@@ -352,7 +360,7 @@ export default function SettingsTab() {
                                             value={shaderSettings.juliaC.y}
                                             font={LabelFonts.Roboto}
                                             baseColor={LabelBaseColors.Ligth}
-                                            onInputChange={(value) =>
+                                            onInputValid={(value) =>
                                                 setShaderSettings((prevSettings) => ({
                                                     ...prevSettings,
                                                     juliaC: {
@@ -383,10 +391,8 @@ export default function SettingsTab() {
                                         >
                                             Constant{color} ≈&nbsp;
                                             <span className="text-xl font-robotomono">
-                                                {constant.x > 0 ? "+" : "-"}
-                                                {Math.abs(constant.x).toFixed(6)}
-                                                {constant.y > 0 ? " + " : " - "}
-                                                {Math.abs(constant.y).toFixed(6)}i
+                                                {goodDisplay(constant.x, 4)}{" "}
+                                                {goodDisplay(constant.y, 4)}i
                                             </span>
                                         </Label>
                                         <div className="flex flex-row gap-2">
@@ -400,7 +406,7 @@ export default function SettingsTab() {
                                                 value={constant.x}
                                                 font={LabelFonts.Roboto}
                                                 baseColor={LabelBaseColors.Ligth}
-                                                onInputChange={(value) =>
+                                                onInputValid={(value) =>
                                                     setShaderSettings((prevSettings) => ({
                                                         ...prevSettings,
                                                         [key]: {
@@ -422,7 +428,7 @@ export default function SettingsTab() {
                                                 value={constant.y}
                                                 font={LabelFonts.Roboto}
                                                 baseColor={LabelBaseColors.Ligth}
-                                                onInputChange={(value) =>
+                                                onInputValid={(value) =>
                                                     setShaderSettings((prevSettings) => ({
                                                         ...prevSettings,
                                                         [key]: {
