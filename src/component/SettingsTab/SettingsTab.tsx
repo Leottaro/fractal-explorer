@@ -18,6 +18,7 @@ import Input from "@component/Inputs/Input";
 import Slider from "@component/Inputs/Slider";
 import Toggle from "@component/Inputs/Toggle";
 import Label from "@component/Label/Label";
+import Button from "../Inputs/Button";
 
 function goodDisplay(value: number, precision: number): string {
     const n = Math.round((value + Number.EPSILON) * 1000000000) / 1000000000;
@@ -33,8 +34,7 @@ export default function SettingsTab() {
 
     return (
         <>
-            <Container
-                hover
+            <Button
                 blur
                 onClick={() => setHidden(!hidden)}
                 className={
@@ -46,7 +46,7 @@ export default function SettingsTab() {
                     type={IconType.Arrow}
                     flipped={hidden ? "x" : undefined}
                 />
-            </Container>
+            </Button>
             <Container
                 blur
                 className={
@@ -326,52 +326,72 @@ export default function SettingsTab() {
                                         {goodDisplay(shaderSettings.juliaC.y, 5)}i
                                     </span>
                                 </Label>
-                                <span className="font-robotomono">
-                                    <div className="flex flex-row gap-2">
-                                        <Label
-                                            font={LabelFonts.Roboto}
-                                            baseColor={LabelBaseColors.Ligth}
-                                        >
-                                            x:
-                                        </Label>
-                                        <Input
-                                            value={shaderSettings.juliaC.x}
-                                            font={LabelFonts.Roboto}
-                                            baseColor={LabelBaseColors.Ligth}
-                                            onInputValid={(value) =>
-                                                setShaderSettings((prevSettings) => ({
-                                                    ...prevSettings,
-                                                    juliaC: {
-                                                        x: value,
-                                                        y: shaderSettings.juliaC.y,
-                                                    },
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                    <div className="flex flex-row gap-2">
-                                        <Label
-                                            font={LabelFonts.Roboto}
-                                            baseColor={LabelBaseColors.Ligth}
-                                        >
-                                            y:
-                                        </Label>
-                                        <Input
-                                            value={shaderSettings.juliaC.y}
-                                            font={LabelFonts.Roboto}
-                                            baseColor={LabelBaseColors.Ligth}
-                                            onInputValid={(value) =>
-                                                setShaderSettings((prevSettings) => ({
-                                                    ...prevSettings,
-                                                    juliaC: {
-                                                        x: shaderSettings.juliaC.x,
-                                                        y: value,
-                                                    },
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </span>
+                                <div className="flex flex-row gap-2">
+                                    <Label
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        x:
+                                    </Label>
+                                    <Input
+                                        value={shaderSettings.juliaC.x}
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputValid={(value) =>
+                                            setShaderSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                juliaC: {
+                                                    x: value,
+                                                    y: shaderSettings.juliaC.y,
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <div className="flex flex-row gap-2">
+                                    <Label
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        y:
+                                    </Label>
+                                    <Input
+                                        value={shaderSettings.juliaC.y}
+                                        font={LabelFonts.Roboto}
+                                        baseColor={LabelBaseColors.Ligth}
+                                        onInputValid={(value) =>
+                                            setShaderSettings((prevSettings) => ({
+                                                ...prevSettings,
+                                                juliaC: {
+                                                    x: shaderSettings.juliaC.x,
+                                                    y: value,
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                <Button
+                                    onClick={() => {
+                                        setShaderSettings((prevSettings) => ({
+                                            ...prevSettings,
+                                            juliaC: shaderSettings.center,
+                                        }));
+                                        setAppSettings((prevSettings) => ({
+                                            ...prevSettings,
+                                            juliaC: {
+                                                x: shaderSettings.width / 2,
+                                                y: shaderSettings.height / 2,
+                                            },
+                                        }));
+                                    }}
+                                >
+                                    <Label
+                                        font={LabelFonts.Poppins}
+                                        baseColor={LabelBaseColors.Ligth}
+                                    >
+                                        Snap to center
+                                    </Label>
+                                </Button>
                             </Accordion>
                         </>
                     ) : shaderSettings.fractal === Fractals.Mandelbrot ? (
@@ -469,8 +489,7 @@ export default function SettingsTab() {
                     )}
                 </div>
                 <Container className="flex h-14 flex-row gap-x-2 border-neutral-400">
-                    <Container
-                        hover
+                    <Button
                         onClick={() =>
                             setAppSettings((prevSettings) => ({
                                 ...prevSettings,
@@ -481,9 +500,8 @@ export default function SettingsTab() {
                         }
                     >
                         <Icon type={IconType.Reset} />
-                    </Container>
-                    <Container
-                        hover
+                    </Button>
+                    <Button
                         onClick={() =>
                             setAppSettings((prevSettings) => ({
                                 ...prevSettings,
@@ -496,9 +514,8 @@ export default function SettingsTab() {
                             type={IconType.DoubleArrow}
                             flipped="x"
                         />
-                    </Container>
-                    <Container
-                        hover
+                    </Button>
+                    <Button
                         onClick={() =>
                             setAppSettings((prevSettings) => ({
                                 ...prevSettings,
@@ -511,7 +528,7 @@ export default function SettingsTab() {
                             type={IconType.Arrow}
                             flipped="x"
                         />
-                    </Container>
+                    </Button>
                     <Container className="relative flex-grow">
                         <Label
                             font={LabelFonts.Roboto}
@@ -528,8 +545,7 @@ export default function SettingsTab() {
                             {appSettings.time.toFixed(3)}
                         </Label>
                     </Container>
-                    <Container
-                        hover
+                    <Button
                         onClick={() =>
                             setAppSettings((prevSettings) => ({
                                 ...prevSettings,
@@ -539,9 +555,8 @@ export default function SettingsTab() {
                         }
                     >
                         <Icon type={IconType.Arrow} />
-                    </Container>
-                    <Container
-                        hover
+                    </Button>
+                    <Button
                         onClick={() =>
                             setAppSettings((prevSettings) => ({
                                 ...prevSettings,
@@ -551,9 +566,8 @@ export default function SettingsTab() {
                         }
                     >
                         <Icon type={IconType.DoubleArrow} />
-                    </Container>
-                    <Container
-                        hover
+                    </Button>
+                    <Button
                         onClick={() =>
                             setAppSettings((prevSettings) => ({
                                 ...prevSettings,
@@ -567,7 +581,7 @@ export default function SettingsTab() {
                                 className: appSettings.playTime ? "" : "fill-neutral-200",
                             }}
                         />
-                    </Container>
+                    </Button>
                 </Container>
             </Container>
         </>

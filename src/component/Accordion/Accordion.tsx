@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { ContainerProps, IconType } from "@utils/exports";
 import Container from "@component/Container/Container";
 import Icon from "@component/Icon/Icon";
+import Button from "../Inputs/Button";
 
 export default function Accordion({ hover, blur, ...attributes }: ContainerProps) {
     const [opened, setOpened] = useState<boolean>(false);
@@ -23,16 +24,15 @@ export default function Accordion({ hover, blur, ...attributes }: ContainerProps
         >
             <div className="flex h-14 flex-row items-center gap-2 p-1 pb-0">
                 {(attributes.children as ReactNode[])[0]}
-                <Container
-                    hover
+                <Button
                     className="ml-auto h-full"
+                    onClick={() => setOpened(!opened)}
                 >
                     <Icon
                         type={IconType.Arrow}
-                        onClick={() => setOpened(!opened)}
                         pathProps={{ className: opened ? "-rotate-90" : "rotate-90" }}
                     />
-                </Container>
+                </Button>
             </div>
             <div
                 ref={contentRef}
