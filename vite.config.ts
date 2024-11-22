@@ -4,6 +4,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    base: "/fractal-explorer/",
+    base: "/",
     plugins: [react(), tsconfigPaths()],
 });

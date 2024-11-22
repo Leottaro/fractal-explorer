@@ -1,29 +1,42 @@
-name: Github Pages Deploy
-run-name: Deploying to github pages
+name: Frambouase Deploy
+run-name: Deploying to Frambouase
 on:
     push:
         branches:
             - main
     workflow_dispatch:
 jobs:
-    Deploy:
+    docker_build:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - name: Run deploy script
-              run: |
-                  export NODE_OPTIONS="--max_old_space_size=4096"
-                  set -e
-                  npm i
-                  npm run build
-                  cd dist
-                  echo > .nojekyll
-                  git config --global user.email "${{ secrets.GH_EMAIL }}"
-                  git config --global user.name "${{ secrets.GH_USER }}"
-                  git init
-                  git checkout -B main
-                  git add -A
-                  git commit -m 'deploy'
-                  git push -f https://${{ secrets.GH_USER }}:${{ secrets.GH_TOKEN }}@github.com/Leottaro/fractal-explorer.git main:gh-pages
-                  cd -
-              shell: bash
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+            - name: Install QEMU
+              uses: docker/setup-qemu-action@v3
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - name: Build for arm64 and push image
+              run: docker buildx build --platform linux/arm64,linux/amd64 -t leottaro/fractals:latest --push .
+
+    frambouase_deploy:
+        runs-on: self-hosted
+        needs: docker_build
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - name: Pull image
+              run: docker pull leottaro/fractals:latest
+            - name: Stop the old container
+              run: (docker kill fractal-explorer ; docker rm fractal-explorer) &> /dev/null
+            - name: Run container
+              run: docker run -dp 9090 --name fractal-explorer --network frambouase_caddy --restart unless-stopped leottaro/fractals:latest
