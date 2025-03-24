@@ -22,7 +22,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://leottaro.github.io/fractal-explorer">
+  <a href="https://fractals.leotta.ro/">
     <img src="public/images/banner.png" alt="Banner" width="auto" height="160" style="border-radius: 1rem;">
   </a>
 
@@ -32,7 +32,7 @@
     A real time online fractal explorer to explore the Julia, Mandelbrot and Newton's fractals.
     <br />
     <br />
-    <a href="https://leottaro.github.io/fractal-explorer">Try it</a>
+    <a href="https://fractals.leotta.ro/">Try it</a>
     ·
     <a href="https://github.com/leottaro/fractal-explorer/issues/new?labels=bug">Report Bug</a>
     ·
@@ -63,7 +63,7 @@
 
 ## <a id="about"></a>❓ About The Project
 
-[![Fractal explorer Screenshot](public/images/screenshot.png)](https://leottaro.github.io/fractal-explorer)
+[![Fractal explorer Screenshot](public/images/screenshot.png)](https://fractals.leotta.ro/)
 
 There are many great fractals explorers avaliable on the net. However most of them are either CPU based or offline. I wanted to make one avaliable online for most people. It has the most important features for a simple exploration. It currently allows you tu explore the Julia and Mandelbrot sets.
 
