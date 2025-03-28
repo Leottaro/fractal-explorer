@@ -1,9 +1,9 @@
 name: Frambouase Deploy
 run-name: Deploying to Frambouase
 on:
-    push:
-        branches:
-            - main
+#    push:
+#        branches:
+#            - main
     workflow_dispatch:
 jobs:
     docker_build:
